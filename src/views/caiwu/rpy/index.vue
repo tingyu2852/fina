@@ -1,185 +1,15 @@
 <template>
   <div>
-    <div style="width: 98%; margin: auto">
-      <el-button
-        style="margin: 10px 0"
-        type="primary"
-        plain
-        @click="dialogTableVisible = true"
-        size="mini"
-        >新增</el-button
-      >
-      <!-- <el-button
-        style="margin: 10px"
-        type="primary"
-        plain
-        @click="dc_btn"
-        size="mini"
-        >导出</el-button
-      > -->
-      <el-button
-        type="danger"
-        plain
-        size="mini"
-        @click="deleteBtn"
-        :disabled="!delRpy.length"
-        >删除</el-button
-      >
-      <el-table
-        :data="rpyList"
-        @selection-change="handleSelectionChange"
-        border
-      >
-        <el-table-column header-align="center" type="selection" width="55"> </el-table-column>
-        <el-table-column header-align="center" label="贷款单位" prop="corp_name"></el-table-column>
-        <el-table-column header-align="center" label="贷款项目" prop="proj_name"></el-table-column>
-        <el-table-column header-align="center" label="放款银行" prop="bank_name"></el-table-column>
-        <el-table-column header-align="center" label="还款金额" prop="prin_rec" align="right">
-          <template slot-scope="{ row }">
-            <span>{{ formatNumber(row.prin_rec) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column header-align="center" label="利息" prop="accr_rec" align="right">
-          <template slot-scope="{ row }">
-            <span>{{ formatNumber(row.accr_rec) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column header-align="center" label="还款日期" prop="rpy_date"></el-table-column>
-        <el-table-column header-align="center" label="操作" min-width="80">
-          <template slot-scope="{ row }">
-            <el-button
-              style="margin-right: 10px"
-              type="text"
-              plain
-              icon="el-icon-plus"
-              class="btn_1"
-              @click="bj_btn(row)"
-              >编辑</el-button
-            >
-            <el-popconfirm
-              :title="`确认删除这条内容吗？`"
-              @onConfirm="deleteTableBtn(row)"
-            >
-              <el-button
-                slot="reference"
-                style="color: red"
-                type="text"
-                plain
-                icon="el-icon-delete"
-                class="btn_1"
-                >删除</el-button
-              >
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div style="text-align: center; margin-top: 10px">
-      <el-pagination
-        style="margin: auto"
-        background
-        :total="total"
-        :current-page="current"
-        :page-size="size"
-        :page-sizes="sizes"
-        @current-change="currentChange"
-        layout="prev, pager, next,jumper,sizes,->,total"
-        @size-change="sizeChange"
-      ></el-pagination>
-    </div>
-    <el-dialog
-      title="添加"
-      width="500px"
-      :visible.sync="dialogTableVisible"
-      @close="AdddialogClose"
-      :close-on-click-modal="false"
-    >
-      <div style="width: 80%; margin: auto" class="dialog_body">
-        <el-form
-          :model="addfrom"
-          ref="ruleForm"
-          label-width="100px"
-          label-position="left"
-          :rules="rules"
-        >
-          <el-form-item label="单位" prop="corp_id">
-            <el-select
-              clearable
-              class="box_select"
-              v-model="addfrom.corp_id"
-              placeholder="请选择贷款单位"
-              filterable
-            >
-              <el-option
-                v-for="item in corpList"
-                :label="item.corp_name"
-                :value="item.corp_id"
-                :key="item.corp_id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="项目" prop="proj_id">
-            <el-select
-              clearable
-              class="box_select"
-              v-model="addfrom.proj_id"
-              placeholder="请选择项目"
-              filterable
-            >
-              <el-option
-                v-for="item in projList"
-                :label="item.proj_name"
-                :value="item.proj_id"
-                :key="item.proj_id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="放款银行" prop="bank_id">
-            <el-select
-              clearable
-              class="box_select"
-              v-model="addfrom.bank_id"
-              placeholder="请选择银行"
-              filterable
-            >
-              <el-option
-                v-for="item in bankList"
-                :label="item.bank_name"
-                :value="item.bank_id"
-                :key="item.bank_id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="还款本金" prop="prin_rec">
-            <el-input v-model="addfrom.prin_rec" type="number"></el-input>
-          </el-form-item>
-          <el-form-item label="还款利息" prop="accr_rec">
-            <el-input v-model="addfrom.accr_rec" type="number"></el-input>
-          </el-form-item>
-          <el-form-item label="还款日期" prop="rpy_date">
-            <el-date-picker
-              v-model="addfrom.rpy_date"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd"
-            >
-            </el-date-picker>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogTableVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addBxBtn">确 定</el-button>
-      </div></el-dialog
-    >
+  
   </div>
 </template>
 
 <script>
 export default {
-  name: "Rpy",
+  name: "RpyPlan",
   data() {
     return {
+      boxshow: 2,
       dialogTableVisible: false,
       rpyList: [],
       current: 1,
@@ -194,6 +24,23 @@ export default {
         proj_id: "",
         prin_rec: "",
       },
+      form: {
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: "",
+        rpyPlan:[
+          {
+            name:'',
+            time:''
+          }
+        ]
+      },
+
       rules: [],
       corpList: [],
       bankList: [],
@@ -322,6 +169,13 @@ export default {
           .join("");
       });
     },
+    addPlan(){
+      this.form.rpyPlan.push({name:'',time:''})
+    },
+    del_btn(index){
+      console.log(index);
+      this.form.rpyPlan.splice(index,1)
+    }
   },
 };
 </script>

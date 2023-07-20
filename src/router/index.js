@@ -55,31 +55,39 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
-
+  
   
   {
-    path:'/caiwu',
+    path:'/proj',
     component:Layout,
-    meta:{title:'财务管理',icon:'el-icon-s-operation'},
+    meta:{title:'项目管理',icon:'el-icon-s-operation'},
     children:[
+      // {
+      //   path:'proj',
+      //   name:'Proj',
+      //   component:()=>import('@/views/jichu/proj'),
+      //   meta:{title:'基础信息',icon:'el-icon-s-order'}
+      // },
       {
         path:'credit',
         name:'Credit',
         component:()=>import('@/views/caiwu/credit'),
-        meta:{title:'放款记录',icon:'el-icon-s-order'}
+        meta:{title:'详细信息',icon:'el-icon-s-order'}
       },
+      
        {
-        path:'rpy',
-        name:'Rpy',
-        component:()=>import('@/views/caiwu/rpy'),
-        meta:{title:'还款记录',icon:'el-icon-s-order'}
+        path:'rpyacc',
+        name:'RpyAcc',
+        component:()=>import('@/views/caiwu/rpyacc'),
+        meta:{title:'项目复审',icon:'el-icon-s-order'}
       },
       {
-        path:'proj',
-        name:'Proj',
-        component:()=>import('@/views/jichu/proj'),
-        meta:{title:'项目信息',icon:'el-icon-s-order'}
+        path:'rpyplan',
+        name:'RpyPlan',
+        component:()=>import('@/views/caiwu/rpy'),
+        meta:{title:'项目审核',icon:'el-icon-s-order'}
       },
+      
 
       
      
