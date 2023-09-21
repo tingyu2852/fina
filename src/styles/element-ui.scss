@@ -48,23 +48,35 @@
   box-sizing: content-box;
 }
 
-.el-table--border, .el-table--group {
-  border: 1px solid #8A8A8A!important;
+// .el-table--border, .el-table--group {
+//   border: 1px solid #8A8A8A!important;
+// }
+// /**
+// 改变表格内竖线颜色
+// */
+// .el-table--border  td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+//   border-right: 1px solid #8A8A8A!important;
+// }
+// /**
+// 改变表格内行线颜色
+// */
+// .el-table  td, .el-table th.is-leaf  {
+//   border-bottom: 1px solid #8A8A8A!important;
+// }
+
+// .el-table thead tr th{
+//   border-color: #8c939d;
+
+// }
+
+.el-form-item__label {
+  text-align: justify;
+  height: 40px;
 }
-/**
-改变表格内竖线颜色
-*/
-.el-table--border  td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
-  border-right: 1px solid #8A8A8A!important;
-}
-/**
-改变表格内行线颜色
-*/
-.el-table  td, .el-table th.is-leaf  {
-  border-bottom: 1px solid #8A8A8A!important;
+.el-form-item__label::after {
+  content: "";
+  display: inline-block;
+  width: 100%;
 }
 
-.el-table thead tr th{
-  border-color: #8c939d;
 
-}

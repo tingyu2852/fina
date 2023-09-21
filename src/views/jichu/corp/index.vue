@@ -24,7 +24,8 @@
       >
         <el-table-column header-align="center" type="selection" width="55"> </el-table-column>
         <el-table-column header-align="center" label="序号" type="index" width="50" align="right"></el-table-column>
-        <el-table-column header-align="center" label="融资单位" prop="corp_name" align="left"></el-table-column>
+        <el-table-column header-align="center" label="单位名称" prop="corp_name" align="left"></el-table-column>
+        <el-table-column header-align="center" label="单位分类" prop="corp_cate" align="left"></el-table-column>
         
         <el-table-column header-align="center" label="操作" width="200px">
           <template slot-scope="{ row }">
@@ -87,6 +88,11 @@
           <el-form-item label="单位名称" prop="corp_name">
             <el-input v-model="addfrom.corp_name" placeholder="请输入"></el-input>
           </el-form-item>
+          <el-form-item label="分类" prop="corp_cate">
+           <el-select v-model="addfrom.corp_cate" placeholder="请选择分类">
+             <el-option v-for="(item,index) in ['融资主体','担保主体','借款主体']" :label="item" :value="item" :key="index"></el-option>
+           </el-select>
+          </el-form-item>
          
         </el-form>
       </div>
@@ -111,12 +117,14 @@ export default {
       sizes: [50, 100, 200, 500],
       total: 1000,
       addfrom: {
-          corp_name:''
+          corp_name:'',
+          corp_cate:null
       },
       rules: [],
       delCorp: [],
       rules: {
         corp_name: [{ required: true, message: "不能为空", trigger: "blur" }],
+        corp_cate: [{ required: true, message: "不能为空", trigger: "blur" }],
       },
     };
   },

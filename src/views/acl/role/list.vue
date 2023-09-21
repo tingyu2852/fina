@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 90%;margin: 20px 20px;">
     <el-form inline>
       <el-form-item>
         <el-input v-model="tempSearchObj.roleName" placeholder="角色名称"/>
@@ -17,9 +17,8 @@
     <el-table
       border
       stripe
-      style="width: 960px"
       v-loading="listLoading"
-      :data="roles"
+      :data="[{roleName:'管理员',edit:false,originRoleName:'管理员'}]"
       @selection-change="handleSelectionChange">
 
       <el-table-column
@@ -53,12 +52,12 @@
       
       <el-table-column label="操作" width="300" align="center">
         <template slot-scope="{row}">
-          <HintButton size="mini" type="info" icon="el-icon-info" title="分配权限"
+          <el-button size="mini" type="info" icon="el-icon-info" title="分配权限"
             @click="$router.push(`/acl/role/auth/${row.id}?roleName=${row.roleName}`)"/>
 
-          <HintButton size="mini" type="primary" icon="el-icon-check" title="确定" 
+          <el-button size="mini" type="primary" icon="el-icon-check" title="确定" 
             @click="updateRole(row)" v-if="row.edit"/>
-          <HintButton size="mini" type="primary" icon="el-icon-edit" title="修改角色" 
+          <el-button size="mini" type="primary" icon="el-icon-edit" title="修改角色" 
             @click="row.edit= true" v-if="!row.edit"/>
 
             
@@ -90,7 +89,7 @@ export default {
 
   data() {
     return {
-      listLoading: true, // 数据是否正在加载
+      listLoading: false, // 数据是否正在加载
       roles: [], // 角色列表
       total: 0, // 总记录数
       page: 1, // 当前页码
@@ -161,22 +160,22 @@ export default {
     异步获取角色分页列表
     */
     getRoles(page = 1) {
-      this.page = page
-      this.listLoading = true
-      const {limit, searchObj} = this
-      this.$API.role.getPageList(page, limit, searchObj).then(
-        result => {
-          const {items, total} = result.data
+      // this.page = page
+      // this.listLoading = true
+      // const {limit, searchObj} = this
+      // this.$API.role.getPageList(page, limit, searchObj).then(
+      //   result => {
+      //     const {items, total} = result.data
           this.roles = items.map(item => {
             item.edit = false // 用于标识是否显示编辑输入框的属性
             item.originRoleName = item.roleName // 缓存角色名称, 用于取消
             return item
           })
-          this.total = total
-        }
-      ).finally(() => {
-        this.listLoading = false
-      })
+      //     this.total = total
+      //   }
+      // ).finally(() => {
+      //   this.listLoading = false
+      // })
     },
 
     /* 

@@ -32,6 +32,7 @@
         <el-input
           :key="passwordType"
           ref="password"
+          inputmode="latin"
           v-model="loginForm.password"
           :type="passwordType"
           placeholder="Password"
@@ -63,15 +64,16 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (value.length<5) {
+        
+        callback(new Error('用户名最少为5位'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value.length < 5) {
+        callback(new Error('密码最少为5位'))
       } else {
         callback()
       }
@@ -79,7 +81,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: 'admin'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

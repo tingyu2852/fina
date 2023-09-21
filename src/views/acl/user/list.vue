@@ -22,7 +22,7 @@
       border
       stripe
       v-loading="listLoading"
-      :data="users"
+      :data="[{username:'test01',nickName:'张三',roleName:'管理员',pas:'123456'}]"
       @selection-change="handleSelectionChange">
 
       <el-table-column
@@ -37,20 +37,21 @@
       />
 
       <el-table-column prop="username" label="用户名" width="150" />
+      <el-table-column prop="pas" label="用户密码" />
       <el-table-column prop="nickName" label="用户昵称" />
-      <el-table-column prop="roleName" label="权限列表" />
+      <el-table-column prop="roleName" label="角色列表" />
       
-      <el-table-column prop="gmtCreate" label="创建时间" width="180"/>
-      <el-table-column prop="gmtModified" label="更新时间" width="180"/>
+      <!-- <el-table-column prop="gmtCreate" label="创建时间" width="180"/>
+      <el-table-column prop="gmtModified" label="更新时间" width="180"/> -->
 
       <el-table-column label="操作" width="230" align="center">
         <template slot-scope="{row}">
-          <HintButton type="info" size="mini" icon="el-icon-user-solid" title="分配角色"
-            @click="showAssignRole(row)"/>
-          <HintButton type="primary" size="mini" icon="el-icon-edit" title="修改用户"
-            @click="showUpdateUser(row)"/>
+          <el-button type="info" size="mini" icon="el-icon-user-solid" title="分配角色" @click="showAssignRole(row)"
+           />
+          <el-button type="primary" size="mini" icon="el-icon-edit" title="修改用户"
+            />
           <el-popconfirm :title="`确定删除 ${row.username} 吗?`" @onConfirm="removeUser(row.id)">
-            <HintButton style="margin-left:10px" slot="reference" type="danger" size="mini" icon="el-icon-delete" 
+            <el-button style="margin-left:10px" slot="reference" type="danger" size="mini" icon="el-icon-delete" 
               title="删除用户"/>
           </el-popconfirm>
         </template>
@@ -143,7 +144,7 @@ export default {
       },
       loading: false, // 是否正在提交请求中
       dialogRoleVisible: false, // 是否显示角色Dialog
-      allRoles: [], // 所有角色列表
+      allRoles: [{id:1,roleName:'管理员'},{id:2,roleName:'录入员'},{id:3,roleName:'主管'},{id:4,roleName:'普通用户'}], // 所有角色列表
       userRoleIds: [], // 用户的角色ID的列表
       isIndeterminate: false, // 是否是不确定的
       checkAll: false, // 是否全选
@@ -220,8 +221,8 @@ export default {
     */
     resetRoleData () {
       this.dialogRoleVisible = false
-      this.allRoles = []
-      this.userRoleIds = []
+      // this.allRoles = []
+      // this.userRoleIds = []
       this.isIndeterminate = false
       this.checkAll = false
     },
@@ -310,15 +311,15 @@ export default {
     获取分页列表
     */
     async getUsers (page=1) {
-      this.page = page
-      const {limit, searchObj} = this
-      this.listLoading = true
-      const result = await this.$API.user.getPageList(page, limit, searchObj)
-      this.listLoading = false
-      const {items, total} = result.data
-      this.users = items.filter(item => item.username!=='admin')
-      this.total = total-1
-      this.selectedIds = []
+      // this.page = page
+      // const {limit, searchObj} = this
+      // this.listLoading = true
+      // const result = await this.$API.user.getPageList(page, limit, searchObj)
+      // this.listLoading = false
+      // const {items, total} = result.data
+      // this.users = items.filter(item => item.username!=='admin')
+      // this.total = total-1
+      // this.selectedIds = []
     },
 
     /* 

@@ -74,19 +74,20 @@
             header-align="center"
             label="融资信息"
             prop="corp_name3"
+            width="150px"
           >
-            <template slot-scope="{ row }">
+            <template slot-scope="scoped">
               <el-button
                 type="primary"
                 size="mini "
-                @click="table_btn(row, 'sx')"
+                @click="table_btn(scoped, 'sx')"
                 >查看</el-button
               >
               <el-button
                 type="primary"
                 size="mini "
-                @click="add_table_btn(row, 'sx')"
-                >录入</el-button
+                @click="add_table_btn(scoped, 'sx')"
+                >编辑</el-button
               >
             </template></el-table-column
           >
@@ -106,27 +107,49 @@
                 type="primary"
                 size="mini "
                 @click="add_table_btn(row,'dk')"
-                >录入</el-button
+                >编辑</el-button
               >
             </template></el-table-column
           > -->
           <el-table-column
             header-align="center"
-            label="还款计划"
+            label="走款信息"
             prop="corp_name3"
+            width="150px"
           >
-            <template slot-scope="{ row }">
+            <template slot-scope="scoped">
               <el-button
                 type="primary"
                 size="mini "
-                @click="table_btn(row, 'hk')"
+                @click="table_btn(scoped, 'hk')"
                 >查看</el-button
               >
               <el-button
                 type="primary"
                 size="mini "
-                @click="add_table_btn(row, 'hk')"
-                >录入</el-button
+                @click="add_table_btn(scoped, 'hk')"
+                >编辑</el-button
+              >
+            </template></el-table-column
+          >
+          <el-table-column
+            header-align="center"
+            label="还款计划"
+            prop="corp_name3"
+            width="150px"
+          >
+            <template slot-scope="scoped">
+              <el-button
+                type="primary"
+                size="mini "
+                @click="table_btn(scoped, 'jh')"
+                >查看</el-button
+              >
+              <el-button
+                type="primary"
+                size="mini "
+                @click="add_table_btn(scoped, 'jh')"
+                >编辑</el-button
               >
             </template></el-table-column
           >
@@ -134,20 +157,31 @@
             header-align="center"
             label="实际还款"
             prop="corp_name3"
+            width="150px"
           >
-            <template slot-scope="{ row }">
+            <template slot-scope="scoped">
               <el-button
                 type="primary"
                 size="mini "
-                @click="table_btn(row, 'sj')"
+                @click="table_btn(scoped, 'sj')"
                 >查看</el-button
               >
               <el-button
                 type="primary"
                 size="mini "
-                @click="add_table_btn(row, 'sj')"
-                >录入</el-button
+                @click="add_table_btn(scoped, 'sj')"
+                
+                >编辑</el-button
               >
+            </template></el-table-column
+          >
+          <el-table-column
+            header-align="center"
+            label="审核状态"
+            prop="corp_name3"
+          >
+            <template slot-scope="scoped">
+              <el-tag type="warning">未提交</el-tag>
             </template></el-table-column
           >
           <el-table-column header-align="center" label="操作" min-width="120">
@@ -159,7 +193,7 @@
                 icon="el-icon-plus"
                 class="btn_1"
                 
-                >提交复审</el-button
+                >提交审核</el-button
               >
               <el-popconfirm
                 :title="`确认删除这条内容吗？`"
@@ -736,7 +770,7 @@
                 >
               </el-row>
             </el-form-item>
-            <el-form-item label="下款及用款">
+            <el-form-item label="下款">
               <el-row :gutter="5" style="margin-left: 0px">
                 <el-col :span="12"
                   ><el-form-item
@@ -905,6 +939,29 @@
                 ></el-col>
               </el-row>
             </el-form-item>
+           
+            <el-form-item label="付息要求">
+              <el-row :gutter="5" style="margin-left: 0px; align-items: center">
+                <el-col :span="24">
+                  <el-form-item label="规则付息" style="align-items: center">
+                    <el-radio-group v-model="form.resource">
+                      <el-radio label="按年"></el-radio>
+                      <el-radio label="按季度"></el-radio>
+                      <el-radio label="按月"></el-radio>
+                    </el-radio-group> </el-form-item
+                ></el-col>
+                <el-col :span="12"
+                  ><el-form-item
+                    label-width="70px"
+                    style="margin: 10px 0px"
+                    label="具体日期"
+                  >
+                    <el-input v-model="form.name33"></el-input> </el-form-item
+                ></el-col>
+              </el-row>
+            </el-form-item>
+          </div>
+          <div v-if="curAdd == 'jh'">
             <el-form-item label="还本计划"
               ><el-button type="primary" size="mini" @click="addPlan">
                 新增</el-button
@@ -953,27 +1010,7 @@
                 </el-col>
               </el-row>
             </el-form-item>
-            <el-form-item label="付息要求">
-              <el-row :gutter="5" style="margin-left: 0px; align-items: center">
-                <el-col :span="24">
-                  <el-form-item label="规则付息" style="align-items: center">
-                    <el-radio-group v-model="form.resource">
-                      <el-radio label="按年"></el-radio>
-                      <el-radio label="按季度"></el-radio>
-                      <el-radio label="按月"></el-radio>
-                    </el-radio-group> </el-form-item
-                ></el-col>
-                <el-col :span="12"
-                  ><el-form-item
-                    label-width="70px"
-                    style="margin: 10px 0px"
-                    label="具体日期"
-                  >
-                    <el-input v-model="form.name33"></el-input> </el-form-item
-                ></el-col>
-              </el-row>
-            </el-form-item>
-          </div>
+           </div>
           <div v-if="curAdd == 'sj'" class="asd">
             <el-form-item label="还本">
               <el-row :gutter="2" style="margin-left: 0px">
@@ -1034,6 +1071,7 @@
       :visible.sync="diag"
       @close="AdddialogClose"
       :close-on-click-modal="false"
+      ref="dialogs"
     >
       <el-form
         :model="addfrom"
@@ -1089,7 +1127,7 @@
       </el-form>
     </el-dialog>
     <el-dialog
-      title="详情"
+      :title="titleInfo"
       width="800px"
       :visible.sync="diags"
       @close="AdddialogClose"
@@ -1176,9 +1214,79 @@
                 <span>？？？</span>
               </el-form-item></el-col
             >
-            <el-col :span="8">
-              <el-form-item label="还本计划">
-                <span>？？？</span>
+            <el-col :span="24"
+              ><el-form-item label="下款">
+                <el-table :data="[{name:10000,time:'2011-01-01',remark:'',},{name:10000,time:'2012-01-01'},{name:10000,time:'2013-01-01'}]" border>
+                 <el-table-column type="index"></el-table-column>
+                 <el-table-column label="时间" prop="time"></el-table-column>
+                 <el-table-column label="金额" prop="name"></el-table-column>
+                 <el-table-column label="备注" prop="remark"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <el-table-column label="附件" prop="name">
+                  <template slot-scope="{row}">
+                    <el-button type="primary" size="mini">下载</el-button>
+                  </template>
+                 </el-table-column>
+               </el-table>
+              </el-form-item></el-col
+            >
+            <el-col :span="24"
+              ><el-form-item label="实际走款">
+                <el-table :data="[{name:10000,time:'2011-01-01',remark:'',},{name:10000,time:'2012-01-01'},{name:10000,time:'2013-01-01'}]" border>
+                 <el-table-column type="index"></el-table-column>
+                 <el-table-column label="时间" prop="time"></el-table-column>
+                 <el-table-column label="金额" prop="name"></el-table-column>
+                 <el-table-column label="用途" prop="name"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <el-table-column label="收款单位" prop="name"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <el-table-column label="备注" prop="remark"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <el-table-column label="用款支撑文件" prop="name">
+                  <template slot-scope="{row}">
+                    <el-button type="primary" size="mini">下载</el-button>
+                  </template>
+                 </el-table-column>
+               </el-table>
+              </el-form-item></el-col
+            >
+            <el-col :span="24"
+              ><el-form-item label="实际用款">
+                <el-table :data="[{name:10000,time:'2011-01-01',remark:'',},{name:10000,time:'2012-01-01'},{name:10000,time:'2013-01-01'}]" border>
+                 <el-table-column type="index"></el-table-column>
+                 <el-table-column label="时间" prop="time"></el-table-column>
+                 <el-table-column label="金额" prop="name"></el-table-column>
+                 <el-table-column label="用途" prop="name"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <el-table-column label="收款单位" prop="name"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <el-table-column label="备注" prop="remark"><template slot-scope="{row}">
+                    <span>？？？</span>
+                  </template></el-table-column>
+                 <!-- <el-table-column label="附件" prop="name">
+                  <template slot-scope="{row}">
+                    <el-button type="primary" size="mini">下载</el-button>
+                  </template>
+                 </el-table-column> -->
+               </el-table>
+              </el-form-item></el-col
+            >
+         
+          </div>
+          <div v-if="curck == 'jh'">
+            <el-col :span="24">
+              <el-form-item label="还本计划" >
+               <el-table :data="[{name:10000,time:'2011-01-01'},{name:10000,time:'2012-01-01'},{name:10000,time:'2013-01-01'}]" border>
+                 <el-table-column type="index"></el-table-column>
+                 <el-table-column label="时间" prop="time"></el-table-column>
+                 <el-table-column label="金额" prop="name"></el-table-column>
+               </el-table>
               </el-form-item></el-col
             >
           </div>
@@ -1186,7 +1294,7 @@
         </el-row>
         <div v-if="curck == 'sj'">
             
-            <el-form-item label="还款1">
+            <!-- <el-form-item label="还款1">
               <el-form-item label="还本金额"><span>10000</span></el-form-item>
             <el-form-item label="时间"><span>2011-01-01</span></el-form-item>
             
@@ -1201,10 +1309,16 @@
             <el-form-item label="付息">
               <el-form-item label="金额"><span>1000</span></el-form-item>
             <el-form-item label="时间"><span>2011-01-01</span></el-form-item>
-            </el-form-item>
-            
-             
-            <el-form-item label="已还本金"><span>20000</span></el-form-item>
+            </el-form-item> -->
+           <el-form-item label="实际还款">
+            <el-table :data="[{name:10000,time:'2011-01-01',acc:100},{name:10000,time:'2011-01-01',acc:100}]" show-summary border>
+              <el-table-column type="index" width="50"></el-table-column>
+              <el-table-column label="时间" prop="time"></el-table-column>
+              <el-table-column label="还本" prop="name"></el-table-column>
+              <el-table-column label="还息" prop="acc"></el-table-column>
+            </el-table>
+           </el-form-item>
+          
             
           
         </div>
@@ -1294,6 +1408,7 @@ export default {
   name: "Credit",
   data() {
     return {
+      titleInfo:'',
       diaasd:false,
       diags:false,
       curck: "",
@@ -1484,6 +1599,9 @@ export default {
       this.form.rpyPlan.splice(index, 1);
     },
     table_btn(row, name) {
+      
+  
+      this.titleInfo = `${row.row.proj_name}-${row.column.label}`
       this.diags = true
       this.curck = name;
       // const table = this.$refs.tableExpand

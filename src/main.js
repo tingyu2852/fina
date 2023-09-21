@@ -17,8 +17,7 @@ import API from './api/index'
 import '@/icons' // icon
 import '@/permission' // permission control
 import dcXlsx from '@/utils/excel'
-
-
+import * as format from '@/utils/format'
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -37,10 +36,12 @@ import dcXlsx from '@/utils/excel'
 // 如果想要中文版 element-ui，按如下方式声明
  Vue.use(ElementUI)
 
-Vue.config.productionTip = false
+
 
 Vue.prototype.$API = API
 Vue.prototype.$dc_excel = dcXlsx
+Vue.prototype.$format = format
+
 
 new Vue({
   el: '#app',

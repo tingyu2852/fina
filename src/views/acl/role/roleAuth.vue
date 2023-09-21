@@ -1,108 +1,1199 @@
 <template>
   <div>
     <el-input disabled :value="$route.query.roleName"></el-input>
-    <el-tree 
+    <!-- <el-tree
       style="margin: 20px 0"
       ref="tree"
-      :data="allPermissions" 
-      node-key="id"  
-      show-checkbox 
+      :data="allPermissions"
+      node-key="id"
+      show-checkbox
       default-expand-all
-      :props="defaultProps" 
-    />
+      
+    /> -->
+    <el-tree
+  :data="data"
+  show-checkbox
+  node-key="id"
+  ref="tree"
+  :default-expanded-keys="[ 3]"
+  :default-checked-keys="[4,9]"
+  :props="defaultProps">
+</el-tree>
     <el-button :loading="loading" type="primary" @click="save">保存</el-button>
-    <el-button @click="$router.replace({name: 'Role'})">取消</el-button>
+    <el-button @click="$router.replace({ name: 'Role' })">取消</el-button>
   </div>
 </template>
 <script>
+export default {
+  name: "roleAuth",
 
-  export default {
-    name: 'roleAuth',
+  data() {
+    return {
+      loading: false, // 用来标识是否正在保存请求中的标识, 防止重复提交
+      allPermissions: [
+        [
+          {
+            id: "1",
+            gmtCreate: "2019-11-15 17:13:06",
+            gmtModified: "2020-09-25 13:47:54",
+            deleted: false,
+            pid: "0",
+            name: "全部数据",
+            code: null,
+            toCode: null,
+            type: 1,
+            status: null,
+            level: 1,
+            children: [
+              {
+                id: "1333329957008228353",
+                gmtCreate: "2020-11-30 16:40:08",
+                gmtModified: "2020-11-30 16:40:08",
+                deleted: false,
+                pid: "1",
+                name: "权限管理",
+                code: "Acl",
+                toCode: "",
+                type: 1,
+                status: null,
+                level: 2,
+                children: [
+                  {
+                    id: "1333330082451472386",
+                    gmtCreate: "2020-11-30 16:40:38",
+                    gmtModified: "2020-11-30 16:40:38",
+                    deleted: false,
+                    pid: "1333329957008228353",
+                    name: "用户管理",
+                    code: "User",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333330741791866881",
+                        gmtCreate: "2020-11-30 16:43:16",
+                        gmtModified: "2020-11-30 16:57:49",
+                        deleted: false,
+                        pid: "1333330082451472386",
+                        name: "添加用户",
+                        code: "btn.User.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333331181728219137",
+                        gmtCreate: "2020-11-30 16:45:00",
+                        gmtModified: "2020-11-30 16:57:40",
+                        deleted: false,
+                        pid: "1333330082451472386",
+                        name: "删除用户",
+                        code: "btn.User.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: true,
+                      },
+                      {
+                        id: "1333331312338845697",
+                        gmtCreate: "2020-11-30 16:45:32",
+                        gmtModified: "2020-11-30 16:57:32",
+                        deleted: false,
+                        pid: "1333330082451472386",
+                        name: "修改用户",
+                        code: "btn.User.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: true,
+                      },
+                      {
+                        id: "1333331463665139714",
+                        gmtCreate: "2020-11-30 16:46:08",
+                        gmtModified: "2020-11-30 16:57:24",
+                        deleted: false,
+                        pid: "1333330082451472386",
+                        name: "分配角色",
+                        code: "btn.User.assgin",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: true,
+                      },
+                      {
+                        id: "1681910985803939842",
+                        gmtCreate: "2023-07-20 14:16:42",
+                        gmtModified: "2023-07-20 14:16:42",
+                        deleted: false,
+                        pid: "1333330082451472386",
+                        name: "热污染",
+                        code: "认为人",
+                        toCode: "热望认为人",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: true,
+                  },
+                  {
+                    id: "1333330152781561858",
+                    gmtCreate: "2020-11-30 16:40:55",
+                    gmtModified: "2020-11-30 16:40:55",
+                    deleted: false,
+                    pid: "1333329957008228353",
+                    name: "角色管理",
+                    code: "Role",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333332492158812161",
+                        gmtCreate: "2020-11-30 16:50:13",
+                        gmtModified: "2020-12-01 08:13:47",
+                        deleted: false,
+                        pid: "1333330152781561858",
+                        name: "分配权限",
+                        code: "btn.Role.assgin",
+                        toCode: "RoleAuth",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333332672870400002",
+                        gmtCreate: "2020-11-30 16:50:56",
+                        gmtModified: "2020-11-30 16:57:00",
+                        deleted: false,
+                        pid: "1333330152781561858",
+                        name: "添加角色",
+                        code: "btn.Role.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333332783683911682",
+                        gmtCreate: "2020-11-30 16:51:22",
+                        gmtModified: "2020-11-30 16:56:52",
+                        deleted: false,
+                        pid: "1333330152781561858",
+                        name: "修改角色",
+                        code: "btn.Role.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333333084306456578",
+                        gmtCreate: "2020-11-30 16:52:34",
+                        gmtModified: "2020-11-30 16:56:44",
+                        deleted: false,
+                        pid: "1333330152781561858",
+                        name: "删除角色",
+                        code: "btn.Role.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333330261636333569",
+                    gmtCreate: "2020-11-30 16:41:21",
+                    gmtModified: "2020-11-30 16:41:21",
+                    deleted: false,
+                    pid: "1333329957008228353",
+                    name: "菜单管理",
+                    code: "Permission",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333334045682876417",
+                        gmtCreate: "2020-11-30 16:56:23",
+                        gmtModified: "2020-11-30 16:56:23",
+                        deleted: false,
+                        pid: "1333330261636333569",
+                        name: "添加",
+                        code: "btn.Permission.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333334713223135233",
+                        gmtCreate: "2020-11-30 16:59:02",
+                        gmtModified: "2020-11-30 16:59:02",
+                        deleted: false,
+                        pid: "1333330261636333569",
+                        name: "修改",
+                        code: "btn.Permission.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333334816461733890",
+                        gmtCreate: "2020-11-30 16:59:27",
+                        gmtModified: "2020-11-30 16:59:27",
+                        deleted: false,
+                        pid: "1333330261636333569",
+                        name: "删除",
+                        code: "btn.Permission.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1681506863485272066",
+                    gmtCreate: "2023-07-19 11:30:52",
+                    gmtModified: "2023-07-19 11:30:52",
+                    deleted: false,
+                    pid: "1333329957008228353",
+                    name: "12",
+                    code: "123",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                  {
+                    id: "1681844388280123393",
+                    gmtCreate: "2023-07-20 09:52:04",
+                    gmtModified: "2023-07-20 09:52:04",
+                    deleted: false,
+                    pid: "1333329957008228353",
+                    name: "432234",
+                    code: "4234234",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                  {
+                    id: "1681844599534632961",
+                    gmtCreate: "2023-07-20 09:52:54",
+                    gmtModified: "2023-07-20 09:52:54",
+                    deleted: false,
+                    pid: "1333329957008228353",
+                    name: "423432",
+                    code: "4234234",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                ],
+                select: true,
+              },
+              {
+                id: "1333565220187107329",
+                gmtCreate: "2020-12-01 08:15:00",
+                gmtModified: "2020-12-01 08:15:00",
+                deleted: false,
+                pid: "1",
+                name: "商品管理",
+                code: "Product",
+                toCode: "",
+                type: 1,
+                status: null,
+                level: 2,
+                children: [
+                  {
+                    id: "1333565287975448577",
+                    gmtCreate: "2020-12-01 08:15:16",
+                    gmtModified: "2020-12-01 08:15:16",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "分类管理",
+                    code: "Category",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333576206260465665",
+                        gmtCreate: "2020-12-01 08:58:39",
+                        gmtModified: "2020-12-01 08:58:39",
+                        deleted: false,
+                        pid: "1333565287975448577",
+                        name: "添加子分类",
+                        code: "btn.Category.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333576296211509249",
+                        gmtCreate: "2020-12-01 08:59:00",
+                        gmtModified: "2020-12-01 08:59:00",
+                        deleted: false,
+                        pid: "1333565287975448577",
+                        name: "修改分类",
+                        code: "btn.Category.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333576398984540162",
+                        gmtCreate: "2020-12-01 08:59:25",
+                        gmtModified: "2020-12-01 08:59:25",
+                        deleted: false,
+                        pid: "1333565287975448577",
+                        name: "删除分类",
+                        code: "btn.Category.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333565362806026242",
+                    gmtCreate: "2020-12-01 08:15:34",
+                    gmtModified: "2020-12-01 08:15:34",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "平台属性管理",
+                    code: "Attr",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333580647210512385",
+                        gmtCreate: "2020-12-01 09:16:18",
+                        gmtModified: "2020-12-01 09:16:18",
+                        deleted: false,
+                        pid: "1333565362806026242",
+                        name: "添加属性",
+                        code: "btn.Attr.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333581293942829057",
+                        gmtCreate: "2020-12-01 09:18:52",
+                        gmtModified: "2020-12-01 09:18:52",
+                        deleted: false,
+                        pid: "1333565362806026242",
+                        name: "更新属性",
+                        code: "btn.Attr.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333581367657721858",
+                        gmtCreate: "2020-12-01 09:19:09",
+                        gmtModified: "2020-12-01 09:19:09",
+                        deleted: false,
+                        pid: "1333565362806026242",
+                        name: "删除属性",
+                        code: "btn.Attr.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333565422956539905",
+                    gmtCreate: "2020-12-01 08:15:48",
+                    gmtModified: "2020-12-01 08:15:48",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "品牌管理",
+                    code: "Trademark",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333577897630330882",
+                        gmtCreate: "2020-12-01 09:05:22",
+                        gmtModified: "2020-12-01 09:05:22",
+                        deleted: false,
+                        pid: "1333565422956539905",
+                        name: "添加品牌",
+                        code: "btn.Trademark.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333578085388349441",
+                        gmtCreate: "2020-12-01 09:06:07",
+                        gmtModified: "2020-12-01 09:06:07",
+                        deleted: false,
+                        pid: "1333565422956539905",
+                        name: "修改品牌",
+                        code: "btn.Trademark.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333578174064324609",
+                        gmtCreate: "2020-12-01 09:06:28",
+                        gmtModified: "2020-12-01 09:06:28",
+                        deleted: false,
+                        pid: "1333565422956539905",
+                        name: "删除品牌",
+                        code: "btn.Trademark.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333565533476450306",
+                    gmtCreate: "2020-12-01 08:16:14",
+                    gmtModified: "2020-12-01 08:16:14",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "SPU管理",
+                    code: "Spu",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333582250592268290",
+                        gmtCreate: "2020-12-01 09:22:40",
+                        gmtModified: "2020-12-01 09:22:40",
+                        deleted: false,
+                        pid: "1333565533476450306",
+                        name: "添加SPU",
+                        code: "btn.Spu.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333582711332368386",
+                        gmtCreate: "2020-12-01 09:24:30",
+                        gmtModified: "2020-12-01 09:24:30",
+                        deleted: false,
+                        pid: "1333565533476450306",
+                        name: "添加SKU",
+                        code: "btn.Spu.addsku",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333582811563651073",
+                        gmtCreate: "2020-12-01 09:24:54",
+                        gmtModified: "2020-12-01 09:24:54",
+                        deleted: false,
+                        pid: "1333565533476450306",
+                        name: "更新Spu",
+                        code: "btn.Spu.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333582952819421185",
+                        gmtCreate: "2020-12-01 09:25:27",
+                        gmtModified: "2020-12-01 09:25:27",
+                        deleted: false,
+                        pid: "1333565533476450306",
+                        name: "查看SKU列表",
+                        code: "btn.Spu.skus",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333583054892003329",
+                        gmtCreate: "2020-12-01 09:25:52",
+                        gmtModified: "2020-12-01 09:25:52",
+                        deleted: false,
+                        pid: "1333565533476450306",
+                        name: "删除Spu",
+                        code: "btn.Spu.delete",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333565600673394690",
+                    gmtCreate: "2020-12-01 08:16:30",
+                    gmtModified: "2020-12-01 08:16:30",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "Sku管理",
+                    code: "Sku",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333584635918118914",
+                        gmtCreate: "2020-12-01 09:32:09",
+                        gmtModified: "2020-12-01 09:32:09",
+                        deleted: false,
+                        pid: "1333565600673394690",
+                        name: "Sku上下架",
+                        code: "btn.Sku.updown",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333585026235854850",
+                        gmtCreate: "2020-12-01 09:33:42",
+                        gmtModified: "2020-12-01 09:33:42",
+                        deleted: false,
+                        pid: "1333565600673394690",
+                        name: "更新SKU",
+                        code: "btn.Sku.update",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333585224177643521",
+                        gmtCreate: "2020-12-01 09:34:29",
+                        gmtModified: "2020-12-01 09:34:29",
+                        deleted: false,
+                        pid: "1333565600673394690",
+                        name: "Sku详情",
+                        code: "btn.Sku.detail",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333585305572306946",
+                        gmtCreate: "2020-12-01 09:34:48",
+                        gmtModified: "2020-12-01 09:34:48",
+                        deleted: false,
+                        pid: "1333565600673394690",
+                        name: "删除Sku",
+                        code: "btn.Sku.remove",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1660258809668673537",
+                        gmtCreate: "2023-05-21 20:18:41",
+                        gmtModified: "2023-05-21 20:18:41",
+                        deleted: false,
+                        pid: "1333565600673394690",
+                        name: "添加sku",
+                        code: "btn.Sku.add",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1681844428058902529",
+                    gmtCreate: "2023-07-20 09:52:13",
+                    gmtModified: "2023-07-20 09:52:13",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "423423",
+                    code: "4324324",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                  {
+                    id: "1681844521751265281",
+                    gmtCreate: "2023-07-20 09:52:36",
+                    gmtModified: "2023-07-20 09:52:36",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "4324",
+                    code: "424324",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                  {
+                    id: "1681915733126922242",
+                    gmtCreate: "2023-07-20 14:35:34",
+                    gmtModified: "2023-07-20 14:35:34",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "234234",
+                    code: "423423",
+                    toCode: "二特瑞特如同",
+                    type: 0,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                  {
+                    id: "1681920781517045762",
+                    gmtCreate: "2023-07-20 14:55:38",
+                    gmtModified: "2023-07-20 14:55:38",
+                    deleted: false,
+                    pid: "1333565220187107329",
+                    name: "234324",
+                    code: "4234",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                ],
+                select: false,
+              },
+              {
+                id: "1333566006992400386",
+                gmtCreate: "2020-12-01 08:18:07",
+                gmtModified: "2020-12-01 08:18:07",
+                deleted: false,
+                pid: "1",
+                name: "订单管理",
+                code: "Order",
+                toCode: "",
+                type: 1,
+                status: null,
+                level: 2,
+                children: [
+                  {
+                    id: "1333566359989219329",
+                    gmtCreate: "2020-12-01 08:19:31",
+                    gmtModified: "2020-12-01 08:19:31",
+                    deleted: false,
+                    pid: "1333566006992400386",
+                    name: "订单列表",
+                    code: "OrderList",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333573521461309442",
+                        gmtCreate: "2020-12-01 08:47:59",
+                        gmtModified: "2020-12-01 08:47:59",
+                        deleted: false,
+                        pid: "1333566359989219329",
+                        name: "查看订单详情",
+                        code: "btn.OrderList.detail",
+                        toCode: "OrderShow",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333574634700894210",
+                        gmtCreate: "2020-12-01 08:52:24",
+                        gmtModified: "2020-12-01 08:52:24",
+                        deleted: false,
+                        pid: "1333566359989219329",
+                        name: "退款",
+                        code: "btn.OrderList.Refund",
+                        toCode: "Refund",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333977786981924865",
+                    gmtCreate: "2020-12-02 11:34:23",
+                    gmtModified: "2020-12-02 11:34:23",
+                    deleted: false,
+                    pid: "1333566006992400386",
+                    name: "退款管理",
+                    code: "Refund",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                  {
+                    id: "1661329280412090369",
+                    gmtCreate: "2023-05-24 19:12:21",
+                    gmtModified: "2023-07-20 14:50:25",
+                    deleted: false,
+                    pid: "1333566006992400386",
+                    name: "查看订单详情",
+                    code: "OrderShow",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [],
+                    select: false,
+                  },
+                ],
+                select: false,
+              },
+              {
+                id: "1333566837842079746",
+                gmtCreate: "2020-12-01 08:21:25",
+                gmtModified: "2020-12-01 11:01:46",
+                deleted: false,
+                pid: "1",
+                name: "客户管理",
+                code: "ClientUser",
+                toCode: "",
+                type: 1,
+                status: null,
+                level: 2,
+                children: [
+                  {
+                    id: "1333567018830491650",
+                    gmtCreate: "2020-12-01 08:22:08",
+                    gmtModified: "2020-12-01 11:02:59",
+                    deleted: false,
+                    pid: "1333566837842079746",
+                    name: "客户列表",
+                    code: "UserList",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333574992164646913",
+                        gmtCreate: "2020-12-01 08:53:49",
+                        gmtModified: "2020-12-01 11:03:07",
+                        deleted: false,
+                        pid: "1333567018830491650",
+                        name: "锁定客户",
+                        code: "btn.UserList.lock",
+                        toCode: "",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                ],
+                select: false,
+              },
+              {
+                id: "1333567258920841218",
+                gmtCreate: "2020-12-01 08:23:06",
+                gmtModified: "2020-12-01 08:23:06",
+                deleted: false,
+                pid: "1",
+                name: "优惠管理",
+                code: "Discount",
+                toCode: "",
+                type: 1,
+                status: null,
+                level: 2,
+                children: [
+                  {
+                    id: "1333567320879099906",
+                    gmtCreate: "2020-12-01 08:23:20",
+                    gmtModified: "2020-12-01 08:23:20",
+                    deleted: false,
+                    pid: "1333567258920841218",
+                    name: "优惠活动管理",
+                    code: "Activity",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333571249788514305",
+                        gmtCreate: "2020-12-01 08:38:57",
+                        gmtModified: "2020-12-01 08:38:57",
+                        deleted: false,
+                        pid: "1333567320879099906",
+                        name: "添加活动",
+                        code: "btn.Activity.add",
+                        toCode: "ActivityAdd",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333571470874472450",
+                        gmtCreate: "2020-12-01 08:39:50",
+                        gmtModified: "2020-12-01 08:39:50",
+                        deleted: false,
+                        pid: "1333567320879099906",
+                        name: "修改活动",
+                        code: "btn.Activity.update",
+                        toCode: "ActivityEdit",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333571598276456449",
+                        gmtCreate: "2020-12-01 08:40:20",
+                        gmtModified: "2020-12-01 08:40:20",
+                        deleted: false,
+                        pid: "1333567320879099906",
+                        name: "活动规则",
+                        code: "btn.Activity.rule",
+                        toCode: "ActivityRule",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1681910898549833730",
+                        gmtCreate: "2023-07-20 14:16:21",
+                        gmtModified: "2023-07-20 15:11:54",
+                        deleted: false,
+                        pid: "1333567320879099906",
+                        name: "额我确认",
+                        code: "热热我热4324324人温热微软",
+                        toCode: "热污染额我热问题",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                  {
+                    id: "1333567430052638721",
+                    gmtCreate: "2020-12-01 08:23:46",
+                    gmtModified: "2020-12-01 08:23:46",
+                    deleted: false,
+                    pid: "1333567258920841218",
+                    name: "优惠券管理",
+                    code: "Coupon",
+                    toCode: "",
+                    type: 1,
+                    status: null,
+                    level: 3,
+                    children: [
+                      {
+                        id: "1333571757181857794",
+                        gmtCreate: "2020-12-01 08:40:58",
+                        gmtModified: "2020-12-01 08:40:58",
+                        deleted: false,
+                        pid: "1333567430052638721",
+                        name: "添加优惠券",
+                        code: "btn.Coupon.add",
+                        toCode: "CouponAdd",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333571906931093505",
+                        gmtCreate: "2020-12-01 08:41:34",
+                        gmtModified: "2020-12-01 08:41:34",
+                        deleted: false,
+                        pid: "1333567430052638721",
+                        name: "修改优惠券",
+                        code: "btn.Coupon.update",
+                        toCode: "CouponEdit",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                      {
+                        id: "1333572118592450562",
+                        gmtCreate: "2020-12-01 08:42:24",
+                        gmtModified: "2020-12-01 08:42:24",
+                        deleted: false,
+                        pid: "1333567430052638721",
+                        name: "活动规则",
+                        code: "btn.Coupon.rule",
+                        toCode: "CouponRule",
+                        type: 2,
+                        status: null,
+                        level: 4,
+                        children: [],
+                        select: false,
+                      },
+                    ],
+                    select: false,
+                  },
+                ],
+                select: false,
+              },
+            ],
+            select: true,
+          },
+        ],
+      ], // 所有
+      data:[{
+          id: 1,
+          label: '项目管理',
+          children: [{
+            id: 4,
+            label: '项目信息',
+            children: [{
+              id: 9,
+              label: '查看'
+            }, {
+              id: 10,
+              label: '录入'
+            }]
+          }]
+        }, {
+          id: 2,
+          label: '基础信息',
+          children: [{
+            id: 5,
+            label: '融资单位',
+            children: [{
+              id: 19,
+              label: '查看'
+            }, {
+              id: 120,
+              label: '录入'
+            }]
+          }, ]
+        }, {
+          id: 3,
+          label: '权限管理',
+          children: [{
+            id: 7,
+            label: '用户管理'
+          }, {
+            id: 8,
+            label: '角色管理'
+          }]
+        }],
+      defaultProps: {
+        children: "children",
+        label: "label",
+      },
+    };
+  },
 
-    data() {
-      return {
-        loading: false, // 用来标识是否正在保存请求中的标识, 防止重复提交
-        allPermissions: [], // 所有
-        defaultProps: {
-          children: 'children',
-          label: 'name'
-        },
-      };
-    },
+  created() {
+    this.init();
+  },
 
-    created() {
-      this.init()
-    },
-
-    methods: {
-      /* 
+  methods: {
+    /* 
       初始化
       */
-      init() {
-        const roleId = this.$route.params.id
-        this.getPermissions(roleId)
-      },
+    init() {
+      const roleId = this.$route.params.id;
+      this.getPermissions(roleId);
+    },
 
-      /* 
+    /* 
       获取指定角色的权限列表
       */
-      getPermissions(roleId) {
-        this.$API.permission.toAssign(roleId).then(result => {
-          const allPermissions = result.data.children
-          this.allPermissions = allPermissions
-          const checkedIds = this.getCheckedIds(allPermissions)
-          // console.log('getPermissions() checkedIds', checkedIds)
-          this.$refs.tree.setCheckedKeys(checkedIds)
-        })
-      },
+    getPermissions(roleId) {
+      // this.$API.permission.toAssign(roleId).then((result) => {
+      //   const allPermissions = result.data.children;
+      //   this.allPermissions = allPermissions;
+      //   const checkedIds = this.getCheckedIds(allPermissions);
+      //   // console.log('getPermissions() checkedIds', checkedIds)
+      //   this.$refs.tree.setCheckedKeys(checkedIds);
+      // });
+    },
 
-      /* 
+    /* 
       得到所有选中的id列表
       */
-      getCheckedIds (auths, initArr = []) {
-        return auths.reduce((pre, item) => {
-          if (item.select && item.level===4) {
-            pre.push(item.id)
-          } else if (item.children) {
-            this.getCheckedIds(item.children, initArr)
-          }
-          return pre
-        }, initArr)
-      },
+    getCheckedIds(auths, initArr = []) {
+      // return auths.reduce((pre, item) => {
+      //   if (item.select && item.level === 4) {
+      //     pre.push(item.id);
+      //   } else if (item.children) {
+      //     this.getCheckedIds(item.children, initArr);
+      //   }
+      //   return pre;
+      // }, initArr);
+    },
 
-      /* 
+    /* 
       保存权限列表
       */
-      save() {
-        var ids = this.$refs.tree.getCheckedKeys().join(",")
-        /* 
-        vue elementUI tree树形控件获取父节点ID的实例
-        修改源码:
-        情况1: element-ui没有实现按需引入打包
-          node_modules\element-ui\lib\element-ui.common.js    25382行修改源码  去掉 'includeHalfChecked &&'
-          // if ((child.checked || includeHalfChecked && child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
-          if ((child.checked || child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
-        情况2: element-ui实现了按需引入打包
-          node_modules\element-ui\lib\tree.js    1051行修改源码  去掉 'includeHalfChecked &&'
-          // if ((child.checked || includeHalfChecked && child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
-          if ((child.checked || child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
-        */
-        this.loading = true
-        this.$API.permission.doAssign(this.$route.params.id, ids).then(result => {
-          this.loading = false
-          this.$message.success(result.$message || '分配权限成功')
-          // 必须在跳转前获取(跳转后通过this获取不到正确的数据了)
-          const roleName = this.$route.query.roleName
-          const roles = this.$store.getters.roles
-          this.$router.replace('/acl/role/list', () => {
-            console.log('replace onComplete')
-            // 跳转成功后, 判断如果更新的是当前用户对应角色的权限, 重新加载页面以获得最新的数据
-            if (roles.includes(roleName)) {
-              window.location.reload()
-            }
-          })
-        })
-      }
-    }
-  };
+    save() {
+       var ids = this.$refs.tree.getCheckedKeys().join(",");
+       console.log(ids);
+      // /* 
+      //   vue elementUI tree树形控件获取父节点ID的实例
+      //   修改源码:
+      //   情况1: element-ui没有实现按需引入打包
+      //     node_modules\element-ui\lib\element-ui.common.js    25382行修改源码  去掉 'includeHalfChecked &&'
+      //     // if ((child.checked || includeHalfChecked && child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
+      //     if ((child.checked || child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
+      //   情况2: element-ui实现了按需引入打包
+      //     node_modules\element-ui\lib\tree.js    1051行修改源码  去掉 'includeHalfChecked &&'
+      //     // if ((child.checked || includeHalfChecked && child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
+      //     if ((child.checked || child.indeterminate) && (!leafOnly || leafOnly && child.isLeaf)) {
+      //   */
+      // this.loading = true;
+      // this.$API.permission
+      //   .doAssign(this.$route.params.id, ids)
+      //   .then((result) => {
+      //     this.loading = false;
+      //     this.$message.success(result.$message || "分配权限成功");
+      //     // 必须在跳转前获取(跳转后通过this获取不到正确的数据了)
+      //     const roleName = this.$route.query.roleName;
+      //     const roles = this.$store.getters.roles;
+      //     this.$router.replace("/acl/role/list", () => {
+      //       console.log("replace onComplete");
+      //       // 跳转成功后, 判断如果更新的是当前用户对应角色的权限, 重新加载页面以获得最新的数据
+      //       if (roles.includes(roleName)) {
+      //         window.location.reload();
+      //       }
+      //     });
+      //   });
+    },
+  },
+};
 </script>
