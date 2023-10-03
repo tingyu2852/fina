@@ -1,23 +1,10 @@
 <template>
   <div style="width: 98%; height: 600px; margin: 20px auto">
-    <el-button
-      type="primary"
-      style="margin: 10px 0px"
-      @click="dialogVisible = true"
-      >新增项目</el-button
-    >
+    <el-button type="primary" style="margin: 10px 0px" @click="dialogVisible = true">新增项目</el-button>
     <el-card style="margin: 0 auto">
       <div style="margin: 10px">
-        <el-table
-          v-loading="loading"
-          :data="projList"
-          @selection-change="selectChange"
-        >
-          <el-table-column
-            header-align="center"
-            type="selection"
-            width="55"
-          ></el-table-column>
+        <el-table v-loading="loading" :data="projList" @selection-change="selectChange">
+          <el-table-column header-align="center" type="selection" width="55"></el-table-column>
           <el-table-column label="项目名称">
             <template slot-scope="{ row }">
               <div @click="edit_btn(row)" style="cursor: pointer">
@@ -56,160 +43,93 @@
           </el-table-column>
         </el-table>
         <div style="margin-top: 20px; text-align: right">
-          <el-pagination
-            background
-            :total="total"
-            :current-page="current"
-            :page-size="size"
-            :page-sizes="sizes"
-            @current-change="currentChange"
-            layout="prev, pager, next,jumper,sizes,->,total"
-            @size-change="sizeChange"
-          >
+          <el-pagination background :total="total" :current-page="current" :page-size="size" :page-sizes="sizes"
+            @current-change="currentChange" layout="prev, pager, next,jumper,sizes,->,total" @size-change="sizeChange">
           </el-pagination>
         </div>
       </div>
     </el-card>
 
-    <el-dialog
-      title="项目基础信息"
-      :visible.sync="dialogVisible"
-      width="650px"
-      @close="handleClose"
-      
-    >
+    <el-dialog title="项目基础信息" :visible.sync="dialogVisible" width="650px" @close="handleClose">
       <div style="width: 600px">
-        <el-form
-          :model="form"
-          label-width="100px"
-          label-position="left"
-          v-show="dialogShow === 1"
-          :rules="infoRules"
-          ref="proj"
-        >
+        <el-form :model="form" label-width="100px" label-position="left" v-show="dialogShow === 1" :rules="infoRules"
+          ref="proj">
           <el-form-item label="项目名称" prop="proj_name">
-            <el-input
-              v-model="form.proj_name"
-              placeholder="请填写项目名称"
-            ></el-input>
+            <el-input v-model="form.proj_name" placeholder="请填写项目名称"></el-input>
           </el-form-item>
-          
+
           <el-form-item label="融资主体" prop="corp_name">
             <el-select v-model="form.corp_name" placeholder="请选择融资主体">
-              <el-option
-                v-for="item in corpList"
-                :label="item.corp_name"
-                :value="item.corp_name"
-                :key="item.corp_id"
-              ></el-option>
+              <el-option v-for="item in corpList" :label="item.corp_name" :value="item.corp_name"
+                :key="item.corp_id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="融资类型" prop="fina_name">
             <el-select v-model="form.fina_name" placeholder="请选择融资类型">
-              <el-option
-                v-for="item in finaCate"
-                :label="item.fina_name"
-                :value="item.fina_name"
-                :key="item.fina_id"
-              ></el-option>
+              <el-option v-for="item in finaCate" :label="item.fina_name" :value="item.fina_name"
+                :key="item.fina_id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="是否隐债">
-            <el-switch
-              v-model="form.hidden_debt"
-              :active-value="1" :inactive-value="0"
-            >
+            <el-switch v-model="form.hidden_debt" :active-value="1" :inactive-value="0">
             </el-switch>
           </el-form-item>
           <el-form-item label="项目说明">
             <el-input v-model="form.proj_remark" type="textarea"></el-input>
           </el-form-item>
         </el-form>
-        <el-form :model="rep_form" :rules="repRules" ref="rep" v-show="dialogShow === 2" label-position="left" label-width="100px">
-         
-            <el-form-item label="是否银团">
-              <el-switch v-model="rep_form.bank_consortium"  :active-value="1"
-              :inactive-value="0"
-               > </el-switch>
-            </el-form-item>
-            <el-form-item label="金融机构" prop="bank_name">
-              <el-select
-                v-model="rep_form.bank_name"
-                placeholder="请选择金融机构"
-                :multiple="true"
-                :multiple-limit="rep_form.bank_consortium===0? 1:0"
-              >
-                <el-option
-                  v-for="item in bankList"
-                  :label="item.bank_name"
-                  :value="item.bank_name"
-                  :key="item.bank_id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="批复金额(元)" prop="rep_sum">
-              <el-input
-                v-model="rep_form.rep_sum"
-                placeholder="请输入批复的金额"
-                @input="
-                  rep_form.rep_sum = $format.formatInput(rep_form.rep_sum)
-                "
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="批复时间" prop="rep_date">
-              <el-date-picker
-                v-model="rep_form.rep_date"
-                type="date"
-                placeholder="选择日期"
-                format="yyyy年M月d日"
-                value-format="yyyy-MM-dd"
-              >
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="期限(月)" prop="rep_limit">
-              <el-input
-                        v-model="rep_form.rep_limit"
-                        type="number"
-                        placeholder="请输入期限"
-                        @input="onKeyPress"
-                      ></el-input>
-            </el-form-item>
-            <el-form-item label="还款来源" prop="rep_sou">
-              <el-input
-                v-model="rep_form.rep_sou"
-                placeholder="请填写还款来源"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="是否创建子项目" label-width="120px">
-              <el-switch v-model="rep_form.sub_project" :active-value="1"
-              :inactive-value="0"> </el-switch>
-            </el-form-item>
-            <el-form-item label="备注说明">
-              <el-input
-                v-model="rep_form.rep_remark"
-                type="textarea"
-              ></el-input>
-            </el-form-item>
-          </el-form>
+        <el-form :model="rep_form" :rules="repRules" ref="rep" v-show="dialogShow === 2" label-position="left"
+          label-width="100px">
+
+          <el-form-item label="是否银团">
+            <el-switch v-model="rep_form.bank_consortium" :active-value="1" :inactive-value="0"> </el-switch>
+          </el-form-item>
+          <el-form-item label="金融机构" prop="bank_name">
+            <el-select v-model="rep_form.bank_name" placeholder="请选择金融机构" :multiple="true"
+              :multiple-limit="rep_form.bank_consortium === 0 ? 1 : 0">
+              <el-option v-for="item in bankList" :label="item.bank_name" :value="item.bank_name"
+                :key="item.bank_id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="批复金额(元)" prop="rep_sum">
+            <el-input v-model="rep_form.rep_sum" placeholder="请输入批复的金额" @input="
+              rep_form.rep_sum = $format.formatInput(rep_form.rep_sum)
+            "></el-input>
+          </el-form-item>
+          <el-form-item label="批复时间" prop="rep_date">
+            <el-date-picker v-model="rep_form.rep_date" type="date" placeholder="选择日期" format="yyyy年M月d日"
+              value-format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="期限(月)" prop="rep_limit">
+            <el-input v-model="rep_form.rep_limit" type="number" placeholder="请输入期限" @input="onKeyPress"></el-input>
+          </el-form-item>
+          <el-form-item label="还款来源" prop="rep_sou">
+            <el-input v-model="rep_form.rep_sou" placeholder="请填写还款来源"></el-input>
+          </el-form-item>
+          <el-form-item label="是否创建子项目" label-width="120px">
+            <el-switch v-model="rep_form.sub_project" :active-value="1" :inactive-value="0"> </el-switch>
+          </el-form-item>
+          <el-form-item label="子项目" v-if="rep_form.sub_project===1">
+            <el-tag :key="tag" v-for="tag in rep_form.sub_project_list" closable :disable-transitions="false" @close="handleClose(tag)">
+              {{ tag }}
+            </el-tag>
+            <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
+              @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+            </el-input>
+            <el-button v-else class="button-new-tag" type="primary" plain size="small" @click="showInput">+子项目</el-button>
+          </el-form-item>
+          <el-form-item label="备注说明">
+            <el-input v-model="rep_form.rep_remark" type="textarea"></el-input>
+          </el-form-item>
+        </el-form>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button
-          type="primary"
-          v-show="dialogShow === 2"
-          @click="dialogShow = 1"
-          >上一步</el-button
-        >
-        <el-button
-          type="primary"
-          v-show="dialogShow === 1"
-          @click="projNext"
-          >下一步</el-button
-        >
-        <el-button type="primary" @click="saveBtn" v-show="dialogShow === 2"
-          >保存</el-button
-        >
+        <el-button type="primary" v-show="dialogShow === 2" @click="dialogShow = 1">上一步</el-button>
+        <el-button type="primary" v-show="dialogShow === 1" @click="projNext">下一步</el-button>
+        <el-button type="primary" @click="saveBtn" v-show="dialogShow === 2">保存</el-button>
       </span>
     </el-dialog>
   </div>
@@ -219,6 +139,9 @@
 export default {
   data() {
     return {
+      dynamicTags: [],
+      inputVisible: false,
+      inputValue: "",
       dialogShow: 1,
       loading: false,
       selectList: [],
@@ -243,6 +166,7 @@ export default {
         rep_limit: null,
         rep_remark: null,
         sub_project: 0,
+        sub_project_list:[]
       },
       total: 0,
       current: 1,
@@ -338,16 +262,16 @@ export default {
       this.dialogShow = 1;
       this.$refs["proj"].resetFields();
       this.$refs["rep"].resetFields();
-      for(const key in this.form){
+      for (const key in this.form) {
         // proj_remark: null,
         // hidden_debt: 0,
-        if(key =='hidden_debt'){
-          this.form[key]=0
-        }else{
-          this.form[key]=null
+        if (key == "hidden_debt") {
+          this.form[key] = 0;
+        } else {
+          this.form[key] = null;
         }
       }
-      for(const key in this.rep_form){
+      for (const key in this.rep_form) {
         // bank_consortium: 0,
         // bank_name: [],
         // rep_sum: null,
@@ -356,14 +280,13 @@ export default {
         // rep_limit: null,
         // rep_remark: null,
         // sub_project: 0,
-        if(key =='bank_name'){
-          this.rep_form[key]=[]
-        }else if(key =='bank_consortium' || key =='sub_project'){
-          this.rep_form[key]=0
-        }else {
-          this.rep_form[key]=null
+        if (key == "bank_name") {
+          this.rep_form[key] = [];
+        } else if (key == "bank_consortium" || key == "sub_project") {
+          this.rep_form[key] = 0;
+        } else {
+          this.rep_form[key] = null;
         }
-       
       }
     },
     asdd(row, column, cellValue, index) {
@@ -428,9 +351,43 @@ export default {
         this.rep_form.rep_limit.replace(/[^0-9]/g, "")
       );
     },
+    handleClose(tag) {
+        this.rep_form.sub_project_list.splice(this.rep_form.sub_project_list.indexOf(tag), 1);
+      },
+
+      showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
+
+      handleInputConfirm() {
+        let inputValue = this.inputValue;
+        if (inputValue) {
+          this.rep_form.sub_project_list.push(inputValue);
+        }
+        this.inputVisible = false;
+        this.inputValue = '';
+      }
   },
 };
 </script>
 
-<style>
-</style>
+<style scoped>
+
+.el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }</style>

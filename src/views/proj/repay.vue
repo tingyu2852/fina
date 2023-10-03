@@ -12,24 +12,24 @@
       <el-table :data="repayList" border v-loading="lodaing">
         <el-table-column label="日期">
           <template slot-scope="{ row }">
-          <el-date-picker
-            v-if="!row.date"
+            <el-date-picker
+              v-if="!row.date"
               v-model="row.date"
               type="date"
               value-format="yyyy-MM-dd"
+              :picker-options="pickerOptions"
             >
             </el-date-picker>
-          
+
             <div v-else>
               {{ row.date }}
             </div>
-            
           </template>
         </el-table-column>
         <el-table-column label="金额">
           <template slot-scope="{ row }">
             <div v-if="!row.isEdit">
-              {{  $format.money(row.repay_plan)}}
+              {{ $format.money(row.repay_plan) }}
             </div>
             <el-input
               v-else
@@ -107,7 +107,25 @@ export default {
       loan_id: 0,
       current: 1,
       total: 0,
+      pickerOptions: {
+        disabledDate: (time) => {
+          //console.log(this.loanInfo.limit);
+          let date = this.$dayjs(this.loanInfo.date).valueOf();
+          let end = this.$dayjs(this.loanInfo.date)
+            .add(this.loanInfo.limit, "month")
+            .valueOf();
+          // console.log(dayjs(end).format('YYYY-MM-DD'));
+          // console.log(time.getTime());
+          return time.getTime() < date || time.getTime() > end;
+        },
+      },
     };
+  },
+  props: {
+    loanInfo: {
+      type: Object,
+      required: true,
+    },
   },
   methods: {
     async getRepayList(loan_id) {
@@ -123,14 +141,17 @@ export default {
     },
     async repaySave(row) {
       row.isEdit = false;
-      row.loan_id = this.loan_id
+      row.loan_id = this.loan_id;
       let res = await this.$API.fina.addRepay("one", row);
       this.getRepayList(this.loan_id);
     },
     async delInter(row) {
-      await this.$API.fina.delRepay({repay_id:row.repay_id,loan_id:this.loan_id})
-       this.getRepayList(this.loan_id)
-       
+      await this.$API.fina.delRepay({
+        repay_id: row.repay_id,
+        loan_id: this.loan_id,
+        date: row.date,
+      });
+      this.getRepayList(this.loan_id);
     },
     curchange(cur) {
       this.current = cur;
@@ -139,9 +160,9 @@ export default {
     addRepay() {
       let obj = {
         date: null,
-        repay_plan:null,
-        remark:null,
-        isEdit:true
+        repay_plan: null,
+        remark: null,
+        isEdit: true,
       };
       this.repayList.unshift(obj);
     },

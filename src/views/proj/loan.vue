@@ -3,16 +3,27 @@
     <div style="width: 100%">
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-form :model="form" label-width="100px" label-position="left"
-            >
+          <el-form :model="form" label-width="100px" label-position="left">
             <el-form-item label="借款金额">
-              <div v-if="!info_status">{{ str_contet($format.money(form.loan_sum)) }}</div>
+              <div v-if="!info_status">
+                {{ str_contet($format.money(form.loan_sum)) }}
+              </div>
               <el-input
                 v-else
                 v-model="form.loan_sum"
-                type="number"
+                :disabled="form.is_actual === 1"
                 placeholder=""
+                @input="form.loan_sum = $format.formatInput(form.loan_sum)"
               ></el-input>
+              <el-switch
+                v-model="form.is_actual"
+                active-text="实际为准"
+                inactive-text="固定金额"
+                :active-value="1"
+                :inactive-value="0"
+                @change="is_actual_change"
+                :disabled="!info_status"
+              ></el-switch>
             </el-form-item>
             <el-form-item label="提交时间">
               <div v-if="!info_status">{{ str_contet(form.loan_date) }}</div>
@@ -25,11 +36,46 @@
                 value-format="yyyy-MM-dd"
               ></el-date-picker>
             </el-form-item>
+            <el-form-item label="所属子项目" v-if="form.sub_project === 1">
+              <div v-if="!info_status">
+                <el-tag
+                  type="primary"
+                  v-for="item in form.sub_project_list"
+                  :key="item"
+                  effect="dark"
+                  >{{ item }}</el-tag
+                >
+              </div>
+
+              <div v-else>
+                <el-checkbox
+                  :indeterminate="loan_isIndeterminate"
+                  v-model="loan_checkAll"
+                  @change="loan_handleCheckAllChange"
+                  >全选</el-checkbox
+                >
+                <el-checkbox-group
+                  v-model="form.sub_project_list"
+                  @change="loan_handleCheckedCitiesChange"
+                >
+                  <el-checkbox
+                    v-for="item in form.rep_project_list"
+                    :label="item"
+                    :key="item"
+                    >{{ item }}</el-checkbox
+                  >
+                </el-checkbox-group>
+              </div>
+            </el-form-item>
             <el-form-item label="付息">
               <div v-if="!info_status">
                 {{ str_contet(form.inter_plan) }}
               </div>
-              <el-input v-model="form.inter_plan" placeholder="请填写" v-else></el-input>
+              <el-input
+                v-model="form.inter_plan"
+                placeholder="请填写"
+                v-else
+              ></el-input>
               <!-- <el-button
                 type="primary"
                 size="mini"
@@ -37,6 +83,28 @@
                 v-else
                 >录入</el-button
               > -->
+            </el-form-item>
+            <el-form-item label="利率类型">
+              <el-switch
+                v-model="form.is_float_rate"
+                active-text="浮动利率"
+                inactive-text="固定利率"
+                :active-value="1"
+                :inactive-value="0"
+                :disabled="!info_status"
+              >
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="利率(%)">
+              <div v-if="!info_status">
+                {{ str_contet(form.rate) + "%" }}
+              </div>
+              <el-input
+                v-else
+                v-model="form.rate"
+                placeholder="请输入基准利率(%)"
+                type="number"
+              ></el-input>
             </el-form-item>
             <el-form-item label="结息详情">
               <el-button type="primary" size="mini" @click="interInfo('view')"
@@ -96,11 +164,6 @@
                 </div>
               </template>
               <el-table :data="mtList" border>
-                <el-table-column label="合同编号">
-                  <template slot-scope="{ row }">
-                    <span>{{ str_contet(row.agmt_id) }}</span>
-                  </template>
-                </el-table-column>
                 <el-table-column label="下款时间">
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.mt_date) }}</span>
@@ -111,6 +174,18 @@
                     <span>{{ str_contet($format.money(row.mt_sum)) }}</span>
                   </template>
                 </el-table-column>
+                <el-table-column label="下款项目" v-if="form.sub_project === 1">
+                  <template slot-scope="{ row }">
+                    <el-tag
+                      style="margin-left: 5px; margin-bottom: 5px"
+                      type="primary"
+                      v-for="item in row.sub_project_list"
+                      :key="item"
+                      effect="dark"
+                      >{{ item }}</el-tag
+                    >
+                  </template>
+                </el-table-column>
                 <el-table-column label="截止日期" min-width="150px">
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.start_end_date) }}</span>
@@ -118,7 +193,12 @@
                 </el-table-column>
                 <el-table-column label="匹配资本金">
                   <template slot-scope="{ row }">
-                    <div>{{ row.matching_capital }}</div>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      @click="showMaching(row)"
+                      >查看</el-button
+                    >
                   </template>
                 </el-table-column>
                 <el-table-column label="备注">
@@ -163,19 +243,13 @@
       </el-row>
 
       <div style="margin-top: 50px">
-        <el-button
-          type="primary"
-          v-show="!info_status"
-          @click="info_status = true"
+        <el-button type="primary" v-show="!info_status" @click="btn_edit"
           >编辑</el-button
         >
         <el-button type="primary" v-show="info_status" @click="loan_save"
           >保存</el-button
         >
-        <el-button
-          type="primary"
-          v-show="info_status"
-          @click="info_status = false"
+        <el-button type="primary" v-show="info_status" @click="btn_cancle"
           >取消</el-button
         >
       </div>
@@ -183,38 +257,45 @@
     <el-dialog
       title="下款信息编辑"
       :visible.sync="dialogVisible"
-      width="30%"
+      width="700px"
       @close="handlerClose"
     >
       <el-form :model="mt_form" label-width="100px" label-position="left">
-        <el-form-item label="下款合同">
-          <el-select
-            v-model="mt_form.mt_con_id"
-            placeholder="请选择合同"
-            filterable
-          >
-            <el-option
-              v-for="item in agmtList"
-              :label="item.agmt_name"
-              :value="item.agmt_index_id"
-              :key="item.agmt_index_id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="下款时间">
           <el-date-picker
             v-model="mt_form.mt_date"
             value-format="yyyy-MM-dd"
             placeholder="请选择下款时间"
+            :picker-options="pickerOptions"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="下款金额">
           <el-input
             style="width: 200px"
             v-model="mt_form.mt_sum"
-            type="number"
             placeholder="请填写下款金额"
+            @input="mt_form.mt_sum = $format.formatInput(mt_form.mt_sum)"
           ></el-input>
+        </el-form-item>
+        <el-form-item label="下款项目" v-if="form.sub_project === 1">
+          <el-checkbox
+            :indeterminate="isIndeterminate"
+            v-model="checkAll"
+            @change="handleCheckAllChange"
+            >全选</el-checkbox
+          >
+          <div style="margin: 15px 0"></div>
+          <el-checkbox-group
+            v-model="mt_form.sub_project_list"
+            @change="handleCheckedCitiesChange"
+          >
+            <el-checkbox
+              v-for="item in form.sub_project_list"
+              :label="item"
+              :key="item"
+              >{{ item }}</el-checkbox
+            >
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="截止日期">
           <!-- <el-date-picker
@@ -231,13 +312,74 @@
             placeholder="请选择下款时间"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="匹配资本金">
-          <el-input
+        <el-form-item label="匹配资本金" label-position="top">
+          <!-- <el-input
             v-model="mt_form.matching_capital"
             placeholder=""
             type="textarea"
-          ></el-input>
+          ></el-input> -->
+          <el-button type="primary" size="mini" @click="addMatch"
+            >新增</el-button
+          >
         </el-form-item>
+
+        <el-table
+          :data="mt_form.matching_capital"
+          border
+          style="margin-bottom: 10px"
+        >
+          <el-table-column label="日期" min-width="100px">
+            <template slot-scope="{ row }">
+              <el-date-picker
+                size="mini"
+                v-model="row.date"
+                placeholder="请选择"
+                type="date"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
+            </template>
+          </el-table-column>
+          <el-table-column label="名称">
+            <template slot-scope="{ row }"
+              ><el-input
+                size="mini"
+                v-model="row.name"
+                placeholder=""
+              ></el-input
+            ></template>
+          </el-table-column>
+          <el-table-column label="金额">
+            <template slot-scope="{ row }"
+              ><el-input
+                size="mini"
+                v-model="row.num"
+                @input="row.num = $format.formatInput(row.num)"
+                placeholder=""
+              ></el-input
+            ></template>
+          </el-table-column>
+          <el-table-column label="收款人">
+            <template slot-scope="{ row }">
+              <el-select v-model="row.corp" placeholder="" size="mini">
+                <el-option
+                  v-for="item in corpList"
+                  :label="item.corp_name"
+                  :value="item.corp_name"
+                  :key="item.corp_id"
+                ></el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="备注" min-width="100px">
+            <template slot-scope="{ row }"
+              ><el-input
+                v-model="row.remark"
+                placeholder=""
+                type="textarea"
+              ></el-input
+            ></template>
+          </el-table-column>
+        </el-table>
         <el-form-item label="备注">
           <el-input
             v-model="mt_form.remark"
@@ -256,15 +398,33 @@
         >新增</el-button
       >
       <el-table :data="spList">
-        <el-table-column label="合同编号" prop="agmt_id"></el-table-column>
         <el-table-column label="收款单位" prop="corp_name"></el-table-column>
         <el-table-column label="走款时间" prop="sp_date"></el-table-column>
-        <el-table-column label="走款金额" prop="sp_num"></el-table-column>
-        <el-table-column label="回款金额" prop="refund"></el-table-column>
+        <el-table-column label="走款金额" prop="sp_num">
+          <template slot-scope="{ row }">
+            <div>
+              {{ $format.money(row.sp_num) }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="回款金额" prop="refund">
+          <template slot-scope="{ row }">
+            <div>
+              {{ $format.money(row.refund) }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column
           label="实际支付金额"
           prop="actul_num"
-        ></el-table-column>
+          min-width="100px"
+        >
+          <template slot-scope="{ row }">
+            <div>
+              {{ $format.money(row.actul_num) }}
+            </div>
+          </template></el-table-column
+        >
         <el-table-column label="用途" prop="sp_use"></el-table-column>
         <el-table-column label="备注" prop="remark"></el-table-column>
         <el-table-column label="操作" prop="remark" min-width="140px">
@@ -277,20 +437,19 @@
                 @click="spEdit(row)"
                 plain
               ></el-button>
-             
+
               <el-popconfirm
-                      
-                      title="确定删除该走款信息吗？"
-                      @onConfirm="delsp(row)"
-                    >
-                      <el-button
-                        type="danger"
-                        size="mini"
-                        icon="el-icon-delete"
-                        slot="reference"
-                        style="margin-left: 10px"
-                      ></el-button>
-                    </el-popconfirm>
+                title="确定删除该走款信息吗？"
+                @onConfirm="delsp(row)"
+              >
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-delete"
+                  slot="reference"
+                  style="margin-left: 10px"
+                ></el-button>
+              </el-popconfirm>
             </div>
           </template>
         </el-table-column>
@@ -302,21 +461,7 @@
         append-to-body
         @close="spDialogClose"
       >
-        <el-form :model="sp_form" label-width="100px" label-position="left">
-          <el-form-item label="合同">
-            <el-select
-              v-model="sp_form.con_id"
-              placeholder="请选择合同"
-              filterable
-            >
-              <el-option
-                v-for="item in agmtList"
-                :label="item.agmt_name"
-                :value="item.agmt_index_id"
-                :key="item.agmt_index_id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
+        <el-form :model="sp_form">
           <el-form-item label="收款单位">
             <el-select
               v-model="sp_form.corp_name"
@@ -336,29 +481,32 @@
               v-model="sp_form.sp_date"
               placeholder="请选择日期"
               value-format="yyyy-MM-dd"
+              :picker-options="sp_pickerOptions"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="走款金额">
             <el-input
               style="width: 200px"
               v-model="sp_form.sp_num"
-              type="number"
+              @input="sp_form.sp_num = $format.formatInput(sp_form.sp_num)"
               placeholder="请输入走款金额"
             ></el-input>
           </el-form-item>
           <el-form-item label="回款金额"
             ><el-input
-              type="number"
               style="width: 200px"
               v-model="sp_form.refund"
+              @input="sp_form.refund = $format.formatInput(sp_form.refund)"
               placeholder="请输入回款金额"
             ></el-input
           ></el-form-item>
           <el-form-item label="实际支付金额"
             ><el-input
-              type="number"
               style="width: 200px"
               v-model="sp_form.actul_num"
+              @input="
+                sp_form.actul_num = $format.formatInput(sp_form.actul_num)
+              "
               placeholder="请输入实际支付金额"
             ></el-input
           ></el-form-item>
@@ -448,10 +596,118 @@
     </el-dialog>
 
     <el-dialog title="还本计划" :visible.sync="repayDialog" width="700px">
-      <Repay ref="repay" />
+      <Repay ref="repay"  :loanInfo="{
+          date: form.loan_date,
+          limit: form.rep_limit,
+          inter_plan: form.inter_plan,
+        }" />
     </el-dialog>
     <el-dialog title="结息计划" :visible.sync="interPlanDialog" width="700px">
-      <InterPlan ref="interPlan"  :loanInfo="{date:form.loan_date,limit:form.rep_limit,inter_plan:form.inter_plan}" />
+      <InterPlan
+        ref="interPlan"
+        :loanInfo="{
+          date: form.loan_date,
+          limit: form.rep_limit,
+          inter_plan: form.inter_plan,
+        }"
+      />
+    </el-dialog>
+    <el-dialog title="匹配资本金" :visible.sync="dialogMatching" width="700px">
+      <el-button type="primary" size="mini" @click="addMatching"
+        >新增</el-button
+      >
+      <el-table :data="curMatching">
+        <el-table-column label="日期" prop="date" min-width="100px">
+          <template slot-scope="{ row }">
+            <div v-if="!row.isEdit">{{ row.date }}</div>
+            <el-date-picker
+              v-else
+              size="mini"
+              v-model="row.date"
+              placeholder="请选择"
+              type="date"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          </template>
+        </el-table-column>
+        <el-table-column label="名称" prop="name">
+          <template slot-scope="{ row }">
+            <div v-if="!row.isEdit">{{ row.name }}</div>
+            <el-input
+              v-else
+              size="mini"
+              v-model="row.name"
+              placeholder=""
+            ></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="金额" prop="num"
+          ><template slot-scope="{ row }">
+            <div v-if="!row.isEdit">{{ $format.money(row.num) }}</div>
+            <el-input
+              v-else
+              size="mini"
+              v-model="row.num"
+              type="number"
+              placeholder=""
+            ></el-input> </template
+        ></el-table-column>
+        <el-table-column label="收款人" prop="corp">
+          <template slot-scope="{ row }">
+            <div v-if="!row.isEdit">{{ row.corp }}</div>
+            <el-select v-else v-model="row.corp" placeholder="" size="mini">
+              <el-option
+                v-for="item in corpList"
+                :label="item.corp_name"
+                :value="item.corp_name"
+                :key="item.corp_id"
+              ></el-option>
+            </el-select> </template
+        ></el-table-column>
+        <el-table-column label="备注" prop="remark">
+          <template slot-scope="{ row }">
+            <div v-if="!row.isEdit">{{ row.remark }}</div>
+            <el-input
+              v-else
+              v-model="row.remark"
+              placeholder=""
+              type="textarea"
+            ></el-input
+          ></template>
+        </el-table-column>
+        <el-table-column label="操作" width="150px">
+          <template slot-scope="{ row, $index }">
+            <el-button
+              v-show="!row.isEdit"
+              type="primary"
+              size="mini"
+              icon="el-icon-edit-outline"
+              @click="$set(row, 'isEdit', true)"
+            ></el-button>
+            <el-button
+              v-show="row.isEdit"
+              type="primary"
+              size="mini"
+              icon="el-icon-check"
+              @click="mactingSave(row)"
+            ></el-button>
+
+            <el-popconfirm
+              title="这是一段内容确定删除吗？"
+              @onConfirm="delMatch($index)"
+            >
+              <el-button
+                v-show="!row.isEdit"
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+                slot="reference"
+                style="margin-left: 10px"
+              ></el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
   </div>
 </template>
@@ -473,11 +729,12 @@ export default {
   },
   name: "Loan",
   props: { loanInfo: Object, required: true },
-  mounted() {
-    console.log(123);
-  },
+  mounted() {},
   data() {
     return {
+      currentMt: null,
+      curMatching: [],
+      dialogMatching: false,
       interPlanDialog: false,
       interPlan: false,
       repayDialog: false,
@@ -503,6 +760,7 @@ export default {
         loan_data: "",
         loan_remark: "",
         inter_plan: "",
+        sub_project_list: [],
       },
       mtList: [],
       agmtList: [],
@@ -513,24 +771,42 @@ export default {
       mt_form: {
         mt_sum: 0,
         mt_date: "",
-        matching_capital: "",
+        matching_capital: [],
         remark: "",
         start_end_date: "",
-        mt_con_id: "",
+        sub_project_list: [],
       },
       sp_form: {
         sp_date: "",
         corp_name: "",
-        sp_num: 0,
-        refund: 0,
-        actul_num: 0,
-        invoice: 0,
+        sp_num: null,
+        refund: null,
+        actul_num: null,
+        invoice: null,
         sp_use: "",
         remark: "",
         con_id: "",
       },
       curMtId: 0,
-      curmt_id:null
+      curmt_id: null,
+      form_copy: {},
+      checkAll: false,
+      //cities: cityOptions,
+      isIndeterminate: false,
+      loan_checkAll: false,
+      //cities: cityOptions,
+      loan_isIndeterminate: false,
+      pickerOptions: {
+        disabledDate: (time) => {
+          return dayjs(time).isBefore(dayjs(this.form.loan_date));
+        },
+      },
+      sp_pickerOptions: {
+        disabledDate: (time) => {
+          return dayjs(time).isBefore(dayjs(this.cur_sp_date));
+        },
+      },
+      cur_sp_date: null,
     };
   },
   async mounted() {
@@ -541,7 +817,6 @@ export default {
   },
   watch: {
     "interest_form.radio"(newv, oldv) {
-      console.log(this.interest_form.Interest_settlement);
       this.interest_form.Interest_settlement = "";
       // if (newv == 4) {
       //   this.interest_form.Interest_settlement = "不规则";
@@ -560,21 +835,22 @@ export default {
     async getInfo(loan_id) {
       this.loan_id = loan_id;
       let res = await this.$API.fina.getLoan(loan_id);
-      this.form = res.data.loanInfo;
+      this.form = { ...res.data.loanInfo };
+      this.form.rate = parseFloat((this.form.rate * 100).toFixed(2));
+      if (this.form.is_actual === 1) {
+        this.form.loan_sum = this.form.mt_total;
+      }
+      this.form.loan_sum = this.$format.money(this.form.loan_sum);
       this.mtList = res.data.mtList;
+      //console.log(res.data.loanInfo.is_repay);
       if (res.data.loanInfo.is_repay === 0) {
-        let { loan_date, loan_id, rep_limit } = res.data.loanInfo;
-        let res1 = this.$API.fina.addRepayment({
-          loan_date,
-          loan_id,
-          rep_limit,
-        });
+        //let { loan_date, loan_id, rep_limit ,rate,} = res.data.loanInfo;
+        let res1 = this.$API.fina.addRepayment(res.data.loanInfo);
       } else {
         let { loan_id } = res.data.loanInfo;
-        if(res.data.loanInfo.is_inter===0){
+        if (res.data.loanInfo.is_inter === 0) {
           this.$API.fina.updateInter(loan_id);
         }
-       
       }
       //   this.proj_id=proj_id
       //   let res = await this.$API.fina.getMt(proj_id)
@@ -610,17 +886,23 @@ export default {
     },
     mtADD() {
       this.dialogVisible = true;
-      console.log("23333");
     },
     async spInfo(row) {
+      //console.log(row);
+      console.log(row, "-----");
       this.curMtId = row.mt_id;
+      this.cur_sp_date = row.mt_date;
       let res = await this.$API.fina.getSp(row.mt_id);
       this.spList = res.data.spList;
       this.spDialog = true;
-      console.log(res);
     },
     async loan_save() {
-      let res = await this.$API.fina.addLoan(this.form);
+      let loanInfo = { ...this.form };
+      loanInfo.rate = parseFloat((loanInfo.rate / 100).toFixed(4));
+      loanInfo.loan_sum = parseFloat(
+        loanInfo.loan_sum.substring(1).replace(/,/g, "")
+      );
+      let res = await this.$API.fina.addLoan(loanInfo);
       if (res.code == 20000) {
         this.$message({ type: "success", message: "保存成功" });
       }
@@ -632,9 +914,10 @@ export default {
         mt_sum: 0,
         mt_con_id: "",
         mt_date: "",
-        matching_capital: "",
+        matching_capital: [],
         remark: "",
         start_end_date: "",
+        sub_project_list: [],
       };
       this.mt_form = obj;
       // for (let key in this.mt_form) {
@@ -650,16 +933,21 @@ export default {
         this.mt_form.loan_id = this.form.loan_id;
       }
       for (let key in this.mt_form) {
-        if (key !== "remark") {
-          if (this.mt_form[key] == "") {
+        if (key !== "remark" && key !== "matching_capital") {
+          if (!this.mt_form[key]) {
             return this.$message({
               type: "error",
-              message: "除备注以外不能为空",
+              message: "除备注与匹配资本金以外不能为空",
             });
           }
         }
       }
-      let res = await this.$API.fina.addMt(this.mt_form);
+      let mt_info = { ...this.mt_form };
+      mt_info.mt_sum = parseFloat(
+        mt_info.mt_sum.substring(1).replace(/,/g, "")
+      );
+      console.log();
+      let res = await this.$API.fina.addMt(mt_info);
       if (res.code == 20000) {
         this.$message({ type: "success", message: "保存成功" });
       }
@@ -667,21 +955,41 @@ export default {
       this.dialogVisible = false;
     },
     mtEdit(row) {
+     // console.log(row);
+      if ( Array.isArray(row.sub_project_list) && row.sub_project_list.length > 0 ) {
+        //console.log(row);
+        if (row.sub_project_list.length === this.form.sub_project_list.length) {
+          //console.log(1);
+          this.checkAll = true;
+          this.isIndeterminate = false;
+        } else {
+          this.checkAll = true;
+          this.isIndeterminate = true;
+        }
+      } else {
+        this.checkAll = false;
+        this.isIndeterminate = false;
+      }
       this.mt_form = { ...row };
+      console.log(this.mt_form);
+      this.mt_form.mt_sum = this.$format.money(this.mt_form.mt_sum);
       this.dialogVisible = true;
     },
     spEdit(row) {
       this.sp_form = { ...row };
+      this.sp_form.sp_num = this.$format.money(this.sp_form.sp_num);
+      this.sp_form.refund = this.$format.money(this.sp_form.refund);
+      this.sp_form.actul_num = this.$format.money(this.sp_form.actul_num);
       this.innerVisible = true;
     },
     spDialogClose() {
       this.sp_form = {
         sp_date: "",
         corp_name: "",
-        sp_num: 0,
-        refund: 0,
-        actul_num: 0,
-        invoice: 0,
+        sp_num: null,
+        refund: null,
+        actul_num: null,
+        invoice: null,
         sp_use: "",
         remark: "",
         con_id: "",
@@ -689,7 +997,17 @@ export default {
     },
     async spSave() {
       this.sp_form.mt_id = this.curMtId;
-      let res = await this.$API.fina.addSp(this.sp_form);
+      let sp_info = { ...this.sp_form };
+      sp_info.sp_num = parseFloat(
+        sp_info.sp_num.substring(1).replace(/,/g, "")
+      );
+      sp_info.refund = parseFloat(
+        sp_info.refund.substring(1).replace(/,/g, "")
+      );
+      sp_info.actul_num = parseFloat(
+        sp_info.actul_num.substring(1).replace(/,/g, "")
+      );
+      let res = await this.$API.fina.addSp(sp_info);
       if (res.code == 20000) {
         this.$message({ type: "success", message: "保存成功" });
       }
@@ -741,7 +1059,6 @@ export default {
           await this.$API.fina.addRepay(this.form.loan_id, c);
           break;
         case 4:
-          console.log(1);
           await this.$API.fina.addRepay(this.form.loan_id, [start_date]);
           break;
         default:
@@ -766,7 +1083,6 @@ export default {
           break;
         case 2:
           let b = this.calculateQuarters(start_date, end_date, formdate);
-          console.log(b);
           break;
           await this.$API.fina.addInter(this.form.loan_id, b);
 
@@ -859,26 +1175,151 @@ export default {
       }, 100);
     },
     //下款信息删除回调
-    async delmt(row){
+    async delmt(row) {
       let obj = {
-        loan_id:this.form.loan_id,
-        date:row.mt_date,
-        mt_id:row.mt_id
-      }
-      await this.$API.fina.delMt(obj)
+        loan_id: this.form.loan_id,
+        date: row.mt_date,
+        mt_id: row.mt_id,
+      };
+      await this.$API.fina.delMt(obj);
       this.getInfo(this.form.loan_id);
     },
     //删除偶组款信息按钮
-    async delsp(row){
+    async delsp(row) {
       let obj = {
-        sp_id:row.sp_id
+        sp_id: row.sp_id,
+      };
+      await this.$API.fina.delSp(obj);
+      // this.spInfo(this.curMtId);
+      let res = await this.$API.fina.getSp(this.curMtId);
+      this.spList = res.data.spList;
+    },
+    addMatch() {
+      this.mt_form.matching_capital.unshift({
+        name: null,
+        num: null,
+        date: null,
+        remark: null,
+        corp: null,
+      });
+    },
+    async showMaching(row) {
+      let res = await this.$API.fina.getMatch(row.mt_id);
+      this.currentMt = row.mt_id;
+      this.curMatching = res.data.matching;
+      if (!this.curMatching) {
+        this.curMatching = [];
       }
-      await  this.$API.fina.delSp(obj)
-      this.spInfo(this.curMtId)
-    }
+      this.curMatching.forEach((item) => {
+        this.$set(item, "isEdit", false);
+      });
+      this.dialogMatching = true;
+    },
+    async mactingSave(row) {
+      await this.$API.fina.addMatch({
+        mt_id: this.currentMt,
+        matching_capital: this.curMatching,
+      });
+      let res = await this.$API.fina.getMatch(this.currentMt);
+      this.curMatching = res.data.matching;
+      if (!this.curMatching) {
+        this.curMatching = [];
+      }
+      this.curMatching.forEach((item) => {
+        this.$set(item, "isEdit", false);
+      });
+    },
+    async delMatch(index) {
+      this.curMatching.splice(index, 1);
+      await this.$API.fina.delMatch({
+        mt_id: this.currentMt,
+        matching_capital: this.curMatching,
+      });
+    },
+    addMatching() {
+      this.curMatching.unshift({
+        name: null,
+        num: null,
+        date: null,
+        remark: null,
+        corp: null,
+        isEdit: true,
+      });
+    },
+    is_actual_change() {
+      this.form.loan_sum = 0;
+    },
+    btn_cancle() {
+      this.info_status = false;
+      this.form = { ...this.form_copy };
+    },
+    btn_edit() {
+      if (this.form.sub_project === 1) {
+        if (Array.isArray(this.form.sub_project_list)&&this.form.sub_project_list.length > 0) {
+          if (
+            this.form.sub_project_list.length ===
+            this.form.rep_project_list.length
+          ) {
+            //console.log(1);
+            this.loan_checkAll = true;
+            this.loan_isIndeterminate = false;
+          } else {
+            this.loan_checkAll = true;
+            this.loan_isIndeterminate = true;
+          }
+        } else {
+          this.loan_checkAll = false;
+          this.loan_isIndeterminate = false;
+        }
+      }
+      this.form_copy = { ...this.form };
+      this.info_status = true;
+    },
+    handleCheckAllChange(val) {
+      //console.log(val);
+      // return
+      this.mt_form.sub_project_list = val ? this.form.sub_project_list : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.form.sub_project_list.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.form.sub_project_list.length;
+    },
+    loan_handleCheckAllChange(val) {
+      //console.log(val);
+      // return
+      this.form.sub_project_list = val ? this.form.rep_project_list : [];
+      this.loan_isIndeterminate = false;
+    },
+    loan_handleCheckedCitiesChange(value) {
+      let checkedCount = value.length;
+      this.loan_checkAll = checkedCount === this.form.rep_project_list.length;
+      this.loan_isIndeterminate =
+        checkedCount > 0 && checkedCount < this.form.rep_project_list.length;
+    },
+    abc(row) {
+      console.log(row);
+    },
   },
 };
 </script>
 
-<style>
+<style scoped>
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>

@@ -52,7 +52,7 @@
               <span v-else>{{ str_contet(proj_form.fina_name) }}</span>
             </el-form-item>
             <el-form-item label="是否隐债" :disabled="!is_status">
-              <el-switch v-model="proj_form.yz" :disabled="!is_status">
+              <el-switch v-model="proj_form.hidden_debt" :disabled="!is_status" :active-value="1" :inactive-value="0">
               </el-switch>
             </el-form-item>
             <el-form-item label="项目说明">
@@ -61,7 +61,7 @@
                 type="textarea"
                 v-if="is_status"
               ></el-input>
-              <span v-else>{{ str_contet(proj_form.rz_id) }}</span>
+              <span v-else>{{ str_contet(proj_form.proj_remark) }}</span>
             </el-form-item>
             <!-- <el-button
               type="primary"
@@ -169,6 +169,39 @@
             >
             </el-switch>
           </el-form-item>
+          <el-form-item label="子项目" v-if="rep_form.sub_project === 1">
+            <el-tag
+              effect="dark"
+              :key="tag"
+              v-for="tag in rep_form.sub_project_list"
+              :closable="is_status"
+              :disable-transitions="false"
+              @close="handleClose(tag)"
+            >
+              {{ tag }}
+            </el-tag>
+            <span v-if="is_status">
+              <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm"
+              >
+              </el-input>
+              <el-button
+                v-else
+                class="button-new-tag"
+                type="primary"
+                plain
+                size="small"
+                @click="showInput"
+                >+子项目</el-button
+              >
+            </span>
+          </el-form-item>
           <el-form-item label="备注说明">
             <el-input
               v-if="is_status"
@@ -211,8 +244,17 @@
         @close="loanClose"
         width="600px"
       >
-        <el-form ref="loan" :model="loan_form" :rules="loanRules" label-width="100px" label-position="left">
-          <el-form-item label="借款金额" :prop="loan_form.is_actual===0?'loan_sum':''">
+        <el-form
+          ref="loan"
+          :model="loan_form"
+          :rules="loanRules"
+          label-width="100px"
+          label-position="left"
+        >
+          <el-form-item
+            label="借款金额"
+            :prop="loan_form.is_actual === 0 ? 'loan_sum' : ''"
+          >
             <el-switch
               v-model="loan_form.is_actual"
               active-text="实际为准"
@@ -225,19 +267,45 @@
             <el-input
               v-model="loan_form.loan_sum"
               placeholder="请填写借款金额"
-              :disabled="loan_form.is_actual===1"
-              @input="loan_form.loan_sum = $format.formatInput(loan_form.loan_sum)"
+              :disabled="loan_form.is_actual === 1"
+              @input="
+                loan_form.loan_sum = $format.formatInput(loan_form.loan_sum)
+              "
             ></el-input>
+          </el-form-item>
+          <el-form-item label="所属子项目" v-if="rep_form.sub_project===1">
+            <el-checkbox
+              :indeterminate="isIndeterminate"
+              v-model="checkAll"
+              @change="handleCheckAllChange"
+              >全选</el-checkbox
+            >
+            <div style="margin: 15px 0"></div>
+            <el-checkbox-group
+              v-model="loan_form.sub_project_list"
+              @change="handleCheckedCitiesChange"
+            >
+              <el-checkbox
+                v-for="item in rep_form.sub_project_list"
+                :label="item"
+                :key="item"
+                >{{ item }}</el-checkbox
+              >
+            </el-checkbox-group>
           </el-form-item>
           <el-form-item label="提交日期" prop="loan_date">
             <el-date-picker
               v-model="loan_form.loan_date"
               placeholder="请选择日期"
               value-format="yyyy-MM-dd"
+              :picker-options="pickerOptions"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="付息" prop="inter_plan">
-           <el-input v-model="loan_form.inter_plan" placeholder="请填写"></el-input>
+            <el-input
+              v-model="loan_form.inter_plan"
+              placeholder="请填写"
+            ></el-input>
           </el-form-item>
           <el-form-item label="利率(%)" prop="rate">
             <el-switch
@@ -248,7 +316,11 @@
               :inactive-value="0"
             >
             </el-switch>
-            <el-input v-model="loan_form.rate" placeholder="请输入基准利率(%)" type="number"></el-input>
+            <el-input
+              v-model="loan_form.rate"
+              placeholder="请输入基准利率(%)"
+              type="number"
+            ></el-input>
           </el-form-item>
           <el-form-item label="备注说明">
             <el-input
@@ -266,11 +338,12 @@
 </template>
 
 <script>
+import dayjs from "dayjs";
 export default {
   name: "projInfo",
   data() {
     return {
-      loan_radio:null,
+      loan_radio: null,
       dialogLoan: false,
       is_status: false,
       proj_loding: false,
@@ -290,14 +363,17 @@ export default {
         rep_limit: null,
         rep_remark: null,
         sub_project: 0,
+        sub_project_list: [],
       },
       loan_form: {
         is_float_rate: 0,
-        loan_sum:null,
-        loan_date:null,
-        is_actual:0,
-        rate:null,
-        loan_remark:null
+        loan_sum: null,
+        loan_date: null,
+        is_actual: 0,
+        rate: null,
+        loan_remark: null,
+        inter_plan: null,
+        sub_project_list:[]
       },
       infoRules: {
         proj_name: [
@@ -323,25 +399,31 @@ export default {
         ],
         rep_limit: [{ required: true, message: "请输入期限", trigger: "blur" }],
       },
-      loanRules:{
+      loanRules: {
         loan_sum: [
           { required: true, message: "请填写借款金额", trigger: "blur" },
         ],
         loan_date: [
           { required: true, message: "请选择提交日期", trigger: "blur" },
         ],
-        inter_plan: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
-        rate: [
-          { required: true, message: "请输入利率", trigger: "blur" },
-        ],
+        inter_plan: [{ required: true, message: "请输入", trigger: "blur" }],
+        rate: [{ required: true, message: "请输入利率", trigger: "blur" }],
       },
       bankList: [],
       corpList: [],
       finaCate: [],
       proj_form_copy: {},
       rep_form_copy: {},
+      inputValue: "",
+      inputVisible: false,
+      checkAll: false,
+      //cities: cityOptions,
+      isIndeterminate: false,
+      pickerOptions: {
+        disabledDate: (time) => {
+          return dayjs(time).isBefore(dayjs(this.rep_form.rep_date));
+        },
+      },
     };
   },
   mounted() {
@@ -380,6 +462,7 @@ export default {
       //this.proj_form.ysProjId = res.data.projInfo.proj_id;
       this.rep_form = res.data.repInfo;
       this.rep_form.rep_sum = this.$format.money(this.rep_form.rep_sum);
+      this.$emit("setRep", this.rep_form.rep_id);
       //this.rep_form.array_bank_name = res.data.repInfo.bank_name.split(",");
       //console.log(this.rep_form.array_bank_name);
       this.$set(
@@ -388,12 +471,11 @@ export default {
         res.data.repInfo.bank_name.split(",")
       );
       //this.loanList = res.data.loanList;
-      console.log(res.data);
+
       this.proj_loding = false;
     },
     swichange() {
       this.rep_form.array_bank_name = [];
-      console.log(123);
     },
     //编辑按钮
     edit_btn() {
@@ -421,7 +503,7 @@ export default {
               repInfo.rep_sum = parseFloat(
                 this.rep_form.rep_sum.substring(1).replace(/,/g, "")
               );
-              console.log(repInfo.bank_name);
+              //return console.log(repInfo);
               await this.$API.fina.addProj("update", {
                 projForm: this.proj_form,
                 repForm: repInfo,
@@ -443,42 +525,96 @@ export default {
     },
     //借款信息添加窗口关闭时的回调函数
     loanClose() {
-      this.$refs['loan'].resetFields()
+      this.$refs["loan"].resetFields();
+      this.loan_form.sub_project_list=[]
+      this.isIndeterminate = false
+      this.checkAll =false
     },
     //借款信息添加保存按钮回调
-    loan_save(){
-      this.$refs['loan'].validate(async validate =>{
-        if(validate){
-          let loan_info = {...this.loan_form}
-          if(loan_info.is_actual===1){
-            loan_info.loan_sum=0
-          }else{
-            loan_info.loan_sum=parseFloat(
-                this.loan_form.loan_sum.substring(1).replace(/,/g, "")
-              );
+    loan_save() {
+      this.$refs["loan"].validate(async (validate) => {
+        if (validate) {
+          let loan_info = { ...this.loan_form };
+          if (loan_info.is_actual === 1) {
+            loan_info.loan_sum = 0;
+          } else {
+            loan_info.loan_sum = parseFloat(
+              this.loan_form.loan_sum.substring(1).replace(/,/g, "")
+            );
           }
-          loan_info.rate = parseFloat((loan_info.rate/100).toFixed(2))
-          loan_info.rep_id = this.rep_form.rep_id
-          loan_info.rep_limit = this.rep_form.rep_limit
-          console.log(loan_info);
-          await this.$API.fina.addLoan(loan_info)
-          this.$emit('loanList')
-          this.dialogLoan = false
-        }else{
-          return false
+          loan_info.rate = parseFloat((loan_info.rate / 100).toFixed(2));
+          loan_info.rep_id = this.rep_form.rep_id;
+          loan_info.rep_limit = this.rep_form.rep_limit;
+          await this.$API.fina.addLoan(loan_info);
+          this.$emit("loanList");
+          this.dialogLoan = false;
+        } else {
+          return false;
         }
-      })
-      
+      });
     },
     //借款金额按钮触发
-    is_actual_change(){
-      if(this.loan_form.is_actual===1){
-        this.$refs['loan'].resetFields()
+    is_actual_change() {
+      if (this.loan_form.is_actual === 1) {
+        this.$refs["loan"].resetFields();
+        this.loan_form.loan_sum = 0;
       }
-    }
+    },
+    handleClose(tag) {
+      this.rep_form.sub_project_list.splice(
+        this.rep_form.sub_project_list.indexOf(tag),
+        1
+      );
+    },
+
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick((_) => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.rep_form.sub_project_list.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = "";
+    },
+    handleCheckAllChange(val) {
+      console.log(val);
+     // return
+        this.loan_form.sub_project_list = val ? this.rep_form.sub_project_list : [];
+        this.isIndeterminate = false;
+      },
+      handleCheckedCitiesChange(value) {
+        
+        let checkedCount = value.length;
+        
+        this.checkAll = checkedCount === this.rep_form.sub_project_list.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.rep_form.sub_project_list.length;
+       
+       // this.isIndeterminate = !this.isIndeterminate
+      }
   },
 };
 </script>
 
-<style>
+<style scoped>
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>

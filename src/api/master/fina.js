@@ -71,3 +71,11 @@ export const getPlan=(loan_id,current,size)=>request({url:`/fina/plan?loan_id=${
 export const updatePlan=(planName,data)=>request({url:`/fina/plan?planName=${planName}`,data,method:'POST'})
 
 export const delPlan=(data)=>request({url:`/fina/plan`,data,method:'DELETE'})
+
+
+export const addMatch = (data)=>request({url:'/fina/match',data,method:'POST'})
+export const getMatch = (mt_id)=>request({url:`/fina/match?mt_id=${mt_id}`,method:'GET'})
+export const delMatch = (data)=>request({url:'/fina/match',data,method:'DELETE'})
+
+
+export const getBasics = (rep_id)=>request({url:`/fina/basics?rep_id=${rep_id}`,method:'GET'})

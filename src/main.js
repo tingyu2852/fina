@@ -18,6 +18,7 @@ import '@/icons' // icon
 import '@/permission' // permission control
 import dcXlsx from '@/utils/excel'
 import * as format from '@/utils/format'
+import dayjs from 'dayjs'
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -41,6 +42,7 @@ import * as format from '@/utils/format'
 Vue.prototype.$API = API
 Vue.prototype.$dc_excel = dcXlsx
 Vue.prototype.$format = format
+Vue.prototype.$dayjs = dayjs
 
 
 new Vue({

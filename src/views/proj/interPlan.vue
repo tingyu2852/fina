@@ -198,7 +198,6 @@ export default {
       this.planList.unshift(obj);
     },
     quxiao(row) {
-      console.log(row);
     },
     savePlan(row) {
       if (!row.date) {
@@ -214,22 +213,26 @@ export default {
     },
     async saveFastPlan() {
       //this.switchover = 0;
+      if(!this.planForm.inter_radio || !this.planForm.startDate){
+        return this.$message({
+          type:'error',
+          message:'请选择规则和第一次结息时间'
+        })
+      }
       const str = this.planForm.inter_radio;
       let list = [];
       let curDate = dayjs(this.planForm.startDate);
       //console.log(this.planForm.startDate);
       let endDate = dayjs(this.loanInfo.loan_date).add(
-        120,
+        this.loanInfo.limit,
         "month"
       );
-      console.log(endDate.format("YYYY-MM-DD"));
       switch (str) {
         case 1:
           //
           while (curDate.isBefore(endDate)) {
             list.push(curDate.format("YYYY-MM-DD"));
             curDate = curDate.add(1, "month");
-            console.log(curDate.format("YYYY-MM-DD"));
             //console.log(endDate.format('YYYY-MM-DD'));
           }
           // console.log(list);
@@ -254,18 +257,18 @@ export default {
           this.$message({ type: "error", message: "该结息方式不支持快速生成" });
           break;
       }
-      console.log(list);
-      return;
+      
       await this.$API.fina.updatePlan("plan", {
         loan_id: this.loan_id,
         dateList: list,
       });
       this.getPlanList(this.loan_id);
+      this.switchover=0
     },
     //删除计划按钮
     async delPlan(row) {
       await this.$API.fina.delPlan({
-        repay_id: row.repay_id,
+        date: row.date,
         loan_id: this.loan_id,
       });
       this.getPlanList(this.loan_id);

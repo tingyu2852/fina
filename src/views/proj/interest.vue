@@ -69,7 +69,6 @@ export default {
     async getInterList(loan_id) {
       this.loan_id = loan_id;
       this.lodaing=true
-      console.log(this.current,this.size);
       //return
       let res = await this.$API.fina.getInter(loan_id,this.current,this.size);
       this.interestList = res.data.interestList;
