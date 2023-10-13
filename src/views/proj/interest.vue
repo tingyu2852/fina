@@ -21,7 +21,7 @@
         <el-table-column label="利率">
           <template slot-scope="{ row }">
             <div >
-              {{ row.rate ? `${((row.rate-0)*100).toFixed(2)}%` : "无" }}
+              {{ row.rate ? `${((row.rate-0)*100).toFixed(3)}%` : "无" }}
             </div>
             
           </template>

@@ -19,6 +19,7 @@ export const money=(v, len, split)=> {
 
   export const formatInput=(number)=> {
     // 限制只允许输入数字和小数点
+    number = number.toString()
     number = number.replace(/[^\d.]/g, "");
 
     // 格式化数字为带逗号的字符串

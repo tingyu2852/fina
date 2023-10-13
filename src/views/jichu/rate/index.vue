@@ -26,7 +26,7 @@
           <el-table-column header-align="center" label="日期" prop="date" align="left"></el-table-column>
           <el-table-column header-align="center" label="利率" prop="rate" align="left">
             <template slot-scope="{row}">
-                <div>{{ row.rate? `${((row.rate)*100).toFixed(2)}%`:'无' }}</div>
+                <div>{{ row.rate? `${((row.rate)*100).toFixed(3)}%`:'无' }}</div>
             </template>
           </el-table-column>
           <el-table-column header-align="center" label="备注" prop="remark" align="left">
@@ -207,7 +207,7 @@
           if (valid) {
             //this.addfrom.rate = this.addfrom.rate /100
             let form = {...this.addfrom}
-          form.rate = (form.rate /100).toFixed(4)
+          form.rate = (form.rate /100).toFixed(5)
           console.log(form);
           
             await this.$API.caiwu.addRate(form);
@@ -230,7 +230,7 @@
       },
       bj_btn(row) {
         this.addfrom = { ...row };
-        this.addfrom.rate = (this.addfrom.rate*100).toFixed(2)
+        this.addfrom.rate = (this.addfrom.rate*100).toFixed(3)
         this.dialogTableVisible = true;
       },
     },

@@ -542,9 +542,10 @@ export default {
               this.loan_form.loan_sum.substring(1).replace(/,/g, "")
             );
           }
-          loan_info.rate = parseFloat((loan_info.rate / 100).toFixed(2));
+          loan_info.rate = parseFloat((loan_info.rate / 100).toFixed(5));
           loan_info.rep_id = this.rep_form.rep_id;
           loan_info.rep_limit = this.rep_form.rep_limit;
+          
           await this.$API.fina.addLoan(loan_info);
           this.$emit("loanList");
           this.dialogLoan = false;

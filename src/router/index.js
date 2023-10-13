@@ -326,12 +326,12 @@ export const asyncRoutes = [
         meta: { title: '担保方式', icon: 'el-icon-s-order' }
       },
 
-      {
-        path: 'agmt',
-        name: 'Agmt',
-        component: () => import('@/views/jichu/agmt'),
-        meta: { title: '合同信息', icon: 'el-icon-s-order' }
-      },
+      // {
+      //   path: 'agmt',
+      //   name: 'Agmt',
+      //   component: () => import('@/views/jichu/agmt'),
+      //   meta: { title: '合同信息', icon: 'el-icon-s-order' }
+      // },
       {
         path: 'rate',
         name: 'Rate',

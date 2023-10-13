@@ -1,10 +1,11 @@
 <template>
   <div style="width: 98%; height: 600px; margin: 20px auto">
-    <el-button type="primary" style="margin: 10px 0px" @click="dialogVisible = true">新增项目</el-button>
+    <el-button type="primary" plain size="mini" style="margin: 10px 0px" @click="dialogVisible = true">新增项目</el-button>
+    <el-button type="danger" plain size="mini" style="margin: 10px 10px" @click="delProj" :disabled="selectList.length === 0">删除</el-button>
     <el-card style="margin: 0 auto">
       <div style="margin: 10px">
         <el-table v-loading="loading" :data="projList" @selection-change="selectChange">
-          <el-table-column header-align="center" type="selection" width="55"></el-table-column>
+          <el-table-column header-align="center" type="selection" width="55" align="center"></el-table-column>
           <el-table-column label="项目名称">
             <template slot-scope="{ row }">
               <div @click="edit_btn(row)" style="cursor: pointer">
@@ -111,7 +112,7 @@
             <el-switch v-model="rep_form.sub_project" :active-value="1" :inactive-value="0"> </el-switch>
           </el-form-item>
           <el-form-item label="子项目" v-if="rep_form.sub_project===1">
-            <el-tag :key="tag" v-for="tag in rep_form.sub_project_list" closable :disable-transitions="false" @close="handleClose(tag)">
+            <el-tag :key="tag" v-for="tag in rep_form.sub_project_list" closable :disable-transitions="false" @close="sub_handleClose(tag)">
               {{ tag }}
             </el-tag>
             <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
@@ -246,6 +247,7 @@ export default {
       this.total = res.data.total;
       this.loading = false;
     },
+    //列表checkbox被点击时触发
     selectChange(val) {
       this.selectList = val;
     },
@@ -258,6 +260,7 @@ export default {
         },
       });
     },
+    //添加项目信息弹窗被关闭时的回调
     handleClose() {
       this.dialogShow = 1;
       this.$refs["proj"].resetFields();
@@ -325,10 +328,12 @@ export default {
 
       return;
     },
+    //分页器每页显示多少条数据发生改变执行
     sizeChange(size) {
       this.size = size;
       this.getProjList();
     },
+    //当前页发生改变时执行
     currentChange(cur) {
       this.current = cur;
       this.getProjList();
@@ -351,17 +356,18 @@ export default {
         this.rep_form.rep_limit.replace(/[^0-9]/g, "")
       );
     },
-    handleClose(tag) {
+    //子项目里tag标签关闭执行
+    sub_handleClose(tag) {
         this.rep_form.sub_project_list.splice(this.rep_form.sub_project_list.indexOf(tag), 1);
       },
-
+      //点击添加子项目时显示文本输入框
       showInput() {
         this.inputVisible = true;
         this.$nextTick(_ => {
           this.$refs.saveTagInput.$refs.input.focus();
         });
       },
-
+      //保存输入完毕的子项目
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
@@ -369,6 +375,31 @@ export default {
         }
         this.inputVisible = false;
         this.inputValue = '';
+      },
+      //删除项目
+      delProj(){
+        //console.log(this.selectList);
+        this.$confirm('此操作将永久删除被选择项目以及项目所有子信息（删除后不可恢复）, 是否继续?', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          let list =[]
+          this.selectList.forEach(item=>{
+            list.push(item.proj_id)
+          })
+          const res = await this.$API.fina.delProj(list)
+           this.getProjList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
       }
   },
 };

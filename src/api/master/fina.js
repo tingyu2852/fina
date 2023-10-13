@@ -4,6 +4,8 @@ import request from '@/utils/request'
 export const getProj =(current,size)=> request({url:`/fina/proj?current=${current}&size=${size}`,method:'GET'})
 
 export const addProj = (name,projForm)=>request({url:`/fina/proj?name=${name}`,data:projForm,method:'POST'})
+
+export const delProj = (data)=>request({url:`/fina/proj`,data,method:'DELETE'})
 //查询一些select表用到的数据
 export const getSelect=(name)=>request({url:`/fina/select?name=${name}`,method:'GET'})
 

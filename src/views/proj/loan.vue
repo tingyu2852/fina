@@ -67,6 +67,7 @@
                 </el-checkbox-group>
               </div>
             </el-form-item>
+            
             <el-form-item label="付息">
               <div v-if="!info_status">
                 {{ str_contet(form.inter_plan) }}
@@ -147,7 +148,27 @@
         </el-col>
         <el-col :span="14">
           <el-form label-position="top">
-            <el-form-item label="下款信息">
+           
+           
+         
+            <el-row>
+              <el-col :span="8"> <el-form-item label="到款总金额">
+             <div>
+              {{$format.money(form.mt_total)}}
+             </div>
+            
+            </el-form-item></el-col>
+              <el-col :span="8"> <el-form-item label="已还本金额">
+              <div>
+              {{$format.money(form.repay_total)}}
+             </div>
+            </el-form-item></el-col>
+              <el-col :span="8">   <el-form-item label="融资余额">
+              <div>
+              {{$format.money(parseInt(form.mt_total)-parseInt(form.repay_total))}}
+             </div>
+            </el-form-item></el-col>
+              <el-col :span="24"><el-form-item label="下款信息">
               <template #label>
                 <div style="display: flex; align-items: center">
                   <div>
@@ -238,7 +259,9 @@
                   </template>
                 </el-table-column>
               </el-table>
-            </el-form-item> </el-form
+            </el-form-item></el-col>
+            </el-row>
+             </el-form
         ></el-col>
       </el-row>
 
@@ -600,7 +623,7 @@
           date: form.loan_date,
           limit: form.rep_limit,
           inter_plan: form.inter_plan,
-        }" />
+        }" @getinfo="getInfo"/>
     </el-dialog>
     <el-dialog title="结息计划" :visible.sync="interPlanDialog" width="700px">
       <InterPlan
@@ -832,61 +855,46 @@ export default {
         return "无";
       }
     },
+    //获取借款信息
     async getInfo(loan_id) {
+      console.log(loan_id);
       this.loan_id = loan_id;
       let res = await this.$API.fina.getLoan(loan_id);
       this.form = { ...res.data.loanInfo };
-      this.form.rate = parseFloat((this.form.rate * 100).toFixed(2));
+      this.form.rate = parseFloat((this.form.rate * 100).toFixed(3));
       if (this.form.is_actual === 1) {
         this.form.loan_sum = this.form.mt_total;
       }
       this.form.loan_sum = this.$format.money(this.form.loan_sum);
       this.mtList = res.data.mtList;
-      //console.log(res.data.loanInfo.is_repay);
+      //is_repay 为0时表示结息详情为生成，向后端发送请求生成结息详情
       if (res.data.loanInfo.is_repay === 0) {
         //let { loan_date, loan_id, rep_limit ,rate,} = res.data.loanInfo;
         let res1 = this.$API.fina.addRepayment(res.data.loanInfo);
       } else {
         let { loan_id } = res.data.loanInfo;
+        //is_repay为1但是is_inter为0向后端发送请求重新更新结息详情的利率
         if (res.data.loanInfo.is_inter === 0) {
           this.$API.fina.updateInter(loan_id);
         }
       }
-      //   this.proj_id=proj_id
-      //   let res = await this.$API.fina.getMt(proj_id)
-      //   console.log(res.data);
+      
     },
-    handleClick(tab, event) {},
-    //该函数用来给没跳列表添加一个布尔值用来表示是否处于编辑状态
+    //该函数用来给每条列表添加一个布尔值用来表示是否处于编辑状态
     listIsEdit(arr) {
       if (Array.isArray(arr)) {
-        // for(let item of arr){
-        //   console.log('edit');
-        //   arr.isEdit=false
-        // }
         arr.forEach((item) => {
-          //item.isEdit = false;
           this.$set(item, "isEdit", false);
         });
       } else {
         throw new Error("传入的参数不是数组");
       }
     },
-    async pawnSave(row) {
-      row.rep_id = this.rep_form.rep_id;
-      let res = await this.$API.fina.addPawn(row);
-      row.isEdit = false;
-      this.$message({ type: "success", message: "保存成功" });
-      this.getRepInfo();
-    },
-    async delPawn(row) {
-      let res = await this.$API.fina.delPawn({ pawn_id: row.pawn_id });
-      this.$message({ type: "success", message: "删除成功" });
-      this.getRepInfo();
-    },
+    //添加下款信息按钮，打开弹窗
     mtADD() {
       this.dialogVisible = true;
     },
+    //获取走款信息
     async spInfo(row) {
       //console.log(row);
       console.log(row, "-----");
@@ -896,9 +904,10 @@ export default {
       this.spList = res.data.spList;
       this.spDialog = true;
     },
+    //保存借款信息
     async loan_save() {
       let loanInfo = { ...this.form };
-      loanInfo.rate = parseFloat((loanInfo.rate / 100).toFixed(4));
+      loanInfo.rate = parseFloat((loanInfo.rate / 100).toFixed(5));
       loanInfo.loan_sum = parseFloat(
         loanInfo.loan_sum.substring(1).replace(/,/g, "")
       );
@@ -909,6 +918,7 @@ export default {
       this.getInfo(this.form.loan_id);
       this.info_status = false;
     },
+    //下款信息编辑弹窗被关闭时的回调，清空表单
     handlerClose() {
       let obj = {
         mt_sum: 0,
@@ -920,14 +930,9 @@ export default {
         sub_project_list: [],
       };
       this.mt_form = obj;
-      // for (let key in this.mt_form) {
-      //   if (key == "mt_sum") {
-      //     this.mt_form[key] = 0;
-      //   } else {
-      //     this.mt_form[key] = "";
-      //   }
-      // }
+      
     },
+    //保存下款信息
     async mtSave() {
       if (!this.mt_form.loan_id) {
         this.mt_form.loan_id = this.form.loan_id;
@@ -954,6 +959,7 @@ export default {
       this.getInfo(this.form.loan_id);
       this.dialogVisible = false;
     },
+    //编辑下款信息按钮
     mtEdit(row) {
      // console.log(row);
       if ( Array.isArray(row.sub_project_list) && row.sub_project_list.length > 0 ) {
@@ -975,6 +981,7 @@ export default {
       this.mt_form.mt_sum = this.$format.money(this.mt_form.mt_sum);
       this.dialogVisible = true;
     },
+    //编辑走款信息按钮
     spEdit(row) {
       this.sp_form = { ...row };
       this.sp_form.sp_num = this.$format.money(this.sp_form.sp_num);
@@ -982,6 +989,7 @@ export default {
       this.sp_form.actul_num = this.$format.money(this.sp_form.actul_num);
       this.innerVisible = true;
     },
+    //走款信息编辑弹窗被关闭时触发，清空表单
     spDialogClose() {
       this.sp_form = {
         sp_date: "",
@@ -995,6 +1003,7 @@ export default {
         con_id: "",
       };
     },
+    //走款信息保存
     async spSave() {
       this.sp_form.mt_id = this.curMtId;
       let sp_info = { ...this.sp_form };
@@ -1015,10 +1024,12 @@ export default {
       this.spList = res1.data.spList;
       this.innerVisible = false;
     },
+    //走款信息添加
     addSp() {
       this.curMtId;
       this.innerVisible = true;
     },
+    //结息详情页查看按钮
     interInfo(name) {
       if (name == "view") {
         setTimeout(() => {
@@ -1028,6 +1039,7 @@ export default {
       }
       this.interestDialog = true;
     },
+    //查看还本计划
     repayInfo(name) {
       if (name == "view") {
         setTimeout(() => {
@@ -1036,135 +1048,8 @@ export default {
         }, 100);
       }
       this.repayDialog = true;
-    },
-    async repaySave(radio) {
-      if (!this.repay_form.bgn_end_date) {
-        return this.$message({ type: "error", message: "请填写开始日期" });
-      }
-      const start_date = this.repay_form.bgn_end_date;
-      const end_date = dayjs(start_date).add(this.form.rep_limit - 0, "month");
-
-      const formdate = this.repay_form.Interest_settlement;
-      switch (radio) {
-        case 1:
-          let a = this.yeardate(start_date, end_date, formdate);
-          await this.$API.fina.addRepay(this.form.loan_id, a);
-          break;
-        case 2:
-          let b = this.calculateQuarters(start_date, end_date, formdate);
-          await this.$API.fina.addRepay(this.form.loan_id, b);
-          break;
-        case 3:
-          let c = this.printMonthsTenth(start_date, end_date, formdate);
-          await this.$API.fina.addRepay(this.form.loan_id, c);
-          break;
-        case 4:
-          await this.$API.fina.addRepay(this.form.loan_id, [start_date]);
-          break;
-        default:
-          break;
-      }
-
-      this.repayDialog = false;
-      this.getInfo(this.form.loan_id);
-    },
-    async jisuandate(radio) {
-      if (!this.interest_form.bgn_end_date) {
-        return this.$message({ type: "error", message: "请填写开始日期" });
-      }
-      const start_date = this.interest_form.bgn_end_date;
-      const end_date = dayjs(start_date).add(this.form.rep_limit - 0, "month");
-
-      const formdate = this.interest_form.Interest_settlement;
-      switch (radio) {
-        case 1:
-          let a = this.yeardate(start_date, end_date, formdate);
-          await this.$API.fina.addInter(this.form.loan_id, a);
-          break;
-        case 2:
-          let b = this.calculateQuarters(start_date, end_date, formdate);
-          break;
-          await this.$API.fina.addInter(this.form.loan_id, b);
-
-        case 3:
-          let c = this.printMonthsTenth(start_date, end_date, formdate);
-          await this.$API.fina.addInter(this.form.loan_id, c);
-          break;
-        case 4:
-          await this.$API.fina.addInter(this.form.loan_id, [start_date]);
-          break;
-        default:
-          break;
-      }
-
-      this.interestDialog = false;
-      this.getInfo(this.form.loan_id);
-    },
-    //打印出时间范围内的每个制定日期
-    yeardate(start_date, end_date, formdate) {
-      // 设置起始日期和结束日期
-      let list = [];
-      const startDate = dayjs(start_date);
-      const endDate = dayjs(end_date);
-
-      // 循环遍历每一年的五月十日
-      for (let year = startDate.year(); year <= endDate.year(); year++) {
-        const date = dayjs(`${year}-${formdate}`);
-
-        // 判断日期是否在范围内
-        if (date.isBetween(startDate, endDate, null, "[]")) {
-          list.push(date.format("YYYY-MM-DD"));
-        }
-      }
-
-      return list;
-    },
-    calculateQuarters(startDates, endDates, formdate) {
-      let currentDate = dayjs(startDates);
-      const end = dayjs(endDates);
-      let list = [];
-      while (currentDate.isBefore(end)) {
-        const year = currentDate.year();
-        const month = currentDate.month();
-
-        // 检查当前月份是否是季度的最后一个月
-        if (month === 2 || month === 5 || month === 8 || month === 11) {
-          list.push[currentDate.format(`YYYY-MM-${formdate}`)];
-        }
-
-        currentDate = currentDate.add(1, "month");
-      }
-      const endQuarter = Math.floor((end.month() + 1) / 3);
-      const endQuarterEndDate = dayjs()
-        .month(endQuarter * 3 - 1)
-        .endOf("month");
-      if (end.isBefore(endQuarterEndDate)) {
-        list.push[end.format(`YYYY-MM-${formdate}`)];
-      }
-      return list;
-    },
-    printMonthsTenth(startDate, endDate, formdate) {
-      let list = [];
-      let currentDate = dayjs(startDate).startOf("month").add(9, "day");
-      const endOfMonth = dayjs(endDate).endOf("month");
-
-      while (
-        currentDate.isSameOrBefore(endDate) &&
-        currentDate.isSameOrBefore(endOfMonth)
-      ) {
-        //console.log(currentDate.format(`YYYY-MM-${formdate}`));
-        list.push(currentDate.format(`YYYY-MM-${formdate}`));
-        currentDate = currentDate.add(1, "month");
-      }
-      return list;
-    },
-    planInter() {
-      this.interPlan = true;
-    },
-    interPlanSave() {
-      this.form.radio = this.interest_form.radio;
-      this.form.inter_plan = this.interest_form.Interest_settlement;
-    },
+    }, 
+    //获取结息计划   
     planInfo() {
       this.interPlanDialog = true;
       //console.log( this.$refs);
@@ -1184,7 +1069,7 @@ export default {
       await this.$API.fina.delMt(obj);
       this.getInfo(this.form.loan_id);
     },
-    //删除偶组款信息按钮
+    //删除走款信息按钮
     async delsp(row) {
       let obj = {
         sp_id: row.sp_id,
@@ -1194,6 +1079,7 @@ export default {
       let res = await this.$API.fina.getSp(this.curMtId);
       this.spList = res.data.spList;
     },
+    //下款信息编辑窗口内添加匹配资本金按钮触发
     addMatch() {
       this.mt_form.matching_capital.unshift({
         name: null,
@@ -1203,6 +1089,7 @@ export default {
         corp: null,
       });
     },
+    //查看匹配资本金触发
     async showMaching(row) {
       let res = await this.$API.fina.getMatch(row.mt_id);
       this.currentMt = row.mt_id;
@@ -1215,6 +1102,7 @@ export default {
       });
       this.dialogMatching = true;
     },
+    //保存匹配资本金
     async mactingSave(row) {
       await this.$API.fina.addMatch({
         mt_id: this.currentMt,
@@ -1229,6 +1117,7 @@ export default {
         this.$set(item, "isEdit", false);
       });
     },
+    //删除匹配资本金
     async delMatch(index) {
       this.curMatching.splice(index, 1);
       await this.$API.fina.delMatch({
@@ -1236,6 +1125,7 @@ export default {
         matching_capital: this.curMatching,
       });
     },
+    //匹配资本金窗口内新增按钮触发
     addMatching() {
       this.curMatching.unshift({
         name: null,
@@ -1246,13 +1136,16 @@ export default {
         isEdit: true,
       });
     },
+    //
     is_actual_change() {
       this.form.loan_sum = 0;
     },
+    //取消编辑借款信息
     btn_cancle() {
       this.info_status = false;
       this.form = { ...this.form_copy };
     },
+    //借款信息编辑按钮
     btn_edit() {
       if (this.form.sub_project === 1) {
         if (Array.isArray(this.form.sub_project_list)&&this.form.sub_project_list.length > 0) {
@@ -1272,36 +1165,39 @@ export default {
           this.loan_isIndeterminate = false;
         }
       }
+      //将原借款信息保存一份，用作取消编辑时还原数据
       this.form_copy = { ...this.form };
       this.info_status = true;
     },
+    //下款子项目全选按钮触发
     handleCheckAllChange(val) {
       //console.log(val);
       // return
       this.mt_form.sub_project_list = val ? this.form.sub_project_list : [];
       this.isIndeterminate = false;
     },
+    //下款子项目被选择时触发
     handleCheckedCitiesChange(value) {
       let checkedCount = value.length;
       this.checkAll = checkedCount === this.form.sub_project_list.length;
       this.isIndeterminate =
         checkedCount > 0 && checkedCount < this.form.sub_project_list.length;
     },
+    //借款信息内子项目全选按钮触发
     loan_handleCheckAllChange(val) {
       //console.log(val);
       // return
       this.form.sub_project_list = val ? this.form.rep_project_list : [];
       this.loan_isIndeterminate = false;
     },
+    //借款信息内子项目被选择是触发
     loan_handleCheckedCitiesChange(value) {
       let checkedCount = value.length;
       this.loan_checkAll = checkedCount === this.form.rep_project_list.length;
       this.loan_isIndeterminate =
         checkedCount > 0 && checkedCount < this.form.rep_project_list.length;
     },
-    abc(row) {
-      console.log(row);
-    },
+
   },
 };
 </script>

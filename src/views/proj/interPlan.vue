@@ -166,6 +166,7 @@ export default {
     };
   },
   methods: {
+    //获取结息计划
     async getPlanList(loan_id) {
       this.loan_id = loan_id;
       this.lodaing = true;
@@ -177,6 +178,7 @@ export default {
       });
       this.lodaing = false;
     },
+    //更新结息计划
     async updatePlan(row) {
       await this.$API.fina.updatePlan("one", {
         loan_id: this.loan_id,
@@ -189,6 +191,7 @@ export default {
       this.current = cur;
       this.getPlanList(this.loan_id);
     },
+    //添加结息计划按钮
     addPlan() {
       let obj = {
         date: null,
@@ -199,6 +202,7 @@ export default {
     },
     quxiao(row) {
     },
+    //保存结息计划
     savePlan(row) {
       if (!row.date) {
         return this.$message({
@@ -208,9 +212,11 @@ export default {
       }
       this.updatePlan(row);
     },
+    //切换到生成结息计划的场景
     fastPlan() {
       this.switchover = 1;
     },
+    //告诉后端需要再哪个事件节点结息
     async saveFastPlan() {
       //this.switchover = 0;
       if(!this.planForm.inter_radio || !this.planForm.startDate){
@@ -223,6 +229,7 @@ export default {
       let list = [];
       let curDate = dayjs(this.planForm.startDate);
       //console.log(this.planForm.startDate);
+      //结束时间
       let endDate = dayjs(this.loanInfo.loan_date).add(
         this.loanInfo.limit,
         "month"

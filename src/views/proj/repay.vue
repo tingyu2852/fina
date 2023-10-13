@@ -13,7 +13,7 @@
         <el-table-column label="日期">
           <template slot-scope="{ row }">
             <el-date-picker
-              v-if="!row.date"
+              v-if="row.isEdit"
               v-model="row.date"
               type="date"
               value-format="yyyy-MM-dd"
@@ -34,7 +34,7 @@
             <el-input
               v-else
               v-model="row.repay_plan"
-              type="number"
+              @input="row.repay_plan = $format.formatInput(row.repay_plan)"
               placeholder="请填写金额"
             ></el-input>
           </template>
@@ -60,7 +60,7 @@
               type="primary"
               size="mini"
               icon="el-icon-edit-outline"
-              @click="$set(row, 'isEdit', true)"
+              @click="repayEdit(row)"
             ></el-button>
             <el-button
               v-show="row.isEdit"
@@ -71,7 +71,7 @@
             ></el-button>
 
             <el-popconfirm
-              title="这是一段内容确定删除吗？"
+              title="这一段内容确定删除吗？"
               @onConfirm="delInter(row)"
             >
               <el-button
@@ -89,9 +89,10 @@
       <el-pagination
         :total="total"
         :current-page="current"
-        :page-size="5"
+        :page-size="size"
         @current-change="curchange"
-        :layout="'prev, pager, next, jumper, ->, total'"
+        @size-change="sizeChange"
+        :layout="'prev, pager, next, jumper,sizes, ->, total'"
       ></el-pagination>
     </div>
   </div>
@@ -107,6 +108,8 @@ export default {
       loan_id: 0,
       current: 1,
       total: 0,
+      size:10,
+      sizes:[10,20,50,100],
       pickerOptions: {
         disabledDate: (time) => {
           //console.log(this.loanInfo.limit);
@@ -131,7 +134,7 @@ export default {
     async getRepayList(loan_id) {
       this.loan_id = loan_id;
       this.lodaing = true;
-      let res = await this.$API.fina.getRepay(loan_id, this.current, 5);
+      let res = await this.$API.fina.getRepay(loan_id, this.current, this.size);
       this.repayList = res.data.repayList;
       this.total = res.data.total;
       this.repayList.forEach((item) => {
@@ -142,8 +145,19 @@ export default {
     async repaySave(row) {
       row.isEdit = false;
       row.loan_id = this.loan_id;
-      let res = await this.$API.fina.addRepay("one", row);
+      
+         let form = {...row}
+        form.repay_plan = form.repay_plan.substring(1).replace(/,/g, "")
+        
+        
+      let res = await this.$API.fina.addRepay("one", form);
       this.getRepayList(this.loan_id);
+      this.$emit('getinfo',this.loan_id)
+    },
+    repayEdit(row){
+      row.repay_plan = this.$format.money(row.repay_plan)
+      //$set(row, 'isEdit', true)
+      row.isEdit = true
     },
     async delInter(row) {
       await this.$API.fina.delRepay({
@@ -160,12 +174,16 @@ export default {
     addRepay() {
       let obj = {
         date: null,
-        repay_plan: null,
+        repay_plan: '',
         remark: null,
         isEdit: true,
       };
       this.repayList.unshift(obj);
     },
+    sizeChange(size){
+      this.size = size
+      this.getRepayList(this.loan_id);
+    }
   },
 };
 </script>
