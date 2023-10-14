@@ -1,25 +1,30 @@
 <template>
   <div style="width: 98%; height: 600px; margin: 20px auto">
-    <el-button type="primary" plain size="mini" style="margin: 10px 0px" @click="dialogVisible = true">新增项目</el-button>
-    <el-button type="danger" plain size="mini" style="margin: 10px 10px" @click="delProj" :disabled="selectList.length === 0">删除</el-button>
+    
     <el-card style="margin: 0 auto">
-      <div style="margin: 10px">
-        <el-table v-loading="loading" :data="projList" @selection-change="selectChange">
-          <el-table-column header-align="center" type="selection" width="55" align="center"></el-table-column>
-          <el-table-column label="项目名称">
-            <template slot-scope="{ row }">
-              <div @click="edit_btn(row)" style="cursor: pointer">
-                <span>{{ row.proj_name }}</span>
+        <div class="custom-btn-wrap">
+          <div class="add-custom-btn" @click="dialogVisible = true"><i class="el-icon-plus"></i>新增项目</div>
+          <div  class="delete-custom-btn"  @click="delProj" ><i class="el-icon-delete"></i>删除</div>
+        </div>
+        <el-table border 
+          style="margin-top: 12px;"
+          row-class-name="active-contnet" 
+          header-cell-class-name='active-header'  
+          :stripe="true"   
+          v-loading="loading" 
+          :data="projList" 
+          @selection-change="selectChange">
+          <el-table-column header-align="center" type="selection"  width="55" align="center"></el-table-column>
+          <el-table-column  :show-overflow-tooltip="true"  label="项目名称">
+            <template slot-scope="{ row }" >
+              <span @click="edit_btn(row)"   style="cursor: pointer;color: #409eff;">{{ row.proj_name }}</span>
                 <!-- <el-button
                 type="text"
                 icon="el-icon-edit-outline"
-                
-               
               ></el-button> -->
-              </div>
             </template>
           </el-table-column>
-          <el-table-column label="项目编号" prop="proj_id"></el-table-column>
+          <el-table-column  label="项目编号" prop="proj_id"></el-table-column>
           <el-table-column label="融资类型" prop="fina_name"></el-table-column>
           <el-table-column label="项目状态" prop="proj_status">
             <template slot-scope="{ row }">
@@ -32,14 +37,14 @@
               <span>{{ row.rep_date ? row.rep_date : "无" }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="批复额度" prop="pf_ed">
+          <el-table-column  label="批复额度"  prop="pf_ed">
             <template slot-scope="{ row }">
-              <span>{{ $format.money(row.rep_total) }}</span>
+              <div class="table-content-right">{{ $format.money(row.rep_total) }}</div>
             </template>
           </el-table-column>
-          <el-table-column label="下款合计" prop="xk_num" :formatter="asdd">
-            <template slot-scope="{ row }">
-              <span>{{ $format.money(row.mt_total) }}</span>
+          <el-table-column  label="下款合计" prop="xk_num" align="rignt" :formatter="asdd">
+            <template  slot-scope="{ row }">
+              <div class="table-content-right">{{ $format.money(row.mt_total) }}</div>
             </template>
           </el-table-column>
         </el-table>
@@ -48,7 +53,6 @@
             @current-change="currentChange" layout="prev, pager, next,jumper,sizes,->,total" @size-change="sizeChange">
           </el-pagination>
         </div>
-      </div>
     </el-card>
 
     <el-dialog title="项目基础信息" :visible.sync="dialogVisible" width="650px" @close="handleClose">
@@ -124,7 +128,6 @@
             <el-input v-model="rep_form.rep_remark" type="textarea"></el-input>
           </el-form-item>
         </el-form>
-        </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -140,6 +143,44 @@
 export default {
   data() {
     return {
+      tableData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333,
+          tag: '家'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1517 弄',
+          zip: 200333,
+          tag: '公司'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1519 弄',
+          zip: 200333,
+          tag: '家'
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1516 弄',
+          zip: 200333,
+          tag: '公司'
+        }],
+      headerCellStyle: {
+        whiteSpace: 'nowrap', /* 设置表头单元格内容不换行 */
+        textOverflow: 'ellipsis', /* 设置表头单元格内容超出部分显示省略号 */
+        overflow: 'hidden' /* 设置表头单元格内容超出部分隐藏 */
+      },
       dynamicTags: [],
       inputVisible: false,
       inputValue: "",
@@ -378,6 +419,13 @@ export default {
       },
       //删除项目
       delProj(){
+        if(this.selectList.length == 0){
+          this.$message({
+            // type: 'success',
+            message: '请选择要删除的数据!'
+          });
+          return;
+        }
         //console.log(this.selectList);
         this.$confirm('此操作将永久删除被选择项目以及项目所有子信息（删除后不可恢复）, 是否继续?', '警告', {
           confirmButtonText: '确定',

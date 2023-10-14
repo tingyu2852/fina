@@ -1,74 +1,74 @@
 <template>
-  <div>
-    <div style="width: 98%; margin: auto">
-      <el-button
-        style="margin: 10px 0"
-        type="primary"
-        plain
-        @click="dialogTableVisible = true"
-        size="mini"
-        >新增</el-button
-      >
-      <el-button
-        type="danger"
-        plain
-        size="mini"
-        @click="deleteBtn"
-        :disabled="!delCorp.length"
-        >删除</el-button
-      >
-      <el-table
-        :data="corpList"
-        @selection-change="handleSelectionChange"
-        border
-      >
-        <el-table-column header-align="center" type="selection" width="55"> </el-table-column>
-        <el-table-column header-align="center" label="序号" type="index" width="50" align="right"></el-table-column>
-        <el-table-column header-align="center" label="单位名称" prop="corp_name" align="left"></el-table-column>
-        <!-- <el-table-column header-align="center" label="单位分类" prop="corp_cate" align="left"></el-table-column> -->
-        
-        <el-table-column header-align="center" label="操作" width="200px">
-          <template slot-scope="{ row }">
-            <el-button
-              style="margin-right: 10px"
-              type="text"
-              plain
-              icon="el-icon-plus"
-              class="btn_1"
-              @click="bj_btn(row)"
-              >编辑</el-button
-            >
-            <el-popconfirm
-              :title="`确认删除这条内容吗？`"
-              @onConfirm="deleteTableBtn(row)"
-            >
-              <el-button
-                slot="reference"
-                style="color: red"
+  <div style="width: 98%; height: 600px; margin: 20px auto">
+    <el-card style="margin: 0 auto">
+        <div class="custom-btn-wrap">
+          <div class="add-custom-btn" @click="dialogTableVisible = true"><i class="el-icon-plus"></i>新增项目</div>
+          <div  class="delete-custom-btn"  @click="deleteBtn" ><i class="el-icon-delete"></i>删除</div>
+        </div>
+        <el-table
+          style="margin-top: 12px;"
+          :data="corpList"
+          @selection-change="handleSelectionChange"
+          row-class-name="active-contnet" 
+          header-cell-class-name='active-header'  
+          :stripe="true"   
+          v-loading="loading" 
+          border
+        >
+          <el-table-column  type="selection" width="55" align="center"> </el-table-column>
+          <el-table-column  label="序号" type="index" width="120"  align="center"></el-table-column>
+          <el-table-column  label="单位名称" prop="corp_name" align="center"></el-table-column>
+          <!-- <el-table-column header-align="center" label="单位分类" prop="corp_cate" align="left"></el-table-column> -->
+          
+          <el-table-column header-align="center" label="操作" width="200px">
+            <template slot-scope="{ row }">
+              <span>{{ row.id }}</span>
+              <div class="custom-table-btn-wrap">
+                <div class="edit-custom-table-btn"  @click="bj_btn(row)"><i class="el-icon-edit"></i>编辑</div>
+                <div  class="delete-custom-table-btn"  @click="deleteTableBtn(row)" ><i class="el-icon-delete"></i>删除</div>
+              </div>
+              <!-- <el-button
+                style="margin-right: 10px"
                 type="text"
                 plain
-                icon="el-icon-delete"
+                icon="el-icon-plus"
                 class="btn_1"
-                >删除</el-button
+               
+                >编辑</el-button
               >
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div style="text-align: center; margin-top: 10px">
-      <el-pagination
-        style="margin: auto"
-        background
-        :total="total"
-        :current-page="current"
-        :page-size="size"
-        :page-sizes="sizes"
-        @current-change="currentChange"
-        layout="prev, pager, next,jumper,sizes,->,total"
-        @size-change="sizeChange"
-      ></el-pagination>
-    </div>
+              <el-popconfirm
+                :title="`确认删除这条内容吗？`"
+                @onConfirm="deleteTableBtn(row)"
+              >
+                <el-button
+                  slot="reference"
+                  style="color: red"
+                  type="text"
+                  plain
+                  icon="el-icon-delete"
+                  class="btn_1"
+                  >删除</el-button
+                >
+              </el-popconfirm> -->
+            </template>
+          </el-table-column>
+        </el-table>
+        
+    
+      <div style="text-align: right; margin-top: 10px">
+        <el-pagination
+          style="margin: auto"
+          background
+          :total="total"
+          :current-page="current"
+          :page-size="size"
+          :page-sizes="sizes"
+          @current-change="currentChange"
+          layout="prev, pager, next,jumper,sizes,->,total"
+          @size-change="sizeChange"
+        ></el-pagination>
+      </div>
+    </el-card>
     <el-dialog
       title="添加"
       width="500px"
@@ -113,8 +113,8 @@ export default {
       corpList: [
       ],
       current: 1,
-      size: 50,
-      sizes: [50, 100, 200, 500],
+      size: 10,
+      sizes: [10, 50, 100, 200, 500],
       total: 1000,
       addfrom: {
           corp_name:'',
@@ -142,14 +142,21 @@ export default {
       this.delCorp = row;
     },
     async deleteBtn() {
-      
+        if(this.delCorp.length == 0){
+          this.$message({
+            // type: 'success',
+            message: '请选择要删除的数据!'
+          });
+          return;
+        }
         
-         this.$confirm("此操作将永久删除所选信息, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(async () => {
+         
+        this.$confirm("此操作将永久删除所选信息, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(async () => {
           if (this.delCorp.length) {
         let delList = [];
         this.delCorp.forEach((item) => {
@@ -173,7 +180,6 @@ export default {
     },
     async deleteTableBtn(row) {
       let delList = [row.corp_id];
-
       await this.$API.caiwu.delCorp(delList);
       this.$message({
         type: "success",
