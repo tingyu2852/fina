@@ -19,6 +19,13 @@ export default {
     text-overflow: ellipsis !important; /* 使用省略号显示超出部分 */
   }
 
+  /* 内容 */
+  .content-wrap{
+    width: 98%; 
+    height: 600px; 
+    margin: 20px auto
+  }
+
   .el-tooltip__popper {
      max-width: 250px;
   }

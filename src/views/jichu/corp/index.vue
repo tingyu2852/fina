@@ -16,13 +16,16 @@
           border
         >
           <el-table-column  type="selection" width="55" align="center"> </el-table-column>
-          <el-table-column  label="序号" type="index" width="120"  align="center"></el-table-column>
+          <el-table-column  label="序号" type="index" width="50"  align="center">
+            <template slot-scope="scope">
+               {{ calculateIndex(scope.$index) }}
+            </template>
+          </el-table-column>
           <el-table-column  label="单位名称" prop="corp_name" align="center"></el-table-column>
           <!-- <el-table-column header-align="center" label="单位分类" prop="corp_cate" align="left"></el-table-column> -->
           
           <el-table-column header-align="center" label="操作" width="200px">
             <template slot-scope="{ row }">
-              <span>{{ row.id }}</span>
               <div class="custom-table-btn-wrap">
                 <div class="edit-custom-table-btn"  @click="bj_btn(row)"><i class="el-icon-edit"></i>编辑</div>
                 <div  class="delete-custom-table-btn"  @click="deleteTableBtn(row)" ><i class="el-icon-delete"></i>删除</div>
@@ -132,6 +135,10 @@ export default {
     this.getCorp();
   },
   methods: {
+    // 计算序号
+    calculateIndex(index) {
+      return (this.current - 1) * this.size + index + 1;
+    },
     async getCorp() {
       let res = await this.$API.caiwu.getCorp(this.current, this.size);
       this.total = res.data.total;

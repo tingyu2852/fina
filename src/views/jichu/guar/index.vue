@@ -1,7 +1,12 @@
 <template>
-    <div>
-      <div style="width: 98%; margin: auto">
-        <el-button
+    <div class="content-wrap">
+      <el-card style="margin: 0 auto">
+        <div class="custom-btn-wrap">
+          <div class="add-custom-btn" @click="dialogTableVisible = true"><i class="el-icon-plus"></i>新增</div>
+          <div  class="delete-custom-btn"  @click="deleteBtn" ><i class="el-icon-delete"></i>删除</div>
+        </div> 
+     
+        <!-- <el-button
           style="margin: 10px 0"
           type="primary"
           plain
@@ -16,19 +21,31 @@
           @click="deleteBtn"
           :disabled="!delGuar.length"
           >删除</el-button
-        >
+        > -->
         <el-table
+          style="margin-top: 12px;"
+          row-class-name="active-contnet" 
+          header-cell-class-name='active-header'  
+          :stripe="true"  
           :data="guarList"
           @selection-change="handleSelectionChange"
           border
         >
           <el-table-column header-align="center" type="selection" width="55"> </el-table-column>
-          <el-table-column header-align="center" label="序号" type="index" width="50" align="right"></el-table-column>
-          <el-table-column header-align="center" label="担保方式" prop="guar_name" align="left"></el-table-column>
+          <el-table-column header-align="center" label="序号" type="index" width="50" align="center">
+            <template slot-scope="scope">
+               {{ calculateIndex(scope.$index) }}
+            </template>
+          </el-table-column>
+          <el-table-column header-align="center" label="担保方式" prop="guar_name" align="center"></el-table-column>
           
           <el-table-column header-align="center" label="操作" width="200px">
             <template slot-scope="{ row }">
-              <el-button
+              <div class="custom-table-btn-wrap">
+                <div class="edit-custom-table-btn"  @click="bj_btn(row)"><i class="el-icon-edit"></i>编辑</div>
+                <div  class="delete-custom-table-btn"  @click="deleteTableBtn(row)" ><i class="el-icon-delete"></i>删除</div>
+              </div>
+              <!-- <el-button
                 style="margin-right: 10px"
                 type="text"
                 plain
@@ -50,12 +67,12 @@
                   class="btn_1"
                   >删除</el-button
                 >
-              </el-popconfirm>
+              </el-popconfirm> -->
             </template>
           </el-table-column>
         </el-table>
-      </div>
-      <div style="text-align: center; margin-top: 10px">
+
+      <div style="text-align: right; margin-top: 10px">
         <el-pagination
           style="margin: auto"
           background
@@ -68,6 +85,7 @@
           @size-change="sizeChange"
         ></el-pagination>
       </div>
+     </el-card>
       <el-dialog
         title="添加"
         width="500px"
@@ -107,8 +125,8 @@
         guarList: [
         ],
         current: 1,
-        size: 50,
-        sizes: [50, 100, 200, 500],
+        size: 10,
+        sizes: [10, 50, 100, 200, 500],
         total: 1000,
         addfrom: {
             guar_name:''
@@ -124,6 +142,10 @@
       this.getGuar();
     },
     methods: {
+      // 计算序号
+      calculateIndex(index) {
+        return (this.current - 1) * this.size + index + 1;
+      },
       async getGuar() {
         let res = await this.$API.caiwu.getGuar(this.current, this.size);
         this.total = res.data.total;
@@ -134,7 +156,13 @@
         this.delGuar = row;
       },
       async deleteBtn() {
-        
+          if(this.delGuar.length == 0){
+           this.$message({
+             // type: 'success',
+             message: '请选择要删除的数据!'
+           });
+           return;
+          }
           
            this.$confirm("此操作将永久删除所选信息, 是否继续?", "提示", {
           confirmButtonText: "确定",

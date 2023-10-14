@@ -1,6 +1,5 @@
 <template>
-  <div style="width: 98%; height: 600px; margin: 20px auto">
-    
+  <div class="content-wrap">
     <el-card style="margin: 0 auto">
         <div class="custom-btn-wrap">
           <div class="add-custom-btn" @click="dialogVisible = true"><i class="el-icon-plus"></i>新增项目</div>
@@ -15,7 +14,12 @@
           :data="projList" 
           @selection-change="selectChange">
           <el-table-column header-align="center" type="selection"  width="55" align="center"></el-table-column>
-          <el-table-column  :show-overflow-tooltip="true"  label="项目名称">
+          <el-table-column header-align="center" label="序号" type="index" width="50" align="center">
+            <template slot-scope="scope">
+               {{ calculateIndex(scope.$index) }}
+            </template>
+          </el-table-column>
+          <el-table-column header-align="center"  :show-overflow-tooltip="true"  label="项目名称">
             <template slot-scope="{ row }" >
               <span @click="edit_btn(row)"   style="cursor: pointer;color: #409eff;">{{ row.proj_name }}</span>
                 <!-- <el-button
@@ -24,25 +28,25 @@
               ></el-button> -->
             </template>
           </el-table-column>
-          <el-table-column  label="项目编号" prop="proj_id"></el-table-column>
-          <el-table-column label="融资类型" prop="fina_name"></el-table-column>
-          <el-table-column label="项目状态" prop="proj_status">
+          <el-table-column align="center"  label="项目编号" prop="proj_id"></el-table-column>
+          <el-table-column align="center" label="融资类型" prop="fina_name"></el-table-column>
+          <el-table-column align="center" label="项目状态" prop="proj_status">
             <template slot-scope="{ row }">
               <span>{{ row.proj_status ? "进行中" : "已完成" }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="融资主体" prop="corp_name"></el-table-column>
-          <el-table-column label="批准日期" prop="proj_date">
+          <el-table-column align="center" label="融资主体" prop="corp_name"></el-table-column>
+          <el-table-column align="center" label="批准日期" prop="proj_date">
             <template slot-scope="{ row }">
               <span>{{ row.rep_date ? row.rep_date : "无" }}</span>
             </template>
           </el-table-column>
-          <el-table-column  label="批复额度"  prop="pf_ed">
+          <el-table-column align="center" label="批复额度"  prop="pf_ed">
             <template slot-scope="{ row }">
               <div class="table-content-right">{{ $format.money(row.rep_total) }}</div>
             </template>
           </el-table-column>
-          <el-table-column  label="下款合计" prop="xk_num" align="rignt" :formatter="asdd">
+          <el-table-column  label="下款合计" prop="xk_num" align="center" :formatter="asdd">
             <template  slot-scope="{ row }">
               <div class="table-content-right">{{ $format.money(row.mt_total) }}</div>
             </template>
@@ -269,6 +273,10 @@ export default {
     //this.getprojInfo();
   },
   methods: {
+    // 计算序号
+    calculateIndex(index) {
+      return (this.current - 1) * this.size + index + 1;
+    },
     //获取一些列表信息
     async getSelectList() {
       if (!this.$store.state.select.corpList.length) {
