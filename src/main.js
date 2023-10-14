@@ -31,6 +31,7 @@ import dayjs from 'dayjs'
 //   const { mockXHR } = require('../mock')
 //   mockXHR()
 // }
+//测试
 
 // set ElementUI lang to EN
 //Vue.use(ElementUI, { locale })
