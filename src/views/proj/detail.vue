@@ -7,10 +7,12 @@
           @tab-click="handleClick"
           @tab-remove="tabsRemove"
         >
+          <!-- 基本信息 -->
           <el-tab-pane label="基本信息" name="proj">
             <projInfo @loanList="getLoanList" @setRep="setRepId" />
           </el-tab-pane>
           
+          <!-- 借款信息 -->
           <el-tab-pane
             v-loading="loan_loading"
             :label="`借款信息${index + 1}`"
@@ -23,13 +25,29 @@
           >
             <Loan :loanInfo="{ a: '123', b: [1, 2, 3] }"  />
           </el-tab-pane>
+          
+          <!-- 其他信息 -->
           <el-tab-pane label="其他信息" name="fourth" :lazy="true"
             ><el-form label-position="top">
-              <el-form-item label="asd">
-                <template #label>
+              
+              <div style="display: flex; align-items: center">
+                <div>
+                  <span>1、融资费用：</span>
+                </div>
+                <div class="custom-btn-wrap">
+                  <!-- <i
+                    class="el-icon-plus"
+                    style="color: #409eff; cursor: pointer"
+                    @click="bondADD"
+                  ></i> -->
+                  <div class="add-custom-btn" @click="finADD"><i class="el-icon-plus"></i>新增</div>
+                </div>
+              </div>
+              <el-form-item label="">
+                <!-- <template #label>
                   <div style="display: flex; align-items: center">
                     <div>
-                      <span>融资费用</span>
+                      <span></span>
                     </div>
                     <div>
                       <i
@@ -39,9 +57,16 @@
                       ></i>
                     </div>
                   </div>
-                </template>
+                </template> -->
 
-                <el-table :data="finaList" border>
+                <el-table
+                  style="margin-top: 12px;"
+                  row-class-name="active-contnet" 
+                  header-cell-class-name='active-header'  
+                  :stripe="true" 
+                  :data="finaList" 
+                  border
+                >
                   <el-table-column label="名称" prop="cost_name">
                     <template slot-scope="{ row }">
                       <span v-if="!row.isEdit">{{
@@ -112,9 +137,14 @@
                         v-else
                       ></el-input> </template
                   ></el-table-column>
-                  <el-table-column label="操作" width="150px" >
+                  <el-table-column label="操作" width="200px" >
                     <template slot-scope="{ row }">
-                      <el-button
+                      <div class="custom-table-btn-wrap">
+                        <div v-show="row.isEdit" class="save-custom-table-btn"   @click="finaSave(row)"><i class="el-icon-document-checked"></i>保存</div>
+                        <div v-show="!row.isEdit" class="edit-custom-table-btn"  @click="finaEdit(row)"><i class="el-icon-edit"></i>编辑</div>
+                        <div v-show="!row.isEdit" class="delete-custom-table-btn"  @click="delFina(row)" ><i class="el-icon-delete"></i>删除</div>
+                      </div>
+                      <!-- <el-button
                         v-show="!row.isEdit"
                         type="primary"
                         size="mini"
@@ -141,18 +171,35 @@
                           slot="reference"
                           style="margin-left: 10px"
                         ></el-button>
-                      </el-popconfirm>
+                      </el-popconfirm> -->
                     </template>
                   </el-table-column>
                 </el-table>
               </el-form-item>
-              <el-form-item label="保证担保">
-                <template #label>
+
+              <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+
+              <div style="display: flex; align-items: center">
+                <div>
+                  <span>2、保证担保：</span>
+                </div>
+                <div class="custom-btn-wrap">
+                  <!-- <i
+                    class="el-icon-plus"
+                    style="color: #409eff; cursor: pointer"
+                    @click="bondADD"
+                  ></i> -->
+                  <div class="add-custom-btn" @click="bondADD"><i class="el-icon-plus"></i>新增</div>
+                </div>
+              </div>
+
+              <el-form-item label="">
+                <!-- <template #label>
                   <div style="display: flex; align-items: center">
                     <div>
                       <span>保证担保</span>
                     </div>
-                    <div>
+                    <div class="custom-btn-wrap">
                       <i
                         class="el-icon-plus"
                         style="color: #409eff; cursor: pointer"
@@ -160,9 +207,15 @@
                       ></i>
                     </div>
                   </div>
-                </template>
-                <el-table :data="bondList" border>
-                  
+                </template> -->
+                <el-table 
+                  style="margin-top: 12px;"
+                  row-class-name="active-contnet" 
+                  header-cell-class-name='active-header'  
+                  :stripe="true"  
+                  :data="bondList" 
+                  border
+                >
                   <el-table-column label="担保人" prop="bond_name" >
                     <template slot-scope="{ row }">
                       <span v-if="!row.isEdit">{{
@@ -194,7 +247,12 @@
                   ></el-table-column>
                   <el-table-column label="操作" >
                     <template slot-scope="{ row }">
-                      <el-button
+                      <div class="custom-table-btn-wrap">
+                        <div v-show="row.isEdit" class="save-custom-table-btn"  @click="bondSave(row)"><i class="el-icon-document-checked"></i>保存</div>
+                        <div v-show="!row.isEdit" class="edit-custom-table-btn"   @click="$set(row, 'isEdit', true)"><i class="el-icon-edit"></i>编辑</div>
+                        <div v-show="!row.isEdit" class="delete-custom-table-btn"  @click="delBond(row)" ><i class="el-icon-delete"></i>删除</div>
+                      </div>
+                      <!-- <el-button
                         v-show="!row.isEdit"
                         type="primary"
                         size="mini"
@@ -221,13 +279,30 @@
                           slot="reference"
                           style="margin-left: 10px"
                         ></el-button>
-                      </el-popconfirm>
+                      </el-popconfirm> -->
                     </template>
                   </el-table-column>
                 </el-table>
               </el-form-item>
-              <el-form-item label="抵押担保">
-                <template #label>
+
+             
+              <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+
+              <div style="display: flex; align-items: center">
+                <div>
+                  <span>3、抵押担保：</span>
+                </div>
+                <div class="custom-btn-wrap">
+                  <!-- <i
+                    class="el-icon-plus"
+                    style="color: #409eff; cursor: pointer"
+                    @click="bondADD"
+                  ></i> -->
+                  <div class="add-custom-btn" @click="pawnADD"><i class="el-icon-plus"></i>新增</div>
+                </div>
+              </div>
+              <el-form-item label="">
+                <!-- <template #label>
                   <div style="display: flex; align-items: center">
                     <div>
                       <span>抵押担保</span>
@@ -240,8 +315,14 @@
                       ></i>
                     </div>
                   </div>
-                </template>
-                <el-table :data="pawnList" border>
+                </template> -->
+                <el-table 
+                  style="margin-top: 12px;"
+                  row-class-name="active-contnet" 
+                  header-cell-class-name='active-header'  
+                  :stripe="true" 
+                  :data="pawnList" 
+                  border>
                   <!-- <el-table-column label="金额" prop="pawn_sum">
                           <template slot-scope="{ row }">
                             <span v-if="!row.isEdit">{{
@@ -297,7 +378,12 @@
                   ></el-table-column>
                   <el-table-column label="操作">
                     <template slot-scope="{ row }">
-                      <el-button
+                      <div class="custom-table-btn-wrap">
+                        <div v-show="row.isEdit" class="save-custom-table-btn"  @click="pawnSave(row)"><i class="el-icon-document-checked"></i>保存</div>
+                        <div v-show="!row.isEdit" class="edit-custom-table-btn"  @click="$set(row, 'isEdit', true)"><i class="el-icon-edit"></i>编辑</div>
+                        <div v-show="!row.isEdit" class="delete-custom-table-btn"  @click="delPawn(row)" ><i class="el-icon-delete"></i>删除</div>
+                      </div>
+                      <!-- <el-button
                         v-show="!row.isEdit"
                         type="primary"
                         size="mini"
@@ -324,7 +410,7 @@
                           slot="reference"
                           style="margin-left: 10px"
                         ></el-button>
-                      </el-popconfirm>
+                      </el-popconfirm> -->
                     </template>
                   </el-table-column>
                 </el-table>
@@ -677,5 +763,8 @@ export default {
 <style>
 .lable-click {
   cursor: pointer;
+}
+.has-gutter{
+  line-height: 20px !important;
 }
 </style>
