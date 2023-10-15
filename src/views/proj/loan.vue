@@ -1,120 +1,142 @@
 <template>
-  <div>
-    <div class="custom-btn-wrap">
-      <div class="add-custom-btn"  @click="interInfo('view')" >杳看结息详情</div>
-      <div class="add-custom-btn"  @click="planInfo" >杳看结息计划</div>
-      <div class="add-custom-btn"  @click="repayInfo('view')" >查看还本计划</div>
-    </div>
-   
+  <div class="custom-table-btn-wrap">
     <div style="width: 100%; margin-top: 12px">
-      <!-- 自定义分割线 -->
-      <div class="custom-horizontal-line" style="margin-bottom: 12px"></div>
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="24">
+          <div style="display: flex; align-items: center">
+            <div>
+              <span style="font-weight: 700;">1、基础信息</span>
+            </div>
+          </div>
+          <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+        </el-col>
+        <el-col :span="24">
           <el-form :model="form" label-width="100px" label-position="left">
-            <el-form-item label="借款金额">
-              <div v-if="!info_status">
-                {{ str_contet($format.money(form.loan_sum)) }}
-              </div>
-              <el-input
-                v-else
-                v-model="form.loan_sum"
-                :disabled="form.is_actual === 1"
-                placeholder=""
-                @input="form.loan_sum = $format.formatInput(form.loan_sum)"
-              ></el-input>
-              <el-switch
-                v-model="form.is_actual"
-                active-text="实际为准"
-                inactive-text="固定金额"
-                :active-value="1"
-                :inactive-value="0"
-                @change="is_actual_change"
-                :disabled="!info_status"
-              ></el-switch>
-            </el-form-item>
-            <el-form-item label="提交时间">
-              <div v-if="!info_status">{{ str_contet(form.loan_date) }}</div>
-              <el-date-picker
-                v-else
-                v-model="form.loan_date"
-                type="date"
-                placeholder="请选择日期"
-                format="yyyy年M月d日"
-                value-format="yyyy-MM-dd"
-              ></el-date-picker>
-            </el-form-item>
-            <el-form-item label="所属子项目" v-if="form.sub_project === 1">
-              <div v-if="!info_status">
-                <el-tag
-                  type="primary"
-                  v-for="item in form.sub_project_list"
-                  :key="item"
-                  effect="dark"
-                  >{{ item }}</el-tag
-                >
-              </div>
-
-              <div v-else>
-                <el-checkbox
-                  :indeterminate="loan_isIndeterminate"
-                  v-model="loan_checkAll"
-                  @change="loan_handleCheckAllChange"
-                  >全选</el-checkbox
-                >
-                <el-checkbox-group
-                  v-model="form.sub_project_list"
-                  @change="loan_handleCheckedCitiesChange"
-                >
-                  <el-checkbox
-                    v-for="item in form.rep_project_list"
-                    :label="item"
+            <el-col :span="8">
+              <el-form-item label="借款金额">
+                <div v-if="!info_status">
+                  {{ str_contet($format.money(form.loan_sum)) }}
+                </div>
+                <el-input
+                  v-else
+                  v-model="form.loan_sum"
+                  :disabled="form.is_actual === 1"
+                  placeholder=""
+                  @input="form.loan_sum = $format.formatInput(form.loan_sum)"
+                ></el-input>
+                <el-switch
+                  v-model="form.is_actual"
+                  active-text="实际为准"
+                  inactive-text="固定金额"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_actual_change"
+                  :disabled="!info_status"
+                ></el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="提交时间">
+                <div v-if="!info_status">{{ str_contet(form.loan_date) }}</div>
+                <el-date-picker
+                  v-else
+                  v-model="form.loan_date"
+                  type="date"
+                  placeholder="请选择日期"
+                  format="yyyy年M月d日"
+                  value-format="yyyy-MM-dd"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="所属子项目" v-if="form.sub_project === 1">
+                <div v-if="!info_status">
+                  <el-tag
+                    type="primary"
+                    v-for="item in form.sub_project_list"
                     :key="item"
-                    >{{ item }}</el-checkbox
+                    effect="dark"
+                    >{{ item }}</el-tag
                   >
-                </el-checkbox-group>
-              </div>
-            </el-form-item>
+                </div>
+
+                <div v-else>
+                  <el-checkbox
+                    :indeterminate="loan_isIndeterminate"
+                    v-model="loan_checkAll"
+                    @change="loan_handleCheckAllChange"
+                    >全选</el-checkbox
+                  >
+                  <el-checkbox-group
+                    v-model="form.sub_project_list"
+                    @change="loan_handleCheckedCitiesChange"
+                  >
+                    <el-checkbox
+                      v-for="item in form.rep_project_list"
+                      :label="item"
+                      :key="item"
+                      >{{ item }}</el-checkbox
+                    >
+                  </el-checkbox-group>
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="付息">
+                <div v-if="!info_status">
+                  {{ str_contet(form.inter_plan) }}
+                </div>
+                <el-input
+                  v-model="form.inter_plan"
+                  placeholder="请填写"
+                  v-else
+                ></el-input>
+                <!-- <el-button
+                  type="primary"
+                  size="mini"
+                  @click="interInfo('insert')"
+                  v-else
+                  >录入</el-button
+                > -->
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="利率类型">
+                <el-switch
+                  v-model="form.is_float_rate"
+                  active-text="浮动利率"
+                  inactive-text="固定利率"
+                  :active-value="1"
+                  :inactive-value="0"
+                  :disabled="!info_status"
+                >
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="利率(%)">
+                <div v-if="!info_status">
+                  {{ str_contet(form.rate) + "%" }}
+                </div>
+                <el-input
+                  v-else
+                  v-model="form.rate"
+                  placeholder="请输入基准利率(%)"
+                  type="number"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="备注说明">
+                <div v-if="!info_status">{{ str_contet(form.loan_remark) }}</div>
+                <el-input
+                  v-else
+                  v-model="form.loan_remark"
+                  type="textarea"
+                ></el-input>
+              </el-form-item>
+            </el-col>
             
-            <el-form-item label="付息">
-              <div v-if="!info_status">
-                {{ str_contet(form.inter_plan) }}
-              </div>
-              <el-input
-                v-model="form.inter_plan"
-                placeholder="请填写"
-                v-else
-              ></el-input>
-              <!-- <el-button
-                type="primary"
-                size="mini"
-                @click="interInfo('insert')"
-                v-else
-                >录入</el-button
-              > -->
-            </el-form-item>
-            <el-form-item label="利率类型">
-              <el-switch
-                v-model="form.is_float_rate"
-                active-text="浮动利率"
-                inactive-text="固定利率"
-                :active-value="1"
-                :inactive-value="0"
-                :disabled="!info_status"
-              >
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="利率(%)">
-              <div v-if="!info_status">
-                {{ str_contet(form.rate) + "%" }}
-              </div>
-              <el-input
-                v-else
-                v-model="form.rate"
-                placeholder="请输入基准利率(%)"
-                type="number"
-              ></el-input>
-            </el-form-item>
             <!-- 结息详情 -->
             <!-- <el-form-item label="结息详情">
               <el-button type="primary" size="mini" @click="interInfo('view')"
@@ -133,47 +155,53 @@
                 >查看</el-button
               >
             </el-form-item> -->
-            <el-form-item label="备注说明">
-              <div v-if="!info_status">{{ str_contet(form.loan_remark) }}</div>
-              <el-input
-                v-else
-                v-model="form.loan_remark"
-                type="textarea"
-              ></el-input>
-            </el-form-item>
+            
           </el-form>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="24">
+          <div style="display: flex; align-items: center">
+            <div>
+              <span style="font-weight: 700;">2、统计信息</span>
+            </div>
+          </div>
+          <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+        </el-col>
+        <el-col :span="24">
           <el-form label-position="top">
             <el-row>
               <el-col :span="8"> <el-form-item label="到款总金额">
-             <div>
+              <div>
               {{$format.money(form.mt_total)}}
-             </div>
+              </div>
             
-            </el-form-item></el-col>
+            </el-form-item>
+            </el-col>
               <el-col :span="8"> <el-form-item label="已还本金额">
               <div>
               {{$format.money(form.repay_total)}}
-             </div>
-            </el-form-item></el-col>
-              <el-col :span="8">   <el-form-item label="融资余额">
-              <div>
-              {{$format.money(parseInt(form.mt_total)-parseInt(form.repay_total))}}
-             </div>
+              </div>
             </el-form-item>
-          </el-col>
+            </el-col>
+            <el-col :span="8">   
+              <el-form-item label="融资余额">
+                <div>
+                  {{$format.money(parseInt(form.mt_total)-parseInt(form.repay_total))}}
+                </div>
+              </el-form-item>
+            </el-col>
 
-          
-          <el-col :span="24">
-            <div style="display: flex; align-items: center">
-              <div style="padding-right: 6px;font-weight: 700;font-size: 15px;">
-                <span>下款信息</span>
+            <el-col :span="24">
+              <div style="display: flex; align-items: center;margin-bottom:12px;">
+                <div style="padding-right: 6px;font-weight: 700;">
+                  <span>3、下款信息</span>
+                </div>
+                <div  v-show="info_status" class="custom-btn-wrap">
+                  <div class="add-custom-btn" @click="mtADD"><i class="el-icon-plus"></i>新增</div>
+                </div>
               </div>
-              <div  v-show="info_status" class="custom-btn-wrap">
-                <div class="add-custom-btn" @click="mtADD"><i class="el-icon-plus"></i>新增</div>
-              </div>
-            </div>
+              <div class="custom-horizontal-line" style="margin-top:12px;"></div>
+            </el-col>
+            <el-col :span="24">
             <el-form-item label=""> <!-- 下款信息 -->
               <!-- <template #label>
                 <div style="display: flex; align-items: center">
@@ -191,19 +219,19 @@
                 </div>
               </template> -->
               <el-table 
-                style="margin-top: 12px;"
+                style="margin-top: 16px;"
                 row-class-name="active-contnet" 
                 header-cell-class-name='active-header'  
                 :stripe="true"   
                 :data="mtList" 
                 border
               >
-                <el-table-column label="下款时间" width="100">
+                <el-table-column label="下款时间" >
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.mt_date) }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="下款金额" width="120">
+                <el-table-column label="下款金额" >
                   <template slot-scope="{ row }">
                     <span>{{ str_contet($format.money(row.mt_sum)) }}</span>
                   </template>
@@ -220,12 +248,12 @@
                     >
                   </template>
                 </el-table-column>
-                <el-table-column label="截止日期" min-width="80px">
+                <el-table-column label="截止日期" >
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.start_end_date) }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="匹配资本金" width="100">
+                <el-table-column label="匹配资本金">
                   <template slot-scope="{ row }">
                     <div class="custom-table-btn-wrap">
                       <div class="edit-custom-table-btn"  @click="showMaching(row)"><i style="padding-right: 3px" class="el-icon-view"></i>查看</div>
@@ -282,11 +310,26 @@
               </el-table>
             </el-form-item></el-col>
             </el-row>
-             </el-form
-        ></el-col>
+          </el-form>
+        </el-col>
+        <el-col :span="24">
+          <div style="display: flex; align-items: center">
+            <div>
+              <span style="font-weight: 700;">4、信息查询</span>
+            </div>
+          </div>
+          <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+        </el-col>
+        <el-col :span="24">
+          <div class="custom-btn-wrap">
+            <div class="add-custom-btn"  @click="interInfo('view')" >杳看结息详情</div>
+            <div class="add-custom-btn"  @click="planInfo" >杳看结息计划</div>
+            <div class="add-custom-btn"  @click="repayInfo('view')" >查看还本计划</div>
+          </div>
+        </el-col>
       </el-row>
       <!-- 自定义分割线 -->
-      <div class="custom-horizontal-line"></div>
+      <div style="margin-top:12px" class="custom-horizontal-line"></div>
       <div slot="footer"  class="dialog-footer custom-page-btn-wrap">
         <div v-show="!info_status" class="save-custom-dialog-btn"  @click="btn_edit" >编辑</div>
         <div v-show="info_status" class="cancel-custom-dialog-btn"  @click="btn_cancle" >取消</div>

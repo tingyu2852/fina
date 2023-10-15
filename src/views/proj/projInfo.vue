@@ -1,7 +1,15 @@
 <template>
-  <div>
+  <div class="custom-table-btn-wrap">
     <el-row :gutter="50" v-loading="proj_loding">
-      <el-col :span="10">
+      <el-col :span="24">
+        <div style="display: flex; align-items: center">
+          <div>
+            <span>1、基础信息</span>
+          </div>
+        </div>
+        <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+      </el-col>
+      <el-col :span="24">
         <div>
           <el-form
             :model="proj_form"
@@ -10,59 +18,77 @@
             label-width="100px"
             label-position="right"
           >
-            <el-form-item label="项目名称" prop="proj_name">
-              <el-input
-                v-model="proj_form.proj_name"
-                placeholder=""
-                v-if="is_status"
-              ></el-input>
-              <span v-else>{{ str_contet(proj_form.proj_name) }}</span>
-            </el-form-item>
-            <el-form-item label="项目编号">
-              <span>{{ str_contet(proj_form.proj_id) }}</span>
-            </el-form-item>
-            <el-form-item label="融资主体" prop="corp_name">
-              <el-select
-                v-model="proj_form.corp_name"
-                placeholder="请选择融资主体"
-                v-if="is_status"
-              >
-                <el-option
-                  v-for="item in corpList"
-                  :label="item.corp_name"
-                  :value="item.corp_name"
-                  :key="item.corp_id"
-                ></el-option>
-              </el-select>
-              <span v-else>{{ str_contet(proj_form.corp_name) }}</span>
-            </el-form-item>
-            <el-form-item label="融资类型" prop="fina_name">
-              <el-select
-                v-model="proj_form.fina_name"
-                placeholder="请选择融资类型"
-                v-if="is_status"
-              >
-                <el-option
-                  v-for="item in finaCate"
-                  :label="item.fina_name"
-                  :value="item.fina_name"
-                  :key="item.fina_id"
-                ></el-option>
-              </el-select>
-              <span v-else>{{ str_contet(proj_form.fina_name) }}</span>
-            </el-form-item>
-            <el-form-item label="是否隐债" :disabled="!is_status">
-              <el-switch v-model="proj_form.hidden_debt" :disabled="!is_status" :active-value="1" :inactive-value="0">
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="项目说明">
-              <el-input
-                v-model="proj_form.proj_remark"
-                type="textarea"
-                v-if="is_status"
-              ></el-input>
-              <span v-else>{{ str_contet(proj_form.proj_remark) }}</span>
-            </el-form-item>
+            <el-col :span="8">
+              <el-form-item label="项目名称" prop="proj_name">
+                <el-input
+                  v-model="proj_form.proj_name"
+                  placeholder=""
+                  v-if="is_status"
+                ></el-input>
+                <span v-else>{{ str_contet(proj_form.proj_name) }}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="融资主体" prop="corp_name">
+                <el-select
+                  v-model="proj_form.corp_name"
+                  placeholder="请选择融资主体"
+                  v-if="is_status"
+                >
+                  <el-option
+                    v-for="item in corpList"
+                    :label="item.corp_name"
+                    :value="item.corp_name"
+                    :key="item.corp_id"
+                  ></el-option>
+                </el-select>
+                <span v-else>{{ str_contet(proj_form.corp_name) }}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="融资类型" prop="fina_name">
+                <el-select
+                  v-model="proj_form.fina_name"
+                  placeholder="请选择融资类型"
+                  v-if="is_status"
+                >
+                  <el-option
+                    v-for="item in finaCate"
+                    :label="item.fina_name"
+                    :value="item.fina_name"
+                    :key="item.fina_id"
+                  ></el-option>
+                </el-select>
+                <span v-else>{{ str_contet(proj_form.fina_name) }}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="项目编号">
+                <span>{{ str_contet(proj_form.proj_id) }}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="是否隐债" :disabled="!is_status">
+                <el-switch v-model="proj_form.hidden_debt" :disabled="!is_status" :active-value="1" :inactive-value="0">
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="项目说明">
+                <el-input
+                  v-model="proj_form.proj_remark"
+                  type="textarea"
+                  v-if="is_status"
+                ></el-input>
+                <span v-else>{{ str_contet(proj_form.proj_remark) }}</span>
+              </el-form-item>
+            </el-col>
+            
+            
+            
+            
+            
+            
             <!-- <el-button
               type="primary"
               v-show="!is_status"
@@ -83,9 +109,19 @@
               >取消</el-button
             > -->
           </el-form>
-        </div></el-col
+        </div>
+        </el-col
       >
-      <el-col :span="10">
+      <el-col :span="24">
+        <div style="display: flex; align-items: center">
+          <div>
+            <span>2、详细信息</span>
+          </div>
+        </div>
+        <div class="custom-horizontal-line" style="margin-top:12px;margin-bottom:12px;"></div>
+      </el-col>
+      
+      <el-col :span="24">
         <el-form
           :model="rep_form"
           ref="rep"
@@ -93,123 +129,143 @@
           label-width="120px"
           label-position="right"
         >
-          <el-form-item label="是否银团">
-            <el-switch
-              v-model="rep_form.bank_consortium"
-              :active-value="1"
-              :inactive-value="0"
-              :disabled="!is_status"
-              @change="swichange"
-            >
-            </el-switch>
-          </el-form-item>
-          <el-form-item label="金融机构" prop="array_bank_name">
-            <el-select
-              v-if="is_status"
-              v-model="rep_form.array_bank_name"
-              placeholder="请选择金融机构"
-              :multiple="true"
-              :multiple-limit="rep_form.bank_consortium === 0 ? 1 : 0"
-            >
-              <el-option
-                v-for="item in bankList"
-                :label="item.bank_name"
-                :value="item.bank_name"
-                :key="item.bank_id"
-              ></el-option>
-            </el-select>
-            <span v-else> {{ str_contet(rep_form.bank_name) }}</span>
-          </el-form-item>
-          <el-form-item label="批复金额" prop="rep_sum">
-            <el-input
-              v-if="is_status"
-              v-model="rep_form.rep_sum"
-              placeholder=""
-              @input="rep_form.rep_sum = $format.formatInput(rep_form.rep_sum)"
-            ></el-input>
-            <span v-else>
-              {{ str_contet($format.money(rep_form.rep_sum)) }}</span
-            >
-          </el-form-item>
-          <el-form-item label="批复时间" prop="rep_date">
-            <el-date-picker
-              v-if="is_status"
-              v-model="rep_form.rep_date"
-              type="date"
-              placeholder="选择日期"
-              format="yyyy年M月d日"
-              value-format="yyyy-MM-dd"
-            >
-            </el-date-picker>
-            <span v-else> {{ str_contet(rep_form.rep_date) }}</span>
-          </el-form-item>
-          <el-form-item label="期限" prop="rep_limit">
-            <el-input
-              v-if="is_status"
-              v-model="rep_form.rep_limit"
-              type="number"
-              placeholder="请输入期限"
-            ></el-input>
-            <span v-else> {{ str_contet(rep_form.rep_limit) }}</span>
-          </el-form-item>
-          <el-form-item label="还款来源" prop="rep_sou">
-            <el-input
-              v-if="is_status"
-              v-model="rep_form.rep_sou"
-              placeholder="请填写还款来源"
-            ></el-input>
-            <span v-else> {{ str_contet(rep_form.rep_sou) }}</span>
-          </el-form-item>
-          <el-form-item label="是否创建子项目" label-width="120px">
-            <el-switch
-              v-model="rep_form.sub_project"
-              :active-value="1"
-              :inactive-value="0"
-              :disabled="!is_status"
-            >
-            </el-switch>
-          </el-form-item>
-          <el-form-item label="子项目" v-if="rep_form.sub_project === 1">
-            <el-tag
-              effect="dark"
-              :key="tag"
-              v-for="tag in rep_form.sub_project_list"
-              :closable="is_status"
-              :disable-transitions="false"
-              @close="handleClose(tag)"
-            >
-              {{ tag }}
-            </el-tag>
-            <span v-if="is_status">
+          <el-col :span="8">
+            <el-form-item label="是否银团">
+              <el-switch
+                v-model="rep_form.bank_consortium"
+                :active-value="1"
+                :inactive-value="0"
+                :disabled="!is_status"
+                @change="swichange"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="金融机构" prop="array_bank_name">
+              <el-select
+                v-if="is_status"
+                v-model="rep_form.array_bank_name"
+                placeholder="请选择金融机构"
+                :multiple="true"
+                :multiple-limit="rep_form.bank_consortium === 0 ? 1 : 0"
+              >
+                <el-option
+                  v-for="item in bankList"
+                  :label="item.bank_name"
+                  :value="item.bank_name"
+                  :key="item.bank_id"
+                ></el-option>
+              </el-select>
+              <span v-else> {{ str_contet(rep_form.bank_name) }}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="批复金额" prop="rep_sum">
               <el-input
-                class="input-new-tag"
-                v-if="inputVisible"
-                v-model="inputValue"
-                ref="saveTagInput"
-                size="small"
-                @keyup.enter.native="handleInputConfirm"
-                @blur="handleInputConfirm"
+                v-if="is_status"
+                v-model="rep_form.rep_sum"
+                placeholder=""
+                @input="rep_form.rep_sum = $format.formatInput(rep_form.rep_sum)"
+              ></el-input>
+              <span v-else>
+                {{ str_contet($format.money(rep_form.rep_sum)) }}</span
               >
-              </el-input>
-              <el-button
-                v-else
-                class="button-new-tag"
-                type="primary"
-                plain
-                size="small"
-                @click="showInput"
-                >+子项目</el-button
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="批复时间" prop="rep_date">
+              <el-date-picker
+                v-if="is_status"
+                v-model="rep_form.rep_date"
+                type="date"
+                placeholder="选择日期"
+                format="yyyy年M月d日"
+                value-format="yyyy-MM-dd"
               >
-            </span>
-          </el-form-item>
-          <el-form-item label="备注说明">
-            <el-input
-              v-if="is_status"
-              v-model="rep_form.rep_remark"
-              type="textarea"
-            ></el-input>
-            <span v-else>{{ str_contet(rep_form.rep_remark) }}</span>
-          </el-form-item>
+              </el-date-picker>
+              <span v-else> {{ str_contet(rep_form.rep_date) }}</span>
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="8">
+            <el-form-item label="还款来源" prop="rep_sou">
+              <el-input
+                v-if="is_status"
+                v-model="rep_form.rep_sou"
+                placeholder="请填写还款来源"
+              ></el-input>
+              <span v-else> {{ str_contet(rep_form.rep_sou) }}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="期限" prop="rep_limit">
+              <el-input
+                v-if="is_status"
+                v-model="rep_form.rep_limit"
+                type="number"
+                placeholder="请输入期限"
+              ></el-input>
+              <span v-else> {{ str_contet(rep_form.rep_limit) }}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="是否创建子项目" label-width="120px">
+              <el-switch
+                v-model="rep_form.sub_project"
+                :active-value="1"
+                :inactive-value="0"
+                :disabled="!is_status"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="子项目" v-if="rep_form.sub_project === 1">
+              <el-tag
+                effect="dark"
+                :key="tag"
+                v-for="tag in rep_form.sub_project_list"
+                :closable="is_status"
+                :disable-transitions="false"
+                @close="handleClose(tag)"
+              >
+                {{ tag }}
+              </el-tag>
+              <span v-if="is_status">
+                <el-input
+                  class="input-new-tag"
+                  v-if="inputVisible"
+                  v-model="inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm"
+                  @blur="handleInputConfirm"
+                >
+                </el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  type="primary"
+                  plain
+                  size="small"
+                  @click="showInput"
+                  >+子项目</el-button
+                >
+              </span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="备注说明">
+              <el-input
+                v-if="is_status"
+                v-model="rep_form.rep_remark"
+                type="textarea"
+              ></el-input>
+              <span v-else>{{ str_contet(rep_form.rep_remark) }}</span>
+            </el-form-item>
+          </el-col>
+         
         </el-form>
         <!-- <el-button type="primary" v-show="!is_status" @click="repBtn('update')"
           >编辑</el-button
@@ -224,15 +280,18 @@
           >取消</el-button
         > --></el-col
       >
+      <el-col :span="24">
+        <!-- 自定义分割线 -->
+        <div class="custom-horizontal-line"></div>
+        <div class="custom-page-btn-wrap">
+          <div v-show="!is_status"  class="save-custom-dialog-btn"  @click="edit_btn" >编辑</div>
+          <div v-show="!is_status"  class="save-custom-dialog-btn"  @click="dialogLoan = true" >添加借款信息</div>
+          <div v-show="is_status" class="cancel-custom-dialog-btn"  @click="cancle_btn" >取消</div>
+          <div v-show="is_status" class="save-custom-dialog-btn"  @click="save_btn">保存</div>
+        </div>
+      </el-col>
     </el-row>
-    <!-- 自定义分割线 -->
-    <div class="custom-horizontal-line"></div>
-    <div class="custom-page-btn-wrap">
-      <div v-show="!is_status"  class="save-custom-dialog-btn"  @click="edit_btn" >编辑</div>
-      <div v-show="!is_status"  class="save-custom-dialog-btn"  @click="dialogLoan = true" >添加借款信息</div>
-      <div v-show="is_status" class="cancel-custom-dialog-btn"  @click="cancle_btn" >取消</div>
-      <div v-show="is_status" class="save-custom-dialog-btn"  @click="save_btn">保存</div>
-    </div>
+    
  
     <!-- <el-button type="primary" v-show="!is_status" @click="edit_btn"
       >编辑</el-button
