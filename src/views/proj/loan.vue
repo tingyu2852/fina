@@ -235,7 +235,7 @@
                 <el-table-column label="操作" min-width="180x">
                   <template slot-scope="{ row }">
                     <div class="custom-table-btn-wrap">
-                      <div class="edit-custom-table-btn"  @click="showMaching(row)"><i style="padding-right: 3px" class="el-icon-more"></i>更多</div>
+                      <div class="edit-custom-table-btn"  @click="spInfo(row)"><i style="padding-right: 3px" class="el-icon-more"></i>更多</div>
                       <div v-show="info_status" class="edit-custom-table-btn"  @click="mtEdit(row)"><i class="el-icon-edit"></i>编辑</div>
                       <div v-show="info_status" class="delete-custom-table-btn"  @click="delmt(row)" ><i class="el-icon-delete"></i>删除</div>
                     </div>
