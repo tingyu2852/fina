@@ -122,6 +122,7 @@ export default {
   .table-content-right{
     text-align: right;
     width: 100%;
+
   }
   
   /* ******************************自定义表格内的菜单样式*********************************** */
