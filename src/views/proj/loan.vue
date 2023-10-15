@@ -167,12 +167,13 @@
               <div>
               {{$format.money(parseInt(form.mt_total)-parseInt(form.repay_total))}}
              </div>
-            </el-form-item></el-col>
-              <el-col :span="24"><el-form-item label="下款信息">
+            </el-form-item>
+          </el-col>
+          <el-col :span="24"><el-form-item label="下款信息">
               <template #label>
                 <div style="display: flex; align-items: center">
                   <div>
-                    <span>下款信息</span>
+                    <span style="font-weight: 700;font-size: 15px;">下款信息：</span>
                   </div>
                   <div>
                     <i
@@ -221,12 +222,15 @@
                 </el-table-column>
                 <el-table-column label="匹配资本金">
                   <template slot-scope="{ row }">
-                    <el-button
+                    <div class="custom-table-btn-wrap">
+                      <div class="edit-custom-table-btn"  @click="showMaching(row)"><i style="padding-right: 3px" class="el-icon-view"></i>查看</div>
+                    </div>
+                    <!-- <el-button
                       type="primary"
                       size="mini"
                       @click="showMaching(row)"
                       >查看</el-button
-                    >
+                    > -->
                   </template>
                 </el-table-column>
                 <el-table-column label="备注">
@@ -236,12 +240,17 @@
                 </el-table-column>
                 <el-table-column label="操作" min-width="180x">
                   <template slot-scope="{ row }">
-                    <el-button
+                    <div class="custom-table-btn-wrap">
+                      <div class="edit-custom-table-btn"  @click="showMaching(row)"><i style="padding-right: 3px" class="el-icon-more"></i>更多</div>
+                      <div v-show="info_status" class="edit-custom-table-btn"  @click="mtEdit(row)"><i class="el-icon-edit"></i>编辑</div>
+                      <div v-show="info_status" class="delete-custom-table-btn"  @click="delmt(row)" ><i class="el-icon-delete"></i>删除</div>
+                    </div>
+                    <!-- <el-button
                       type="primary"
                       size="mini"
                       icon="el-icon-more"
                       @click="spInfo(row)"
-                    ></el-button>
+                    >更多</el-button>
                     <el-button
                       v-show="info_status"
                       type="primary"
@@ -262,7 +271,7 @@
                         slot="reference"
                         style="margin-left: 10px"
                       ></el-button>
-                    </el-popconfirm>
+                    </el-popconfirm> -->
                   </template>
                 </el-table-column>
               </el-table>
@@ -271,7 +280,12 @@
              </el-form
         ></el-col>
       </el-row>
-
+       <!-- 自定义分割线 -->
+       <!-- <div class="custom-horizontal-line"></div>
+        <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
+          <div  class="cancel-custom-dialog-btn"  @click="dialogTableVisible = false" >取消</div>
+          <div class="save-custom-dialog-btn"  @click="addBxBtn">保存</div>
+        </div> -->
       <div style="margin-top: 50px">
         <el-button type="primary" v-show="!info_status" @click="btn_edit"
           >编辑</el-button
@@ -428,142 +442,172 @@
 
     <!-- 走款信息 -->
     <el-dialog title="走款信息" :visible.sync="spDialog" width="900px">
-      <el-button type="primary" size="mini" @click="addSp" plain
-        >新增</el-button
-      >
-      <el-table :data="spList">
-        <el-table-column label="收款单位" prop="corp_name"></el-table-column>
-        <el-table-column label="走款时间" prop="sp_date"></el-table-column>
-        <el-table-column label="走款金额" prop="sp_num">
-          <template slot-scope="{ row }">
-            <div>
-              {{ $format.money(row.sp_num) }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="回款金额" prop="refund">
-          <template slot-scope="{ row }">
-            <div>
-              {{ $format.money(row.refund) }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="实际支付金额"
-          prop="actul_num"
-          min-width="100px"
+      <div class="custom-dialog-table-body">
+        <div class="custom-btn-wrap">
+          <div class="add-custom-btn" @click="addSp"><i class="el-icon-plus"></i>新增</div>
+        </div>
+        <!-- <el-button type="primary" size="mini" @click="addSp" plain
+          >新增</el-button
+        > -->
+        <el-table
+          style="margin-top: 12px;"
+          row-class-name="active-contnet" 
+          header-cell-class-name='active-header'  
+          :stripe="true"   
+          v-loading="loading"  
+          :data="spList"
+          border="true"
         >
-          <template slot-scope="{ row }">
-            <div>
-              {{ $format.money(row.actul_num) }}
-            </div>
-          </template></el-table-column
-        >
-        <el-table-column label="用途" prop="sp_use"></el-table-column>
-        <el-table-column label="备注" prop="remark"></el-table-column>
-        <el-table-column label="操作" prop="remark" min-width="140px">
-          <template slot-scope="{ row }">
-            <div style="">
-              <el-button
-                type="primary"
-                size="mini"
-                icon="el-icon-edit-outline"
-                @click="spEdit(row)"
-                plain
-              ></el-button>
-
-              <el-popconfirm
-                title="确定删除该走款信息吗？"
-                @onConfirm="delsp(row)"
-              >
+          <el-table-column label="收款单位" prop="corp_name"></el-table-column>
+          <el-table-column label="走款时间" prop="sp_date"></el-table-column>
+          <el-table-column label="走款金额" prop="sp_num">
+            <template slot-scope="{ row }">
+              <div>
+                {{ $format.money(row.sp_num) }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="回款金额" prop="refund">
+            <template slot-scope="{ row }">
+              <div>
+                {{ $format.money(row.refund) }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="实际支付金额"
+            prop="actul_num"
+            min-width="100px"
+          >
+            <template slot-scope="{ row }">
+              <div>
+                {{ $format.money(row.actul_num) }}
+              </div>
+            </template></el-table-column
+          >
+          <el-table-column label="用途" prop="sp_use"></el-table-column>
+          <el-table-column label="备注" prop="remark"></el-table-column>
+          <el-table-column label="操作" prop="remark" min-width="140px">
+            <template slot-scope="{ row }">
+              <div class="custom-table-btn-wrap">
+                <div class="edit-custom-table-btn"  @click="spEdit(row)"><i class="el-icon-edit"></i>编辑</div>
+                <div  class="delete-custom-table-btn"  @click="delsp(row)" ><i class="el-icon-delete"></i>删除</div>
+              </div>
+              <!-- <div style="">
                 <el-button
-                  type="danger"
+                  type="primary"
                   size="mini"
-                  icon="el-icon-delete"
-                  slot="reference"
-                  style="margin-left: 10px"
+                  icon="el-icon-edit-outline"
+                  @click="spEdit(row)"
+                  plain
                 ></el-button>
-              </el-popconfirm>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+
+                <el-popconfirm
+                  title="确定删除该走款信息吗？"
+                  @onConfirm="delsp(row)"
+                >
+                  <el-button
+                    type="danger"
+                    size="mini"
+                    icon="el-icon-delete"
+                    slot="reference"
+                    style="margin-left: 10px"
+                  ></el-button>
+                </el-popconfirm>
+              </div> -->
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
       <el-dialog
         width="500px"
-        title="走款添加"
+        :title="dialogTitle"
         :visible.sync="innerVisible"
         append-to-body
         @close="spDialogClose"
       >
-        <el-form :model="sp_form">
-          <el-form-item label="收款单位">
-            <el-select
-              v-model="sp_form.corp_name"
-              placeholder="请选择收款单位"
-              filterable
-            >
-              <el-option
-                v-for="item in corpList"
-                :label="item.corp_name"
-                :value="item.corp_name"
-                :key="item.agmt_index_id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="走款时间">
-            <el-date-picker
-              v-model="sp_form.sp_date"
-              placeholder="请选择日期"
-              value-format="yyyy-MM-dd"
-              :picker-options="sp_pickerOptions"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item label="走款金额">
-            <el-input
-              style="width: 200px"
-              v-model="sp_form.sp_num"
-              @input="sp_form.sp_num = $format.formatInput(sp_form.sp_num)"
-              placeholder="请输入走款金额"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="回款金额"
-            ><el-input
-              style="width: 200px"
-              v-model="sp_form.refund"
-              @input="sp_form.refund = $format.formatInput(sp_form.refund)"
-              placeholder="请输入回款金额"
-            ></el-input
-          ></el-form-item>
-          <el-form-item label="实际支付金额"
-            ><el-input
-              style="width: 200px"
-              v-model="sp_form.actul_num"
-              @input="
-                sp_form.actul_num = $format.formatInput(sp_form.actul_num)
-              "
-              placeholder="请输入实际支付金额"
-            ></el-input
-          ></el-form-item>
-          <el-form-item label="用途"
-            ><el-input
-              style="width: 200px"
-              v-model="sp_form.sp_use"
-              placeholder="请输入用途"
-            ></el-input
-          ></el-form-item>
-          <el-form-item label="备注"
-            ><el-input
-              style="width: 200px"
-              type="textarea"
-              v-model="sp_form.remark"
-              placeholder=""
-            ></el-input
-          ></el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
+        <!-- 自定义分割线 -->
+        <div class="custom-horizontal-line"></div>
+        <div  class="dialog_body custom-dialog-body">
+          <el-form 
+            label-width="100px"
+            label-position="right"
+            :model="sp_form"
+          >
+            <el-form-item label="收款单位">
+              <el-select
+                v-model="sp_form.corp_name"
+                placeholder="请选择收款单位"
+                filterable
+              >
+                <el-option
+                  v-for="item in corpList"
+                  :label="item.corp_name"
+                  :value="item.corp_name"
+                  :key="item.agmt_index_id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="走款时间">
+              <el-date-picker
+                v-model="sp_form.sp_date"
+                placeholder="请选择日期"
+                value-format="yyyy-MM-dd"
+                :picker-options="sp_pickerOptions"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="走款金额">
+              <el-input
+                style="width: 200px"
+                v-model="sp_form.sp_num"
+                @input="sp_form.sp_num = $format.formatInput(sp_form.sp_num)"
+                placeholder="请输入走款金额"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="回款金额"
+              ><el-input
+                style="width: 200px"
+                v-model="sp_form.refund"
+                @input="sp_form.refund = $format.formatInput(sp_form.refund)"
+                placeholder="请输入回款金额"
+              ></el-input
+            ></el-form-item>
+            <el-form-item label="实际支付金额"
+              ><el-input
+                style="width: 200px"
+                v-model="sp_form.actul_num"
+                @input="
+                  sp_form.actul_num = $format.formatInput(sp_form.actul_num)
+                "
+                placeholder="请输入实际支付金额"
+              ></el-input
+            ></el-form-item>
+            <el-form-item label="用途"
+              ><el-input
+                style="width: 200px"
+                v-model="sp_form.sp_use"
+                placeholder="请输入用途"
+              ></el-input
+            ></el-form-item>
+            <el-form-item label="备注"
+              ><el-input
+                style="width: 200px"
+                type="textarea"
+                v-model="sp_form.remark"
+                placeholder=""
+              ></el-input
+            ></el-form-item>
+          </el-form>
+        </div>
+        <div class="custom-horizontal-line"></div>
+        <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
+          <div  class="cancel-custom-dialog-btn"  @click="innerVisible = false" >取消</div>
+          <div class="save-custom-dialog-btn"  @click="spSave">保存</div>
+        </div>
+        <!-- <span slot="footer" class="dialog-footer">
           <el-button @click="innerVisible = false">取 消</el-button>
           <el-button type="primary" @click="spSave">确 定</el-button>
-        </span>
+        </span> -->
       </el-dialog>
     </el-dialog>
 
@@ -789,6 +833,7 @@ export default {
   mounted() {},
   data() {
     return {
+      dialogTitle: '添加走款信息',
       currentMt: null,
       curMatching: [],
       dialogMatching: false,
@@ -1017,6 +1062,7 @@ export default {
     },
     //编辑走款信息按钮
     spEdit(row) {
+      this.dialogTitle = '编辑走款信息';
       this.sp_form = { ...row };
       this.sp_form.sp_num = this.$format.money(this.sp_form.sp_num);
       this.sp_form.refund = this.$format.money(this.sp_form.refund);
@@ -1060,6 +1106,7 @@ export default {
     },
     //走款信息添加
     addSp() {
+      this.dialogTitle = '添加走款信息';
       this.curMtId;
       this.innerVisible = true;
     },
