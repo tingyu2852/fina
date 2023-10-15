@@ -143,7 +143,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="14">
+        <el-col :span="16">
           <el-form label-position="top">
             <el-row>
               <el-col :span="8"> <el-form-item label="到款总金额">
@@ -163,8 +163,19 @@
              </div>
             </el-form-item>
           </el-col>
-          <el-col :span="24"><el-form-item label="下款信息">
-              <template #label>
+
+          
+          <el-col :span="24">
+            <div style="display: flex; align-items: center">
+              <div style="padding-right: 6px;font-weight: 700;font-size: 15px;">
+                <span>下款信息</span>
+              </div>
+              <div  v-show="info_status" class="custom-btn-wrap">
+                <div class="add-custom-btn" @click="mtADD"><i class="el-icon-plus"></i>新增</div>
+              </div>
+            </div>
+            <el-form-item label=""> <!-- 下款信息 -->
+              <!-- <template #label>
                 <div style="display: flex; align-items: center">
                   <div>
                     <span style="font-weight: 700;font-size: 15px;">下款信息：</span>
@@ -178,7 +189,7 @@
                     ></i>
                   </div>
                 </div>
-              </template>
+              </template> -->
               <el-table 
                 style="margin-top: 12px;"
                 row-class-name="active-contnet" 
@@ -187,12 +198,12 @@
                 :data="mtList" 
                 border
               >
-                <el-table-column label="下款时间">
+                <el-table-column label="下款时间" width="100">
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.mt_date) }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="下款金额">
+                <el-table-column label="下款金额" width="120">
                   <template slot-scope="{ row }">
                     <span>{{ str_contet($format.money(row.mt_sum)) }}</span>
                   </template>
@@ -209,12 +220,12 @@
                     >
                   </template>
                 </el-table-column>
-                <el-table-column label="截止日期" min-width="150px">
+                <el-table-column label="截止日期" min-width="80px">
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.start_end_date) }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="匹配资本金">
+                <el-table-column label="匹配资本金" width="100">
                   <template slot-scope="{ row }">
                     <div class="custom-table-btn-wrap">
                       <div class="edit-custom-table-btn"  @click="showMaching(row)"><i style="padding-right: 3px" class="el-icon-view"></i>查看</div>
@@ -232,7 +243,7 @@
                     <div style="white-space: pre-line">{{ row.remark }}</div>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="180x">
+                <el-table-column label="操作" min-width="200">
                   <template slot-scope="{ row }">
                     <div class="custom-table-btn-wrap">
                       <div class="edit-custom-table-btn"  @click="spInfo(row)"><i style="padding-right: 3px" class="el-icon-more"></i>走款信息</div>
@@ -301,142 +312,162 @@
       width="700px"
       @close="handlerClose"
     >
-      <el-form 
-        :model="mt_form" 
-        label-width="100px" 
-        label-position="right"
-      >
-        <el-form-item label="下款时间">
-          <el-date-picker
-            v-model="mt_form.mt_date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择下款时间"
-            :picker-options="pickerOptions"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="下款金额">
-          <el-input
-            style="width: 200px"
-            v-model="mt_form.mt_sum"
-            placeholder="请填写下款金额"
-            @input="mt_form.mt_sum = $format.formatInput(mt_form.mt_sum)"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="下款项目" v-if="form.sub_project === 1">
-          <el-checkbox
-            :indeterminate="isIndeterminate"
-            v-model="checkAll"
-            @change="handleCheckAllChange"
-            >全选</el-checkbox
-          >
-          <div style="margin: 15px 0"></div>
-          <el-checkbox-group
-            v-model="mt_form.sub_project_list"
-            @change="handleCheckedCitiesChange"
-          >
-            <el-checkbox
-              v-for="item in form.sub_project_list"
-              :label="item"
-              :key="item"
-              >{{ item }}</el-checkbox
-            >
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="截止日期">
-          <!-- <el-date-picker
-            v-model="mt_form.start_end_date"
-            value-format="yyyy-MM-dd"
-            size="mini"
-            format="yyyy-MM-dd"
-          >
-         
-          </el-date-picker> -->
-          <el-date-picker
-            v-model="mt_form.start_end_date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择下款时间"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="匹配资本金" label-position="top">
-          <!-- <el-input
-            v-model="mt_form.matching_capital"
-            placeholder=""
-            type="textarea"
-          ></el-input> -->
-          <el-button type="primary" size="mini" @click="addMatch"
-            >新增</el-button
-          >
-        </el-form-item>
-
-        <el-table
-          :data="mt_form.matching_capital"
-          border
-          style="margin-bottom: 10px"
+      <!-- 自定义分割线 -->
+      <div class="custom-horizontal-line"></div>
+      <div  class="dialog_body custom-dialog-table-body">
+        <el-form 
+          :model="mt_form" 
+          label-width="100px" 
+          label-position="right"
         >
-          <el-table-column label="日期" min-width="100px">
-            <template slot-scope="{ row }">
-              <el-date-picker
-                size="mini"
-                v-model="row.date"
-                placeholder="请选择"
-                type="date"
-                value-format="yyyy-MM-dd"
-              ></el-date-picker>
-            </template>
-          </el-table-column>
-          <el-table-column label="名称">
-            <template slot-scope="{ row }"
-              ><el-input
-                size="mini"
-                v-model="row.name"
-                placeholder=""
-              ></el-input
-            ></template>
-          </el-table-column>
-          <el-table-column label="金额">
-            <template slot-scope="{ row }"
-              ><el-input
-                size="mini"
-                v-model="row.num"
-                @input="row.num = $format.formatInput(row.num)"
-                placeholder=""
-              ></el-input
-            ></template>
-          </el-table-column>
-          <el-table-column label="收款人">
-            <template slot-scope="{ row }">
-              <el-select v-model="row.corp" placeholder="" size="mini">
-                <el-option
-                  v-for="item in corpList"
-                  :label="item.corp_name"
-                  :value="item.corp_name"
-                  :key="item.corp_id"
-                ></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="备注" min-width="100px">
-            <template slot-scope="{ row }"
-              ><el-input
-                v-model="row.remark"
-                placeholder=""
-                type="textarea"
-              ></el-input
-            ></template>
-          </el-table-column>
-        </el-table>
-        <el-form-item label="备注">
-          <el-input
-            v-model="mt_form.remark"
-            placeholder=""
-            type="textarea"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
+          <el-form-item label="下款时间">
+            <el-date-picker
+              v-model="mt_form.mt_date"
+              value-format="yyyy-MM-dd"
+              placeholder="请选择下款时间"
+              :picker-options="pickerOptions"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="下款金额">
+            <el-input
+              style="width: 200px"
+              v-model="mt_form.mt_sum"
+              placeholder="请填写下款金额"
+              @input="mt_form.mt_sum = $format.formatInput(mt_form.mt_sum)"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="下款项目" v-if="form.sub_project === 1">
+            <el-checkbox
+              :indeterminate="isIndeterminate"
+              v-model="checkAll"
+              @change="handleCheckAllChange"
+              >全选</el-checkbox
+            >
+            <div style="margin: 15px 0"></div>
+            <el-checkbox-group
+              v-model="mt_form.sub_project_list"
+              @change="handleCheckedCitiesChange"
+            >
+              <el-checkbox
+                v-for="item in form.sub_project_list"
+                :label="item"
+                :key="item"
+                >{{ item }}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="截止日期">
+            <!-- <el-date-picker
+              v-model="mt_form.start_end_date"
+              value-format="yyyy-MM-dd"
+              size="mini"
+              format="yyyy-MM-dd"
+            >
+          
+            </el-date-picker> -->
+            <el-date-picker
+              v-model="mt_form.start_end_date"
+              value-format="yyyy-MM-dd"
+              placeholder="请选择下款时间"
+            ></el-date-picker>
+          </el-form-item>
+          <div style="display: flex; align-items: center">
+            <div style="padding-right: 6px;font-weight: 700;font-size: 15px;">
+              <span>匹配资本金</span>
+            </div>
+            <div  v-show="info_status" class="custom-btn-wrap">
+              <div class="add-custom-btn" @click="addMatch"><i class="el-icon-plus"></i>新增</div>
+            </div>
+          </div>
+          <!-- <el-form-item label="匹配资本金" label-position="top">
+            <el-input
+              v-model="mt_form.matching_capital"
+              placeholder=""
+              type="textarea"
+            ></el-input> 
+            <el-button type="primary" size="mini" @click="addMatch"
+              >新增</el-button
+            >
+          </el-form-item> -->
+
+          <el-table
+            style="margin-bottom: 10px;margin-top: 12px"
+            row-class-name="active-contnet" 
+            header-cell-class-name='active-header'  
+            :stripe="true"   
+            :data="mt_form.matching_capital"
+            border
+          >
+            <el-table-column label="日期" min-width="100px">
+              <template slot-scope="{ row }">
+                <el-date-picker
+                  size="mini"
+                  v-model="row.date"
+                  placeholder="请选择"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                ></el-date-picker>
+              </template>
+            </el-table-column>
+            <el-table-column label="名称">
+              <template slot-scope="{ row }"
+                ><el-input
+                  size="mini"
+                  v-model="row.name"
+                  placeholder=""
+                ></el-input
+              ></template>
+            </el-table-column>
+            <el-table-column label="金额">
+              <template slot-scope="{ row }"
+                ><el-input
+                  size="mini"
+                  v-model="row.num"
+                  @input="row.num = $format.formatInput(row.num)"
+                  placeholder=""
+                ></el-input
+              ></template>
+            </el-table-column>
+            <el-table-column label="收款人">
+              <template slot-scope="{ row }">
+                <el-select v-model="row.corp" placeholder="" size="mini">
+                  <el-option
+                    v-for="item in corpList"
+                    :label="item.corp_name"
+                    :value="item.corp_name"
+                    :key="item.corp_id"
+                  ></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" min-width="100px">
+              <template slot-scope="{ row }"
+                ><el-input
+                  v-model="row.remark"
+                  placeholder=""
+                  type="textarea"
+                ></el-input
+              ></template>
+            </el-table-column>
+          </el-table>
+          <el-form-item label="备注">
+            <el-input
+              v-model="mt_form.remark"
+              placeholder=""
+              type="textarea"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="custom-horizontal-line"></div>
+      <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
+        <div  class="cancel-custom-dialog-btn"  @click="dialogVisible = false" >取消</div>
+        <div class="save-custom-dialog-btn"   @click="mtSave">保存</div>
+      </div>
+      <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="mtSave">确 定</el-button>
-      </span>
+      </span> -->
     </el-dialog>
 
     <!-- 走款信息 -->
