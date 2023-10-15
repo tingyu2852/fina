@@ -2,7 +2,7 @@
     <div class="content-wrap">
       <el-card style="margin: 0 auto">
         <div class="custom-btn-wrap">
-          <div class="add-custom-btn" @click="dialogTableVisible = true"><i class="el-icon-plus"></i>新增</div>
+          <div class="add-custom-btn" @click="dialogTableVisible = true,dialogTitle='添加金融机构'"><i class="el-icon-plus"></i>新增</div>
           <div  class="delete-custom-btn"  @click="deleteBtn" ><i class="el-icon-delete"></i>删除</div>
         </div>
         <!-- <el-button
@@ -86,32 +86,39 @@
       </div>
       </el-card>
       <el-dialog
-        title="添加"
+        :title="dialogTitle"
         width="500px"
         :visible.sync="dialogTableVisible"
         @close="AdddialogClose"
         :close-on-click-modal="false"
       >
-        <div style="width: 80%; margin: auto" class="dialog_body">
+        <!-- 自定义分割线 -->
+        <div class="custom-horizontal-line"></div>
+        <div  class="dialog_body custom-dialog-body">
           <el-form
             :model="addfrom"
             ref="ruleForm"
-            label-width="100px"
+            label-width="80px"
             label-position="left"
             :rules="rules"
           >
-           
             <el-form-item label="银行名称" prop="bank_name" >
               <el-input v-model="addfrom.bank_name" placeholder="请输入"></el-input>
             </el-form-item>
            
           </el-form>
         </div>
-        <div slot="footer" class="dialog-footer">
+        <!-- 自定义分割线 -->
+        <div class="custom-horizontal-line"></div>
+        <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
+          <div  class="cancel-custom-dialog-btn"  @click="dialogTableVisible = false" >取消</div>
+          <div class="save-custom-dialog-btn"  @click="addBxBtn">保存</div>
+        </div>
+        <!-- <div slot="footer" class="dialog-footer">
           <el-button @click="dialogTableVisible = false">取 消</el-button>
           <el-button type="primary" @click="addBxBtn">确 定</el-button>
-        </div></el-dialog
-      >
+        </div>-->
+      </el-dialog> 
     </div>
   </template>
   
@@ -120,6 +127,7 @@
     name: "Bank",
     data() {
       return {
+        dialogTitle: '添加金融机构',
         dialogTableVisible: false,
         bankLists: [
         ],
@@ -235,6 +243,7 @@
         }
       },
       bj_btn(row) {
+        this.dialogTitle = "编辑金融机构";
         this.addfrom = { ...row };
         this.dialogTableVisible = true;
       },

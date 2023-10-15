@@ -1,15 +1,26 @@
 <template>
-  <div>
+  <div class="content-wrap">
     <div>
-      <el-button
+      <div class="custom-btn-wrap">
+        <div class="add-custom-btn" @click="addRepay"><i class="el-icon-plus"></i>新增</div>
+      </div>
+      <!-- <el-button
         type="primary"
         plain
         size="mini"
         style="margin-bottom: 10px"
         @click="addRepay"
         >新增</el-button
+      > -->
+      <el-table 
+        style="margin-top: 12px;"
+        row-class-name="active-contnet" 
+        header-cell-class-name='active-header'  
+        :stripe="true"   
+        :data="repayList" 
+        v-loading="lodaing"
+        border
       >
-      <el-table :data="repayList" border v-loading="lodaing">
         <el-table-column label="日期">
           <template slot-scope="{ row }">
             <el-date-picker
@@ -53,9 +64,14 @@
             ></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="100px">
+        <el-table-column label="操作" min-width="60px">
           <template slot-scope="{ row }">
-            <el-button
+            <div class="custom-table-btn-wrap">
+              <div v-show="row.isEdit" class="save-custom-table-btn"  @click="repaySave(row)"><i class="el-icon-document-checked"></i>保存</div>
+              <div v-show="!row.isEdit" class="edit-custom-table-btn"    @click="repayEdit(row)"><i class="el-icon-edit"></i>编辑</div>
+              <div v-show="!row.isEdit" class="delete-custom-table-btn"  @click="delInter(row)" ><i class="el-icon-delete"></i>删除</div>
+            </div>
+            <!-- <el-button
               v-show="!row.isEdit"
               type="primary"
               size="mini"
@@ -82,18 +98,30 @@
                 slot="reference"
                 style="margin-left: 10px"
               ></el-button>
-            </el-popconfirm>
+            </el-popconfirm> -->
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
+      <!-- 分页 -->
+      <div style="text-align: right; margin-top: 20px">
+        <el-pagination 
+          style="margin: auto"
+          background
+          :total="total" 
+          :current-page="current" 
+          :page-size="size" 
+          @current-change="curchange" 
+          :layout="'prev, pager, next, jumper, ->, total'">
+        </el-pagination>
+      </div>
+      <!-- <el-pagination
         :total="total"
         :current-page="current"
         :page-size="size"
         @current-change="curchange"
         @size-change="sizeChange"
         :layout="'prev, pager, next, jumper,sizes, ->, total'"
-      ></el-pagination>
+      ></el-pagination> -->
     </div>
   </div>
 </template>

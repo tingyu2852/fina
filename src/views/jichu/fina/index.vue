@@ -2,7 +2,7 @@
     <div class="content-wrap">
       <el-card style="margin: 0 auto">
         <div class="custom-btn-wrap">
-          <div class="add-custom-btn" @click="dialogTableVisible = true"><i class="el-icon-plus"></i>新增</div>
+          <div class="add-custom-btn" @click="dialogTableVisible = true,dialogTitle='添加品种信息'"><i class="el-icon-plus"></i>新增</div>
           <div  class="delete-custom-btn"  @click="deleteBtn" ><i class="el-icon-delete"></i>删除</div>
         </div> 
         <!-- <el-button
@@ -85,30 +85,33 @@
       </div>
     </el-card>
       <el-dialog
-        title="添加"
+        :title="dialogTitle"
         width="500px"
         :visible.sync="dialogTableVisible"
         @close="AdddialogClose"
         :close-on-click-modal="false"
       >
-        <div style="width: 80%; margin: auto" class="dialog_body">
+        <div class="custom-horizontal-line"></div>
+        <div class="dialog_body custom-dialog-body">
           <el-form
             :model="addfrom"
             ref="ruleForm"
-            label-width="100px"
+            label-width="80px"
             label-position="left"
             :rules="rules"
           >
-           
             <el-form-item label="品种名称" prop="fina_name">
               <el-input v-model="addfrom.fina_name" placeholder="请输入"></el-input>
             </el-form-item>
-           
           </el-form>
         </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogTableVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addBxBtn">确 定</el-button>
+        <!-- 添加横线 -->
+        <div class="custom-horizontal-line"></div>
+        <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
+          <!-- <el-button @click="dialogTableVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addBxBtn">确 定</el-button> -->
+          <div  class="cancel-custom-dialog-btn"  @click="dialogTableVisible = false" >取消</div>
+          <div class="save-custom-dialog-btn"  @click="addBxBtn">保存</div>
         </div></el-dialog
       >
     </div>
@@ -119,6 +122,7 @@
     name: "Fina",
     data() {
       return {
+        dialogTitle: '添加品种信息',
         dialogTableVisible: false,
         finaList: [
         ],
@@ -234,6 +238,7 @@
         }
       },
       bj_btn(row) {
+        this.dialogTitle = '编辑品种信息';
         this.addfrom = { ...row };
         this.dialogTableVisible = true;
       },

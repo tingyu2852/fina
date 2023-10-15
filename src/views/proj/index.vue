@@ -58,11 +58,23 @@
           </el-pagination>
         </div>
     </el-card>
+   
 
-    <el-dialog title="项目基础信息" :visible.sync="dialogVisible" width="650px" @close="handleClose">
-      <div style="width: 600px">
-        <el-form :model="form" label-width="100px" label-position="left" v-show="dialogShow === 1" :rules="infoRules"
-          ref="proj">
+    <el-dialog 
+      title="项目基础信息" 
+      :visible.sync="dialogVisible" 
+      width="500px" 
+      @close="handleClose">
+      <div  class="dialog_body custom-dialog-body">
+
+        <!-- 项目基础信息 -->
+        <el-form :model="form" 
+          label-width="80px" 
+          label-position="right" 
+          v-show="dialogShow === 1" 
+          :rules="infoRules"
+          ref="proj"
+        >
           <el-form-item label="项目名称" prop="proj_name">
             <el-input v-model="form.proj_name" placeholder="请填写项目名称"></el-input>
           </el-form-item>
@@ -87,9 +99,15 @@
             <el-input v-model="form.proj_remark" type="textarea"></el-input>
           </el-form-item>
         </el-form>
-        <el-form :model="rep_form" :rules="repRules" ref="rep" v-show="dialogShow === 2" label-position="left"
-          label-width="100px">
 
+        <el-form 
+          :model="rep_form" 
+          :rules="repRules" 
+          ref="rep" 
+          v-show="dialogShow === 2" 
+          label-position="right"
+          label-width="110px"
+        >
           <el-form-item label="是否银团">
             <el-switch v-model="rep_form.bank_consortium" :active-value="1" :inactive-value="0"> </el-switch>
           </el-form-item>
@@ -133,6 +151,8 @@
           </el-form-item>
         </el-form>
       </div>
+      <!-- 自定义分割线 -->
+      <div class="custom-horizontal-line"></div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" v-show="dialogShow === 2" @click="dialogShow = 1">上一步</el-button>
@@ -147,44 +167,6 @@
 export default {
   data() {
     return {
-      tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333,
-          tag: '家'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1517 弄',
-          zip: 200333,
-          tag: '公司'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1519 弄',
-          zip: 200333,
-          tag: '家'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1516 弄',
-          zip: 200333,
-          tag: '公司'
-        }],
-      headerCellStyle: {
-        whiteSpace: 'nowrap', /* 设置表头单元格内容不换行 */
-        textOverflow: 'ellipsis', /* 设置表头单元格内容超出部分显示省略号 */
-        overflow: 'hidden' /* 设置表头单元格内容超出部分隐藏 */
-      },
       dynamicTags: [],
       inputVisible: false,
       inputValue: "",
@@ -445,7 +427,7 @@ export default {
             list.push(item.proj_id)
           })
           const res = await this.$API.fina.delProj(list)
-           this.getProjList()
+          this.getProjList()
           this.$message({
             type: 'success',
             message: '删除成功!'

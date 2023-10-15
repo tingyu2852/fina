@@ -8,7 +8,7 @@
             ref="proj"
             :rules="infoRules"
             label-width="100px"
-            label-position="left"
+            label-position="right"
           >
             <el-form-item label="项目名称" prop="proj_name">
               <el-input
@@ -90,8 +90,8 @@
           :model="rep_form"
           ref="rep"
           :rules="repRules"
-          label-width="100px"
-          label-position="left"
+          label-width="120px"
+          label-position="right"
         >
           <el-form-item label="是否银团">
             <el-switch
@@ -242,96 +242,104 @@
         title="借款信息添加"
         :visible.sync="dialogLoan"
         @close="loanClose"
-        width="600px"
+        width="500px"
       >
-        <el-form
-          ref="loan"
-          :model="loan_form"
-          :rules="loanRules"
-          label-width="100px"
-          label-position="left"
-        >
-          <el-form-item
-            label="借款金额"
-            :prop="loan_form.is_actual === 0 ? 'loan_sum' : ''"
+        <div class="custom-horizontal-line"></div>
+        <div  class="dialog_body custom-dialog-body">
+          <el-form
+            ref="loan"
+            :model="loan_form"
+            :rules="loanRules"
+            label-width="100px"
+            label-position="right"
           >
-            <el-switch
-              v-model="loan_form.is_actual"
-              active-text="实际为准"
-              inactive-text="固定金额"
-              :active-value="1"
-              :inactive-value="0"
-              @change="is_actual_change"
+            <el-form-item
+              label="借款金额"
+              :prop="loan_form.is_actual === 0 ? 'loan_sum' : ''"
             >
-            </el-switch>
-            <el-input
-              v-model="loan_form.loan_sum"
-              placeholder="请填写借款金额"
-              :disabled="loan_form.is_actual === 1"
-              @input="
-                loan_form.loan_sum = $format.formatInput(loan_form.loan_sum)
-              "
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="所属子项目" v-if="rep_form.sub_project===1">
-            <el-checkbox
-              :indeterminate="isIndeterminate"
-              v-model="checkAll"
-              @change="handleCheckAllChange"
-              >全选</el-checkbox
-            >
-            <div style="margin: 15px 0"></div>
-            <el-checkbox-group
-              v-model="loan_form.sub_project_list"
-              @change="handleCheckedCitiesChange"
-            >
-              <el-checkbox
-                v-for="item in rep_form.sub_project_list"
-                :label="item"
-                :key="item"
-                >{{ item }}</el-checkbox
+              <el-switch
+                v-model="loan_form.is_actual"
+                active-text="实际为准"
+                inactive-text="固定金额"
+                :active-value="1"
+                :inactive-value="0"
+                @change="is_actual_change"
               >
-            </el-checkbox-group>
-          </el-form-item>
-          <el-form-item label="提交日期" prop="loan_date">
-            <el-date-picker
-              v-model="loan_form.loan_date"
-              placeholder="请选择日期"
-              value-format="yyyy-MM-dd"
-              :picker-options="pickerOptions"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item label="付息" prop="inter_plan">
-            <el-input
-              v-model="loan_form.inter_plan"
-              placeholder="请填写"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="利率(%)" prop="rate">
-            <el-switch
-              v-model="rep_form.is_float_rate"
-              active-text="浮动利率"
-              inactive-text="固定利率"
-              :active-value="1"
-              :inactive-value="0"
-            >
-            </el-switch>
-            <el-input
-              v-model="loan_form.rate"
-              placeholder="请输入基准利率(%)"
-              type="number"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="备注说明">
-            <el-input
-              v-model="loan_form.loan_remark"
-              placeholder=""
-              type="textarea"
-            ></el-input>
-          </el-form-item>
-        </el-form>
-        <el-button type="primary" @click="loan_save">保存</el-button>
-        <el-button type="primary" @click="dialogLoan = false">取消</el-button>
+              </el-switch>
+              <el-input
+                v-model="loan_form.loan_sum"
+                placeholder="请填写借款金额"
+                :disabled="loan_form.is_actual === 1"
+                @input="
+                  loan_form.loan_sum = $format.formatInput(loan_form.loan_sum)
+                "
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="所属子项目" v-if="rep_form.sub_project===1">
+              <el-checkbox
+                :indeterminate="isIndeterminate"
+                v-model="checkAll"
+                @change="handleCheckAllChange"
+                >全选</el-checkbox
+              >
+              <div style="margin: 15px 0"></div>
+              <el-checkbox-group
+                v-model="loan_form.sub_project_list"
+                @change="handleCheckedCitiesChange"
+              >
+                <el-checkbox
+                  v-for="item in rep_form.sub_project_list"
+                  :label="item"
+                  :key="item"
+                  >{{ item }}</el-checkbox
+                >
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="提交日期" prop="loan_date">
+              <el-date-picker
+                v-model="loan_form.loan_date"
+                placeholder="请选择日期"
+                value-format="yyyy-MM-dd"
+                :picker-options="pickerOptions"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="付息" prop="inter_plan">
+              <el-input
+                v-model="loan_form.inter_plan"
+                placeholder="请填写"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="利率(%)" prop="rate">
+              <el-switch
+                v-model="rep_form.is_float_rate"
+                active-text="浮动利率"
+                inactive-text="固定利率"
+                :active-value="1"
+                :inactive-value="0"
+              >
+              </el-switch>
+              <el-input
+                v-model="loan_form.rate"
+                placeholder="请输入基准利率(%)"
+                type="number"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="备注说明">
+              <el-input
+                v-model="loan_form.loan_remark"
+                placeholder=""
+                type="textarea"
+              ></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="custom-horizontal-line"></div>
+        <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
+          <div  class="cancel-custom-dialog-btn"  @click="dialogLoan = false" >取消</div>
+          <div class="save-custom-dialog-btn"  @click="loan_save">保存</div>
+        </div>
+        <!-- <el-button type="primary" @click="loan_save">保存</el-button>
+        <el-button type="primary" @click="dialogLoan = false">取消</el-button> -->
       </el-dialog>
     </div>
   </div>

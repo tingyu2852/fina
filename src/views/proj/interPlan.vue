@@ -1,8 +1,12 @@
 <template>
-  <div>
+  <div class="content-wrap">
     <div v-loading="lodaing">
       <div v-show="!switchover">
-        <el-button
+        <div class="custom-btn-wrap">
+          <div class="add-custom-btn" @click="addPlan"><i class="el-icon-plus"></i>新增</div>
+          <div class="add-custom-btn" @click="switchover = 1"><i class="el-icon-plus"></i>快速生成</div>
+        </div>
+        <!-- <el-button
           type="primary"
           size="mini"
           style="margin-bottom: 10px"
@@ -15,9 +19,16 @@
           style="margin-bottom: 10px"
           @click="switchover = 1"
           >快速生成</el-button
-        >
+        > -->
         <div>
-          <el-table :data="planList" border>
+          <el-table 
+            style="margin-top: 12px;"
+            row-class-name="active-contnet" 
+            header-cell-class-name='active-header'  
+            :stripe="true"   
+            :data="planList" 
+            border
+          >
             <el-table-column label="日期">
               <template slot-scope="{ row }">
                 <div v-if="row.isEdit">
@@ -29,7 +40,6 @@
                   >
                   </el-date-picker>
                 </div>
-
                 <div v-else>
                   {{ row.date }}
                 </div>
@@ -42,9 +52,14 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="120px">
+            <el-table-column label="操作" width="160px">
               <template slot-scope="{ row, $index }">
-                <div>
+                <div class="custom-table-btn-wrap">
+                  <div v-show="row.isEdit" class="save-custom-table-btn"  @click="savePlan(row)"><i class="el-icon-check"></i>确定</div>
+                  <div v-show="row.isEdit" class="cancle-custom-table-btn"   @click="planList.splice($index, 1)"><i class="el-icon-close"></i>取消</div>
+                  <div v-show="!row.isEdit" class="delete-custom-table-btn"  @onConfirm="delPlan(row)" ><i class="el-icon-delete"></i>删除</div>
+                </div>
+                 <!--  <div>
                   <el-button
                     v-show="row.isEdit"
                     type="primary"
@@ -62,7 +77,7 @@
                     icon="el-icon-close"
                   ></el-button>
 
-                  <el-popconfirm
+                 <el-popconfirm
                     title="确定删除吗？"
                     @onConfirm="delPlan(row)"
                     v-show="!row.isEdit"
@@ -75,18 +90,30 @@
                       icon="el-icon-delete"
                     ></el-button>
                   </el-popconfirm>
-                </div>
+                </div> -->
               </template>
             </el-table-column>
           </el-table>
         </div>
-        <el-pagination
+        <!-- 分页 -->
+        <div style="text-align: right; margin-top: 20px">
+          <el-pagination 
+            style="margin: auto"
+            background
+            :total="total" 
+            :current-page="current" 
+            :page-size="10" 
+            @current-change="curchange" 
+            :layout="'prev, pager, next, jumper, ->, total'">
+          </el-pagination>
+        </div>
+        <!-- <el-pagination
           :total="total"
           :current-page="current"
           :page-size="12"
           @current-change="curchange"
           :layout="'prev, pager, next, jumper, ->, total'"
-        ></el-pagination>
+        ></el-pagination> -->
       </div>
       <div v-show="switchover">
         <el-button

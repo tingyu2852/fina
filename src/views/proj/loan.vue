@@ -184,7 +184,14 @@
                   </div>
                 </div>
               </template>
-              <el-table :data="mtList" border>
+              <el-table 
+                style="margin-top: 12px;"
+                row-class-name="active-contnet" 
+                header-cell-class-name='active-header'  
+                :stripe="true"   
+                :data="mtList" 
+                border
+              >
                 <el-table-column label="下款时间">
                   <template slot-scope="{ row }">
                     <span>{{ str_contet(row.mt_date) }}</span>
@@ -277,6 +284,8 @@
         >
       </div>
     </div>
+
+    <!-- 下款信息编辑 -->
     <el-dialog
       title="下款信息编辑"
       :visible.sync="dialogVisible"
@@ -416,6 +425,8 @@
         <el-button type="primary" @click="mtSave">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 走款信息 -->
     <el-dialog title="走款信息" :visible.sync="spDialog" width="900px">
       <el-button type="primary" size="mini" @click="addSp" plain
         >新增</el-button
@@ -556,7 +567,8 @@
       </el-dialog>
     </el-dialog>
 
-    <el-dialog title="每日详情" :visible.sync="interestDialog" width="900px">
+    <!-- 结息（每日）详情 -->
+    <el-dialog title="结息（每日）详情" :visible.sync="interestDialog" width="900px">
       <el-form :model="interest_form" v-if="false">
         <el-form-item label="结息方式">
           <el-radio-group v-model="interest_form.radio">
@@ -618,14 +630,17 @@
       </span> -->
     </el-dialog>
 
-    <el-dialog title="还本计划" :visible.sync="repayDialog" width="700px">
+    <!-- 还本计划 -->
+    <el-dialog title="还本计划" :visible.sync="repayDialog" width="900px">
       <Repay ref="repay"  :loanInfo="{
           date: form.loan_date,
           limit: form.rep_limit,
           inter_plan: form.inter_plan,
         }" @getinfo="getInfo"/>
     </el-dialog>
-    <el-dialog title="结息计划" :visible.sync="interPlanDialog" width="700px">
+
+    <!-- 结息计划  -->
+    <el-dialog title="结息计划" :visible.sync="interPlanDialog" width="900px">
       <InterPlan
         ref="interPlan"
         :loanInfo="{
@@ -635,102 +650,121 @@
         }"
       />
     </el-dialog>
-    <el-dialog title="匹配资本金" :visible.sync="dialogMatching" width="700px">
-      <el-button type="primary" size="mini" @click="addMatching"
-        >新增</el-button
-      >
-      <el-table :data="curMatching">
-        <el-table-column label="日期" prop="date" min-width="100px">
-          <template slot-scope="{ row }">
-            <div v-if="!row.isEdit">{{ row.date }}</div>
-            <el-date-picker
-              v-else
-              size="mini"
-              v-model="row.date"
-              placeholder="请选择"
-              type="date"
-              value-format="yyyy-MM-dd"
-            ></el-date-picker>
-          </template>
-        </el-table-column>
-        <el-table-column label="名称" prop="name">
-          <template slot-scope="{ row }">
-            <div v-if="!row.isEdit">{{ row.name }}</div>
-            <el-input
-              v-else
-              size="mini"
-              v-model="row.name"
-              placeholder=""
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column label="金额" prop="num"
-          ><template slot-scope="{ row }">
-            <div v-if="!row.isEdit">{{ $format.money(row.num) }}</div>
-            <el-input
-              v-else
-              size="mini"
-              v-model="row.num"
-              type="number"
-              placeholder=""
-            ></el-input> </template
-        ></el-table-column>
-        <el-table-column label="收款人" prop="corp">
-          <template slot-scope="{ row }">
-            <div v-if="!row.isEdit">{{ row.corp }}</div>
-            <el-select v-else v-model="row.corp" placeholder="" size="mini">
-              <el-option
-                v-for="item in corpList"
-                :label="item.corp_name"
-                :value="item.corp_name"
-                :key="item.corp_id"
-              ></el-option>
-            </el-select> </template
-        ></el-table-column>
-        <el-table-column label="备注" prop="remark">
-          <template slot-scope="{ row }">
-            <div v-if="!row.isEdit">{{ row.remark }}</div>
-            <el-input
-              v-else
-              v-model="row.remark"
-              placeholder=""
-              type="textarea"
-            ></el-input
-          ></template>
-        </el-table-column>
-        <el-table-column label="操作" width="150px">
-          <template slot-scope="{ row, $index }">
-            <el-button
-              v-show="!row.isEdit"
-              type="primary"
-              size="mini"
-              icon="el-icon-edit-outline"
-              @click="$set(row, 'isEdit', true)"
-            ></el-button>
-            <el-button
-              v-show="row.isEdit"
-              type="primary"
-              size="mini"
-              icon="el-icon-check"
-              @click="mactingSave(row)"
-            ></el-button>
 
-            <el-popconfirm
-              title="这是一段内容确定删除吗？"
-              @onConfirm="delMatch($index)"
-            >
-              <el-button
-                v-show="!row.isEdit"
-                type="danger"
+    <!-- 匹配资本金  -->
+    <el-dialog  title="匹配资本金" :visible.sync="dialogMatching" width="900px">
+      <div class="custom-dialog-table-body" style="margin-top:12px">
+        <div class="custom-btn-wrap">
+          <div class="add-custom-btn" @click="addMatching"><i class="el-icon-plus"></i>新增</div>
+        </div>
+        <!-- <el-button  type="primary" size="mini" @click="addMatching">新增</el-button> -->
+        <el-table 
+          style="margin-top: 12px;"
+          row-class-name="active-contnet" 
+          header-cell-class-name='active-header'  
+          :stripe="true"   
+          :data="curMatching"
+          border
+        >
+          <el-table-column label="日期" prop="date" min-width="100px">
+            <template slot-scope="{ row }">
+              <div v-if="!row.isEdit">{{ row.date }}</div>
+              <el-date-picker
+                v-else
                 size="mini"
-                icon="el-icon-delete"
-                slot="reference"
-                style="margin-left: 10px"
+                v-model="row.date"
+                placeholder="请选择"
+                type="date"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
+            </template>
+          </el-table-column>
+          <el-table-column label="名称" prop="name">
+            <template slot-scope="{ row }">
+              <div v-if="!row.isEdit">{{ row.name }}</div>
+              <el-input
+                v-else
+                size="mini"
+                v-model="row.name"
+                placeholder=""
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column label="金额" prop="num"
+            ><template slot-scope="{ row }">
+              <div v-if="!row.isEdit">{{ $format.money(row.num) }}</div>
+              <el-input
+                v-else
+                size="mini"
+                v-model="row.num"
+                type="number"
+                placeholder=""
+              ></el-input> </template
+          ></el-table-column>
+          <el-table-column label="收款人" prop="corp">
+            <template slot-scope="{ row }">
+              <div v-if="!row.isEdit">{{ row.corp }}</div>
+              <el-select v-else v-model="row.corp" placeholder="" size="mini">
+                <el-option
+                  v-for="item in corpList"
+                  :label="item.corp_name"
+                  :value="item.corp_name"
+                  :key="item.corp_id"
+                ></el-option>
+              </el-select> </template
+          ></el-table-column>
+          <el-table-column label="备注" prop="remark">
+            <template slot-scope="{ row }">
+              <div v-if="!row.isEdit">{{ row.remark }}</div>
+              <el-input
+                v-else
+                v-model="row.remark"
+                placeholder=""
+                type="textarea"
+              ></el-input
+            ></template>
+          </el-table-column>
+          <el-table-column label="操作" width="150px">
+            <template slot-scope="{ row, $index }">
+              <div class="custom-table-btn-wrap">
+                <div v-show="row.isEdit" class="save-custom-table-btn"  @click="mactingSave(row)"><i class="el-icon-document-checked"></i>保存</div>
+                <div v-show="!row.isEdit" class="edit-custom-table-btn"   @click="$set(row, 'isEdit', true)"><i class="el-icon-edit"></i>编辑</div>
+                <div v-show="!row.isEdit" class="delete-custom-table-btn"  @click="delMatch($index)" ><i class="el-icon-delete"></i>删除</div>
+              </div>
+              <!-- <el-button
+                v-show="!row.isEdit"
+                type="primary"
+                size="mini"
+                icon="el-icon-edit-outline"
+                @click="$set(row, 'isEdit', true)"
               ></el-button>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
+              <el-button
+                v-show="row.isEdit"
+                type="primary"
+                size="mini"
+                icon="el-icon-check"
+                @click="mactingSave(row)"
+              ></el-button>
+
+              <el-popconfirm
+                title="这是一段内容确定删除吗？"
+                @onConfirm="delMatch($index)"
+              >
+                <el-button
+                  v-show="!row.isEdit"
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-delete"
+                  slot="reference"
+                  style="margin-left: 10px"
+                ></el-button>
+              </el-popconfirm> -->
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      
+     
     </el-dialog>
   </div>
 </template>
