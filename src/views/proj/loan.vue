@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div  class="custom-btn-wrap">
-      <div  class="add-custom-btn"  @click="interInfo('view')" >杳看结息详情</div>
-      <div  class="add-custom-btn"  @click="planInfo" >杳看结息计划</div>
-      <div  class="add-custom-btn"  @click="repayInfo('view')" >查看还本计划</div>
+    <div class="custom-btn-wrap">
+      <div class="add-custom-btn"  @click="interInfo('view')" >杳看结息详情</div>
+      <div class="add-custom-btn"  @click="planInfo" >杳看结息计划</div>
+      <div class="add-custom-btn"  @click="repayInfo('view')" >查看还本计划</div>
     </div>
    
     <div style="width: 100%; margin-top: 12px">
@@ -141,9 +141,6 @@
                 type="textarea"
               ></el-input>
             </el-form-item>
-
-            
-
           </el-form>
         </el-col>
         <el-col :span="14">
@@ -279,7 +276,7 @@
       </el-row>
       <!-- 自定义分割线 -->
       <div class="custom-horizontal-line"></div>
-      <div slot="footer"   class="dialog-footer custom-page-btn-wrap">
+      <div slot="footer"  class="dialog-footer custom-page-btn-wrap">
         <div v-show="!info_status" class="save-custom-dialog-btn"  @click="btn_edit" >编辑</div>
         <div v-show="info_status" class="cancel-custom-dialog-btn"  @click="btn_cancle" >取消</div>
         <div v-show="info_status" class="save-custom-dialog-btn"  @click="loan_save">保存</div>
@@ -299,12 +296,16 @@
 
     <!-- 下款信息编辑 -->
     <el-dialog
-      title="下款信息编辑"
+      title="编辑下款信息"
       :visible.sync="dialogVisible"
       width="700px"
       @close="handlerClose"
     >
-      <el-form :model="mt_form" label-width="100px" label-position="left">
+      <el-form 
+        :model="mt_form" 
+        label-width="100px" 
+        label-position="right"
+      >
         <el-form-item label="下款时间">
           <el-date-picker
             v-model="mt_form.mt_date"

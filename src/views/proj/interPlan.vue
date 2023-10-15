@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrap">
+  <div class="custom-dialog-table-body">
     <div v-loading="lodaing">
       <div v-show="!switchover">
         <div class="custom-btn-wrap">

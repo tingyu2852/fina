@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-bottom: 20px" class="content-wrap">
+  <div style="padding-bottom: 20px" class="custom-dialog-table-body">
     <!-- <div><el-button type="primary" plain size="mini" style="margin-bottom: 10px;" @click="addInterest">新增</el-button> -->
       <el-table 
         style="margin-top: 12px;"
@@ -10,7 +10,7 @@
         border 
         v-loading="lodaing"
       >
-        <el-table-column  label="序号" type="index" width="50"  align="center">
+        <el-table-column  label="序号" type="index" width="60"  align="center">
             <template slot-scope="scope">
                {{ calculateIndex(scope.$index) }}
             </template>

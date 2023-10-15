@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrap">
+  <div class="custom-dialog-table-body">
     <div>
       <div class="custom-btn-wrap">
         <div class="add-custom-btn" @click="addRepay"><i class="el-icon-plus"></i>新增</div>
