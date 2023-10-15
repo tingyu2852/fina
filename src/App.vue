@@ -159,6 +159,13 @@ export default {
     margin-right: 16px;
   }
 
+   /* ******************************自定义页面菜单里的样式*********************************** */
+  .custom-page-btn-wrap{
+    display: flex;
+    justify-content: center;
+    padding-top: 12px !important;
+  }
+
   /* ******************************自定义弹框菜单里的样式*********************************** */
   /* 自定义弹框菜单里的样式 */
   .custom-dialog-btn-wrap{

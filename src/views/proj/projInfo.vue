@@ -225,7 +225,16 @@
         > --></el-col
       >
     </el-row>
-    <el-button type="primary" v-show="!is_status" @click="edit_btn"
+    <!-- 自定义分割线 -->
+    <div class="custom-horizontal-line"></div>
+    <div class="custom-page-btn-wrap">
+      <div v-show="!is_status"  class="save-custom-dialog-btn"  @click="edit_btn" >编辑</div>
+      <div v-show="!is_status"  class="save-custom-dialog-btn"  @click="dialogLoan = true" >添加借款信息</div>
+      <div v-show="is_status" class="cancel-custom-dialog-btn"  @click="cancle_btn" >取消</div>
+      <div v-show="is_status" class="save-custom-dialog-btn"  @click="save_btn">保存</div>
+    </div>
+ 
+    <!-- <el-button type="primary" v-show="!is_status" @click="edit_btn"
       >编辑</el-button
     >
     <el-button type="primary" v-show="is_status" @click="save_btn"
@@ -236,10 +245,10 @@
     >
     <el-button type="primary" v-show="!is_status" @click="dialogLoan = true"
       >添加借款信息</el-button
-    >
+    > -->
     <div>
       <el-dialog
-        title="借款信息添加"
+        title="添加借款信息"
         :visible.sync="dialogLoan"
         @close="loanClose"
         width="500px"

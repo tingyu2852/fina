@@ -1,6 +1,14 @@
 <template>
   <div>
-    <div style="width: 100%">
+    <div  class="custom-btn-wrap">
+      <div  class="add-custom-btn"  @click="interInfo('view')" >杳看结息详情</div>
+      <div  class="add-custom-btn"  @click="planInfo" >杳看结息计划</div>
+      <div  class="add-custom-btn"  @click="repayInfo('view')" >查看还本计划</div>
+    </div>
+   
+    <div style="width: 100%; margin-top: 12px">
+      <!-- 自定义分割线 -->
+      <div class="custom-horizontal-line" style="margin-bottom: 12px"></div>
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form :model="form" label-width="100px" label-position="left">
@@ -107,35 +115,24 @@
                 type="number"
               ></el-input>
             </el-form-item>
-            <el-form-item label="结息详情">
+            <!-- 结息详情 -->
+            <!-- <el-form-item label="结息详情">
               <el-button type="primary" size="mini" @click="interInfo('view')"
                 >查看</el-button
               >
-              <!-- <el-button
-                type="primary"
-                size="mini"
-                @click="interInfo('insert')"
-                v-else
-                >录入</el-button
-              > -->
-            </el-form-item>
-            <el-form-item label="结息计划">
+            </el-form-item> -->
+            <!-- 结息计划 -->
+            <!-- <el-form-item label="结息计划">
               <el-button type="primary" size="mini" @click="planInfo"
                 >查看</el-button
-              >
-              <!-- <el-button
-                type="primary"
-                size="mini"
-                @click="interInfo('insert')"
-                v-else
-                >录入</el-button
-              > -->
-            </el-form-item>
-            <el-form-item label="还本计划">
+              > 
+            </el-form-item> -->
+            <!-- 还本计划 -->
+            <!--<el-form-item label="还本计划">
               <el-button type="primary" size="mini" @click="repayInfo('view')"
                 >查看</el-button
               >
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="备注说明">
               <div v-if="!info_status">{{ str_contet(form.loan_remark) }}</div>
               <el-input
@@ -144,13 +141,13 @@
                 type="textarea"
               ></el-input>
             </el-form-item>
+
+            
+
           </el-form>
         </el-col>
         <el-col :span="14">
           <el-form label-position="top">
-           
-           
-         
             <el-row>
               <el-col :span="8"> <el-form-item label="到款总金额">
              <div>
@@ -280,23 +277,24 @@
              </el-form
         ></el-col>
       </el-row>
-       <!-- 自定义分割线 -->
-       <!-- <div class="custom-horizontal-line"></div>
-        <div slot="footer"  class="dialog-footer custom-dialog-btn-wrap">
-          <div  class="cancel-custom-dialog-btn"  @click="dialogTableVisible = false" >取消</div>
-          <div class="save-custom-dialog-btn"  @click="addBxBtn">保存</div>
-        </div> -->
-      <div style="margin-top: 50px">
-        <el-button type="primary" v-show="!info_status" @click="btn_edit"
-          >编辑</el-button
-        >
-        <el-button type="primary" v-show="info_status" @click="loan_save"
-          >保存</el-button
-        >
-        <el-button type="primary" v-show="info_status" @click="btn_cancle"
-          >取消</el-button
-        >
+      <!-- 自定义分割线 -->
+      <div class="custom-horizontal-line"></div>
+      <div slot="footer"   class="dialog-footer custom-page-btn-wrap">
+        <div v-show="!info_status" class="save-custom-dialog-btn"  @click="btn_edit" >编辑</div>
+        <div v-show="info_status" class="cancel-custom-dialog-btn"  @click="btn_cancle" >取消</div>
+        <div v-show="info_status" class="save-custom-dialog-btn"  @click="loan_save">保存</div>
       </div>
+      <!-- <div style="margin-top: 50px">
+          <el-button type="primary" v-show="!info_status" @click="btn_edit"
+            >编辑</el-button
+          >
+          <el-button type="primary" v-show="info_status" @click="loan_save"
+            >保存</el-button
+          >
+          <el-button type="primary" v-show="info_status" @click="btn_cancle"
+            >取消</el-button
+          >
+        </div> -->
     </div>
 
     <!-- 下款信息编辑 -->
