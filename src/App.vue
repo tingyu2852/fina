@@ -187,6 +187,17 @@ export default {
   .save-custom-dialog-btn:hover{
     background: #2f94f8;;
   }
+  /*删除按钮*/
+  .del-custom-dialog-btn{
+    border-radius: 3px;
+    margin-right: 16px;
+    padding: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+    color: #fff;
+    background: #F56C6C;;
+  }
   /* 取消按钮 */
   .cancel-custom-dialog-btn{
     border-radius: 3px;

@@ -12,7 +12,8 @@
         </el-col>
         <el-col :span="24">
           <el-form :model="form" label-width="100px" label-position="left">
-            <el-col :span="8">
+            
+              <el-col :span="8">
               <el-form-item label="借款金额">
                 <div v-if="!info_status">
                   {{ str_contet($format.money(form.loan_sum)) }}
@@ -332,6 +333,7 @@
       <div style="margin-top:12px" class="custom-horizontal-line"></div>
       <div slot="footer"  class="dialog-footer custom-page-btn-wrap">
         <div v-show="!info_status" class="save-custom-dialog-btn"  @click="btn_edit" >编辑</div>
+        <div v-show="!info_status" class="del-custom-dialog-btn"  @click="delLoan" >删除</div>
         <div v-show="info_status" class="cancel-custom-dialog-btn"  @click="btn_cancle" >取消</div>
         <div v-show="info_status" class="save-custom-dialog-btn"  @click="loan_save">保存</div>
       </div>
@@ -526,10 +528,9 @@
           style="margin-top: 12px;"
           row-class-name="active-contnet" 
           header-cell-class-name='active-header'  
-          :stripe="true"   
-          v-loading="loading"  
+          :stripe="true"    
           :data="spList"
-          border="true"
+          border
         >
           <el-table-column label="收款单位" prop="corp_name"></el-table-column>
           <el-table-column label="走款时间" prop="sp_date"></el-table-column>
@@ -1069,6 +1070,32 @@ export default {
       }
       this.getInfo(this.form.loan_id);
       this.info_status = false;
+    },
+    //删除借款信息
+    delLoan(){
+      let loan_id = this.form.loan_id
+      this.$confirm("此操作将永久删除该借款信息, 是否继续?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          await this.$API.fina.delLoan({ loan_id: loan_id });
+         // this.getLoanList()
+         this.$emit('loanList')
+          
+          this.$message({
+            type: "success",
+            message: "删除成功!",
+          });
+          
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
     //下款信息编辑弹窗被关闭时的回调，清空表单
     handlerClose() {

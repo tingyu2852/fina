@@ -5,7 +5,7 @@
         <el-tabs
           v-model="activeName"
           @tab-click="handleClick"
-          @tab-remove="tabsRemove"
+         
         >
           <!-- 基本信息 -->
           <el-tab-pane label="基本信息" name="proj">
@@ -21,9 +21,9 @@
             v-for="(item, index) in loanList"
             :key="item.loan_id"
             :loan_id="item.loan_id"
-            :closable="true"
+            
           >
-            <Loan :loanInfo="{ a: '123', b: [1, 2, 3] }"  />
+            <Loan :loanInfo="{ a: '123', b: [1, 2, 3] }" @loanList="getLoanList" />
           </el-tab-pane>
           
           <!-- 其他信息 -->
@@ -562,8 +562,10 @@ export default {
     },
     //获取借款信息列表
     async getLoanList() {
+      console.log('loanlist');
       let res = await this.$API.fina.getLoanList(this.$route.params.id);
       this.loanList = res.data.loanList;
+      this.activeName="proj"
     }, 
     async getprojInfo() {
       this.proj_loding = true;
