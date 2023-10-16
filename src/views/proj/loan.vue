@@ -1101,7 +1101,6 @@ export default {
     handlerClose() {
       let obj = {
         mt_sum: 0,
-        mt_con_id: "",
         mt_date: "",
         matching_capital: [],
         remark: "",
@@ -1117,8 +1116,9 @@ export default {
         this.mt_form.loan_id = this.form.loan_id;
       }
       for (let key in this.mt_form) {
-        if (key !== "remark" && key !== "matching_capital") {
+        if (key !== "remark") {
           if (!this.mt_form[key]) {
+            console.log(this.mt_form[key],key);
             return this.$message({
               type: "error",
               message: "除备注与匹配资本金以外不能为空",

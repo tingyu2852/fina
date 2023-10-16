@@ -48,7 +48,7 @@
             <el-table-column label="金额">
               <template slot-scope="{ row }">
                 <div>
-                  {{ $format.money(row.inter_actual) }}
+                  {{ $format.money(row.inter_actual,2) }}
                 </div>
               </template>
             </el-table-column>

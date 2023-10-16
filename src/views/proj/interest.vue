@@ -41,7 +41,7 @@
         </el-table-column>
         <el-table-column label="结息" align="center">
           <template slot-scope="{ row }">
-            <div class="table-content-right">{{  $format.money(row.inter_plan)}}</div>
+            <div class="table-content-right">{{  $format.money(row.inter_plan,2)}}</div>
           </template>
         </el-table-column>
         <el-table-column label="还本" align="center">
