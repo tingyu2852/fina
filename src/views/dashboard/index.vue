@@ -1,9 +1,12 @@
 <template>
   <div class="dashboard-container">
-    <el-card>
+    <div clang="weclome-wrap">
+      <div class="title">欢迎使用</div>
+    </div>
+    <!-- <el-card>
       <div style="text-align: center;margin: 20px;font-size: 20px;">年度统计</div>
       <div id="wx" style="width: 100%; height: 400px"></div>
-    </el-card>
+    </el-card> -->
   </div>
 </template>
 
@@ -109,6 +112,13 @@ export default {
   &-text {
     font-size: 30px;
     line-height: 46px;
+  }
+}
+
+.weclome-wrap{
+  width: 98%;
+  .title{
+    
   }
 }
 </style>

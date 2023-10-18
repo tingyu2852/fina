@@ -262,41 +262,72 @@ export const constantRoutes = [
   // },
 
   // 404 page must be placed at the end !!!
- // { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 //异步路由
 export const asyncRoutes = [
+  // {
+  //   path: '/projs',
+  //   name: 'Projs',
+  //   component: Layout,
+  //   redirect: '/info',
+  //   children: [{
+  //     path: 'info',
+  //     name: 'Info',
+  //     component: () => import('@/views/proj'),
+  //     meta: { title: '项目管理', },
+
+  //   },
+  //   {
+  //     path: 'detail/:id',
+  //     name: 'Detail',
+  //     component: () => import('@/views/proj/detail.vue'),
+  //     meta: { title: '项目详情' },
+  //     hidden: true,
+  //     beforeEnter: (to, from, next) => {
+  //       // ...
+
+
+  //       to.meta.title = `项目管理 / ${to.query.proj_name}`
+  //       next()
+  //     }
+
+  //   },]
+  // },
   {
     path: '/projs',
-    name:'Projs',
+    name: 'Projs',
     component: Layout,
-    redirect: '/info',
-    children: [{
-      path: 'info',
-      name: 'Info',
-      component: () => import('@/views/proj'),
-      meta: { title: '项目管理', },
-
-    },
-    {
-      path: 'detail/:id',
-      name: 'Detail',
-      component: () => import('@/views/proj/detail.vue'),
-      meta: { title: '项目详情' },
-      hidden: true,
-      beforeEnter: (to, from, next) => {
-        // ...
-
-
-        to.meta.title = `项目管理 / ${to.query.proj_name}`
-        next()
+    meta: { title: '项目信息', icon: 'el-icon-s-operation' },
+    children: [
+      {
+        path: 'corp',
+        name: 'Corp',
+        component: () => import('@/views/proj'),
+        meta: { title: '项目管理', icon: 'el-icon-s-order' }
+      },
+      {
+        path: 'bank',
+        name: 'Bank',
+        component: () => import('@/views/proj/project'),
+        meta: { title: '项目添加', icon: 'el-icon-s-order' }
+      },
+      {
+        path: 'detail/:id',
+        name: 'Detail',
+        component: () => import('@/views/proj/detail.vue'),
+        meta: { title: '项目详情' },
+        hidden: true,
+        beforeEnter: (to, from, next) => {
+          to.meta.title = `项目管理 / ${to.query.proj_name}`
+          next()
+        }
       }
-
-    },]
+    ]
   },
   {
     path: '/jichu',
-    name:'Jichu',
+    name: 'Jichu',
     component: Layout,
     meta: { title: '基础信息', icon: 'el-icon-s-operation' },
     children: [
@@ -358,7 +389,7 @@ const createRouter = () => new Router({
   routes: constantRoutes
 })
 
- const router = createRouter()
+const router = createRouter()
 
 // router.beforeEach((to,from,next)=>{
 //   next({to,replace:true})
