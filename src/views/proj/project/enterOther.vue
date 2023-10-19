@@ -81,7 +81,7 @@
 
               <el-select v-model="row.corp_name" placeholder="请选择" v-else>
                 <el-option
-                  v-for="item in corpList"
+                  v-for="item in $store.state.select.corpList"
                   :label="item.corp_name"
                   :value="item.corp_name"
                   :key="item.corp_id"
@@ -208,7 +208,7 @@
                 placeholder="请选择担保"
               >
                 <el-option
-                  v-for="item in corpList"
+                  v-for="item in $store.state.select.corpList"
                   :label="item.corp_name"
                   :value="item.corp_name"
                   :key="item.corp_id"
@@ -355,7 +355,7 @@
                 placeholder="请选择担保"
               >
                 <el-option
-                  v-for="item in corpList"
+                  v-for="item in $store.state.select.corpList"
                   :label="item.corp_name"
                   :value="item.corp_name"
                   :key="item.corp_id"
@@ -438,7 +438,10 @@
 
 <script>
 export default {
-  name: "enterOther",
+  name: "enterOther", 
+  props:{
+    projId:String
+  },
   data() {
     return {
       finaList: [],
@@ -446,7 +449,22 @@ export default {
       pawnList: [],
     };
   },
+  mounted(){
+    if(this.projId){
+      this.getOther()
+    }
+  },
   methods:{
+    //获取其他信息列表
+    async  getOther(){
+      let res = await this.$API.enter.getOther(this.projId)
+      this.finaList=res.data.finaList
+      this.bondList=res.data.bondList
+      this.pawnList=res.data.pawnList
+      this.listIsEdit(this.finaList)
+      this.listIsEdit(this.bondList)
+      this.listIsEdit(this.pawnList)
+    },
     //融资费用行内添加按钮
     finADD() {
       let obj = {
@@ -468,19 +486,19 @@ export default {
     },
     //融资费用行内保存按钮
     async finaSave(row) {
-      row.rep_id = this.rep_id;
+      row.proj_id = this.projId;
       let info = {...row}
-      info.cost_sum = parseFloat(info.cost_sum.substring(1).replace(/,/g, ""))
-      let res = await this.$API.fina.addCost(info);
+      info.cost_sum = this.$format.restoreMoney(info.cost_sum)
+      let res = await this.$API.enter.addCost(info);
       row.isEdit = false;
       this.$message({ type: "success", message: "保存成功" });
-      this.getBasics();
+       this.getOther()
     },
     //融资费用行内删除按钮
     async delFina(row) {
-      let res = await this.$API.fina.delCost({ cost_id: row.cost_id });
+      let res = await this.$API.enter.delCost({ cost_id: row.cost_id });
       this.$message({ type: "success", message: "删除成功" });
-      this.getBasics();
+       this.getOther()
     },
     //保证担保行内添加按钮
     bondADD() {
@@ -494,17 +512,17 @@ export default {
     },
      //保证担保行内编辑按钮
     async bondSave(row) {
-      row.rep_id = this.rep_id;
-      let res = await this.$API.fina.addBond(row);
+      row.proj_id = this.projId;
+      let res = await this.$API.enter.addBond(row);
       row.isEdit = false;
       this.$message({ type: "success", message: "保存成功" });
-      this.getBasics();
+       this.getOther()
     },
      //保证担保行内删除按钮
     async delBond(row) {
-      let res = await this.$API.fina.delBond({ bond_id: row.bond_id });
+      let res = await this.$API.enter.delBond({ bond_id: row.bond_id });
       this.$message({ type: "success", message: "删除成功" });
-      this.getBasics();
+       this.getOther()
     },
     //抵押担保行内添加按钮
     pawnADD() {
@@ -519,17 +537,40 @@ export default {
     },
     //抵押担保行保存按钮
     async pawnSave(row) {
-      row.rep_id = this.rep_id;
-      let res = await this.$API.fina.addPawn(row);
+      row.proj_id = this.projId;
+      let res = await this.$API.enter.addPawn(row);
       row.isEdit = false;
       this.$message({ type: "success", message: "保存成功" });
-      this.getBasics();
+       this.getOther()
     },
     //抵押担保行内删除按钮
     async delPawn(row) {
-      let res = await this.$API.fina.delPawn({ pawn_id: row.pawn_id });
+      let res = await this.$API.enter.delPawn({ pawn_id: row.pawn_id });
       this.$message({ type: "success", message: "删除成功" });
-      this.getBasics();
+       this.getOther()
+    },
+    //该函数用来给每条列表添加一个布尔值用来表示是否处于编辑状态
+    listIsEdit(arr) {
+      if (Array.isArray(arr)) {
+        // for(let item of arr){
+        //   console.log('edit');
+        //   arr.isEdit=false
+        // }
+        arr.forEach((item) => {
+          //item.isEdit = false;
+          this.$set(item, "isEdit", false);
+        });
+      } else {
+        throw new Error("传入的参数不是数组");
+      }
+    },
+    //用于显示字符串
+    str_contet(str) {
+      if (str) {
+        return str;
+      } else {
+        return "无";
+      }
     },
   }
 };

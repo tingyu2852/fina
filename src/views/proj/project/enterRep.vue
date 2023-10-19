@@ -115,7 +115,6 @@ export default {
   },
   watch: {
     "rep_form.bank_consortium"(newv) {
-      console.log(newv, "----");
       if (newv === 1) {
         // this.rep_form.bank_name = '';
 
@@ -164,9 +163,7 @@ export default {
     };
   },
   watch:{
-    'rep_form.bank_name'(a,b){
-      console.log(a,b);
-    }
+    
   },
   methods: {
     //如果projId存在发送请求获取批复信息
@@ -181,7 +178,6 @@ export default {
       );     
       this.rep_form.rep_sum = this.$format.money(this.rep_form.rep_sum)
       }
-      console.log( this.rep_form.bank_name,'7');
     },
     //监听用户输入行为，只允许输入数字
     onKeyPress(event) {
@@ -223,7 +219,6 @@ export default {
           repInfo.rep_sum = this.$format.restoreMoney(repInfo.rep_sum)
           repInfo.proj_id=this.projId
           
-          console.log( repInfo.rep_sum );
           let res =  await this.$API.enter.addRep(repInfo)
           
           this.$emit('stepNext', 2)

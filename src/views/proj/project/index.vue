@@ -94,11 +94,11 @@
           >下一步</el-button
         >
        </div>
-       <enterRep v-if="activeStatus ===1" @stepNext="handleStepClick" @getId="getProjId" :projId="curProj"/>
-       <enterOther v-if="activeStatus ===2" @stepNext="handleStepClick"/>
-       <enterLoan v-if="activeStatus ===3" @stepNext="handleStepClick"/>
-       <enterMt v-if="activeStatus ===4" @stepNext="handleStepClick"/>
-       <enterSp v-if="activeStatus ===5" @stepNext="handleStepClick"/>
+       <enterRep v-if="activeStatus ===1" @stepNext="handleStepClick"  :projId="curProj"/>
+       <enterOther v-if="activeStatus ===2" @stepNext="handleStepClick" :projId="curProj"/>
+       <enterLoan v-if="activeStatus ===3" @stepNext="handleStepClick" :projId="curProj"/>
+       <enterMt v-if="activeStatus ===4" @stepNext="handleStepClick" />
+       <enterSp v-if="activeStatus ===5" @stepNext="handleStepClick" />
       </div>
     </el-card>
   </div>
