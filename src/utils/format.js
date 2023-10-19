@@ -37,3 +37,14 @@ export const formatInput = (number) => {
   }
   return number;
 }
+export const restoreMoney = (str,len=0)=>{
+  str =  str.substring(1).replace(/,/g, "")
+  if(len===0){
+    str = parseInt(str)
+  }else{
+    str = parseFloat(str)
+    
+  }
+  return str
+  
+}

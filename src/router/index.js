@@ -307,8 +307,8 @@ export const asyncRoutes = [
         meta: { title: '项目管理', icon: 'el-icon-s-order' }
       },
       {
-        path: 'bank',
-        name: 'Bank',
+        path: 'enter',
+        name: 'Enter',
         component: () => import('@/views/proj/project'),
         meta: { title: '项目添加', icon: 'el-icon-s-order' }
       },

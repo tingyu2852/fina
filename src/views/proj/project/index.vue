@@ -1,75 +1,228 @@
 <template>
-    <div class="content-wrap">
-      <el-card style="margin: 0 auto">
-        <!-- 步骤条 -->
-        <el-steps :active="activeStatus" simple>
-            <el-step class="custom-step" @click.native="handleStepClick(0)" title="基础信息" icon="el-icon-edit"></el-step>
-            <el-step class="custom-step" @click.native="handleStepClick(1)" title="批复信息" icon="el-icon-upload"></el-step>
-            <el-step class="custom-step" @click.native="handleStepClick(2)" title="其他信息" icon="el-icon-picture"></el-step>
-            <el-step class="custom-step" @click.native="handleStepClick(3)" title="借款信息" icon="el-icon-picture"></el-step>
-            <el-step class="custom-step" @click.native="handleStepClick(4)" title="下款信息" icon="el-icon-picture"></el-step>
-            <el-step class="custom-step" @click.native="handleStepClick(5)" title="走款信息" icon="el-icon-picture"></el-step>
-        </el-steps>
+  <div class="content-wrap">
+    <el-card style="margin: 0 auto">
+      <!-- 步骤条 -->
+      <el-steps :active="activeStatus" simple>
+        <el-step
+          class="custom-step"
+          @click.native="handleStepClick(0)"
+          title="基础信息"
+          icon="el-icon-edit"
+        ></el-step>
+        <el-step
+          class="custom-step"
+          @click.native="handleStepClick(1)"
+          title="批复信息"
+          icon="el-icon-upload"
+        ></el-step>
+        <el-step
+          class="custom-step"
+          @click.native="handleStepClick(2)"
+          title="其他信息"
+          icon="el-icon-picture"
+        ></el-step>
+        <el-step
+          class="custom-step"
+          @click.native="handleStepClick(3)"
+          title="借款信息"
+          icon="el-icon-picture"
+        ></el-step>
+        <el-step
+          class="custom-step"
+          @click.native="handleStepClick(4)"
+          title="下款信息"
+          icon="el-icon-picture"
+        ></el-step>
+        <el-step
+          class="custom-step"
+          @click.native="handleStepClick(5)"
+          title="走款信息"
+          icon="el-icon-picture"
+        ></el-step>
+      </el-steps>
 
-        <!-- 项目内容 -->
-        <div class="project-content-wrap">
-           <projInfo></projInfo>
-        </div>
+      <!-- 项目内容 -->
+      <div class="project-content-wrap">
+       <div v-if="activeStatus===0">
+        <el-form
+          :model="form"
+          label-width="80px"
+          label-position="right"
+          :rules="infoRules"
+          ref="proj"
+        >
+          <el-form-item label="项目名称" prop="proj_name">
+            <el-input
+              v-model="form.proj_name"
+              placeholder="请填写项目名称"
+            ></el-input>
+          </el-form-item>
 
-      </el-card>
-    </div>
-  </template>
+          <el-form-item label="融资主体" prop="corp_name">
+            <el-select v-model="form.corp_name" placeholder="请选择融资主体">
+              <el-option
+                v-for="item in corpList"
+                :label="item.corp_name"
+                :value="item.corp_name"
+                :key="item.corp_id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="融资类型" prop="fina_name">
+            <el-select v-model="form.fina_name" placeholder="请选择融资类型">
+              <el-option
+                v-for="item in finaCate"
+                :label="item.fina_name"
+                :value="item.fina_name"
+                :key="item.fina_id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="是否隐债">
+            <el-switch
+              v-model="form.hidden_debt"
+              :active-value="1"
+              :inactive-value="0"
+            >
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="项目说明">
+            <el-input v-model="form.proj_remark" type="textarea"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-button type="primary" @click="projNext"
+          >下一步</el-button
+        >
+       </div>
+       <enterRep v-if="activeStatus ===1" @stepNext="handleStepClick" @getId="getProjId" :projId="curProj"/>
+       <enterOther v-if="activeStatus ===2" @stepNext="handleStepClick"/>
+       <enterLoan v-if="activeStatus ===3" @stepNext="handleStepClick"/>
+       <enterMt v-if="activeStatus ===4" @stepNext="handleStepClick"/>
+       <enterSp v-if="activeStatus ===5" @stepNext="handleStepClick"/>
+      </div>
+    </el-card>
+  </div>
+</template>
   
   <script>
-  import projInfo from "../projInfo.vue";
-  export default {
-    components: {
-        projInfo
+import projInfo from "../projInfo.vue";
+import enterRep from "./enterRep.vue"
+import enterOther from "./enterOther.vue";
+import enterLoan from "./enterLoan.vue";
+import enterMt from "./enterMt.vue";
+import enterSp from "./enterSp.vue";
+export default {
+  components: {
+    projInfo,
+    enterRep,
+    enterOther,
+    enterLoan,
+    enterMt,
+    enterSp,
+},
+  data() {
+    return {
+      curProj:'',
+      activeStatus: 0,
+      form: {
+        proj_name: "",
+        corp_name: "",
+        fina_name: "",
+        proj_remark: null,
+        hidden_debt: 0,
+      },
+      corpList:[],
+      finaCate:[],
+      bankList:[],
+      infoRules: {
+        proj_name: [
+          { required: true, message: "请输入项目名称", trigger: "blur" },
+        ],
+        corp_name: [
+          { required: true, message: "请选择融资主体", trigger: "blur" },
+        ],
+        fina_name: [{ required: true, message: "请选择类型", trigger: "blur" }],
+      },
+    };
+  },
+  watch: {},
+  computed: {},
+  mounted() {
+    if(this.$store.state.select.corpList.length === 0){
+      this.getSelectList()
+    }
+    //console.log(this.$route);
+    if(this.$route.query.proj_id){
+      console.log('cunzai');
+      this.curProj=this.$route.query.proj_id
+      this.getInfo(this.$route.query.proj_id)
+
+    }
+  },
+  methods: {
+    handleStepClick(index) {
+      this.activeStatus = index;
     },
-    data() {
-      return {
-        activeStatus: 0
-      };
-    },
-    watch: {
-      
-    },
-    computed: {
-     
-    },
-    mounted() {
-      
-    },
-    methods: {
-      handleStepClick(index){
-        this.activeStatus = index;
+      //获取一些列表信息
+      async getSelectList() {
+      if (!this.$store.state.select.corpList.length) {
+        await this.$store.dispatch("select/getSelcet");
       }
+
+      this.corpList = { ...this.$store.state.select.corpList };
+      this.finaCate = { ...this.$store.state.select.finaCate };
+      this.bankList = { ...this.$store.state.select.bankList };
     },
-  };
-  </script>
+    //下一步按钮触发
+    projNext(){
+      this.$refs["proj"].validate(async(validate) => {
+        console.log(validate);
+        if (validate) {
+           let res = await this.$API.enter.addProj(this.form)
+           //console.log(res.data.proj_id);
+           this.curProj=res.data.proj_id
+          this.activeStatus = 1;
+        } else {
+          return false;
+        }
+      });
+      return;
+    },
+    //如果url中携带参数获取信息
+    async getInfo(proj_id){
+      let res = await this.$API.enter.getProj(proj_id)
+      this.form = res.data.projInfo
+      console.log(res);
+    },
+    getProjId(){
+      return this.curProj
+    }
+  },
+};
+</script>
   
   <style scoped>
-   .custom-step{
-     cursor: pointer;
-   }
-   .project-content-wrap{
-      width: 100%;
-      margin-top: 12px;
-   }
+.custom-step {
+  cursor: pointer;
+}
+.project-content-wrap {
+  width: 100%;
+  margin-top: 12px;
+}
 
-  .el-tag + .el-tag {
-      margin-left: 10px;
-    }
-    .button-new-tag {
-      margin-left: 10px;
-      height: 32px;
-      line-height: 30px;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-    .input-new-tag {
-      width: 90px;
-      margin-left: 10px;
-      vertical-align: bottom;
-    }
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>
