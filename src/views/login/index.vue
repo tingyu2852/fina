@@ -6,8 +6,8 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left" >
 
       <div class="title-container" >
-        <!-- <h3 class="title">贵州思锐通教学后台管理系统</h3> -->
-        <img style="margin: 20px 100px;" src="http://www.gz-srt.com/srt/img/logo.png" alt="">
+        <h3 class="title">经开建设项目管理平台</h3>
+        <!-- <img style="margin: 20px 100px;" src="http://www.gz-srt.com/srt/img/logo.png" alt=""> -->
       </div>
 
       <el-form-item prop="username">
@@ -48,10 +48,10 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登入</el-button>
 
-      <div class="tips">
+      <!-- <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: any</span>
-      </div>
+      </div> -->
 
     </el-form>
   </div>
@@ -195,11 +195,11 @@ $light_gray:#409EFF;
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 20px 35px 0;
+    padding: 40px 35px 0;
     margin: 10% auto;
     overflow: hidden;
     border: 1px rgb(198, 189, 189) solid;
-    height: 400px;
+    height: 360px;
     background-color: #fff;
     border-radius:20px ;
     color: #000000;
