@@ -7,3 +7,5 @@ export const addProj = data => request({url:'/enter/proj',data,method:'POST'})
 export const getRep = proj_id => request({url:`/enter/rep?proj_id=${proj_id}`,method:'GET'})
 
 export const addRep = data => request({url:'/enter/rep',data,method:'POST'})
+//其他信息接口
+export const getOther = proj_id =>request({url:`/enter/other?proj_id=${proj_id}`,method:"GET"})
