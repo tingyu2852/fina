@@ -61,7 +61,7 @@
           <el-form-item label="融资主体" prop="corp_name">
             <el-select v-model="form.corp_name" placeholder="请选择融资主体">
               <el-option
-                v-for="item in corpList"
+                v-for="item in $store.state.select.corpList"
                 :label="item.corp_name"
                 :value="item.corp_name"
                 :key="item.corp_id"
@@ -71,7 +71,7 @@
           <el-form-item label="融资类型" prop="fina_name">
             <el-select v-model="form.fina_name" placeholder="请选择融资类型">
               <el-option
-                v-for="item in finaCate"
+                v-for="item in $store.state.select.finaCate"
                 :label="item.fina_name"
                 :value="item.fina_name"
                 :key="item.fina_id"
@@ -96,9 +96,9 @@
        </div>
        <enterRep v-if="activeStatus ===1" @stepNext="handleStepClick"  :projId="curProj"/>
        <enterOther v-if="activeStatus ===2" @stepNext="handleStepClick" :projId="curProj"/>
-       <enterLoan v-if="activeStatus ===3" @stepNext="handleStepClick" :projId="curProj"/>
-       <enterMt v-if="activeStatus ===4" @stepNext="handleStepClick" />
-       <enterSp v-if="activeStatus ===5" @stepNext="handleStepClick" />
+       <enterLoan v-if="activeStatus ===3" @stepNext="handleStepClick" :projId="curProj" @setId="setId"/>
+       <enterMt v-if="activeStatus ===4" @stepNext="handleStepClick" :projId="curProj" @setId="setId" :loanId="curLoan"/>
+       <enterSp v-if="activeStatus ===5" @stepNext="handleStepClick" :projId="curProj" @setId="setId" :mtId="curMT"/>
       </div>
     </el-card>
   </div>
@@ -111,6 +111,7 @@ import enterOther from "./enterOther.vue";
 import enterLoan from "./enterLoan.vue";
 import enterMt from "./enterMt.vue";
 import enterSp from "./enterSp.vue";
+import { log } from 'console';
 export default {
   components: {
     projInfo,
@@ -123,6 +124,8 @@ export default {
   data() {
     return {
       curProj:'',
+      curLoan:null,
+      curMT:null,
       activeStatus: 0,
       form: {
         proj_name: "",
@@ -147,8 +150,11 @@ export default {
   },
   watch: {},
   computed: {},
-  mounted() {
-    if(this.$store.state.select.corpList.length === 0){
+  async mounted() {
+    console.log(this.$store.state.select.corpList.length);
+    if(!this.$store.state.select.corpList.length){
+      //await this.$store.dispatch("select/getSelcet");
+      console.log(123);
       this.getSelectList()
     }
     //console.log(this.$route);
@@ -156,6 +162,23 @@ export default {
       console.log('cunzai');
       this.curProj=this.$route.query.proj_id
       this.getInfo(this.$route.query.proj_id)
+      let str = this.$route.query.name
+      let list = str.split('_')
+      console.log(list);
+      if(list[0]==='rep'){
+        this.activeStatus=1
+        
+      }else if(list[0]==='other'){
+        this.activeStatus=2
+      }else if(list[0]==='loan'){
+        this.activeStatus=3
+      }else if(list[0]==='mt'){
+        this.activeStatus=4
+        this.curLoan = parseInt(list[1])
+      }else if(list[0]==='sp'){
+        this.activeStatus=5
+        this.curMT = parseInt(list[1])
+      }
 
     }
   },
@@ -181,6 +204,7 @@ export default {
            let res = await this.$API.enter.addProj(this.form)
            //console.log(res.data.proj_id);
            this.curProj=res.data.proj_id
+           await this.$API.enter.getNext('rep',this.curProj)
           this.activeStatus = 1;
         } else {
           return false;
@@ -196,6 +220,20 @@ export default {
     },
     getProjId(){
       return this.curProj
+    },
+    setId(curObj){
+      if(curObj.name==='loan'){
+        this.curLoan = curObj.id
+      }
+      if(curObj.name==='mt'){
+        this.curMT = curObj.id
+      }
+      if(curObj.name==='proj_end'){
+        this.curProj=null
+        this.curLoan=null
+        this.curMT=null
+      }
+      console.log(curObj);
     }
   },
 };

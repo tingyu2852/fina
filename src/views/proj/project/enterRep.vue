@@ -103,6 +103,7 @@
         <el-input v-model="rep_form.rep_remark" type="textarea"></el-input>
       </el-form-item>
     </el-form>
+    <el-button type="primary" @click="$emit('stepNext',0)">上一步</el-button>
     <el-button type="primary" @click="repNext">下一步</el-button>
   </div>
 </template>
@@ -126,7 +127,16 @@ export default {
   },
   mounted() {
     if(this.projId){
+      console.log(this.projId);
       this.getRep()
+    }else{
+      //console.log(123);
+      
+      this.$message({
+        type: "error",
+        message: "请先添加基础信息",
+      });
+      this.$emit('stepNext',0)
     }
   },
   data() {
@@ -220,6 +230,7 @@ export default {
           repInfo.proj_id=this.projId
           
           let res =  await this.$API.enter.addRep(repInfo)
+          await this.$API.enter.getNext('other',this.projId)
           
           this.$emit('stepNext', 2)
         } else {

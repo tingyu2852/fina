@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div >
     其他信息
-   <div style="height: 80%; overflow: hidden;overflow: auto;"> <el-form label-position="top">
+   <div style="max-height: 600px;overflow: auto; ">
+     <el-form label-position="top">
       <div style="display: flex; align-items: center">
         <div>
           <span>1、融资费用：</span>
@@ -430,7 +431,8 @@
         </el-table>
       </el-form-item>
     </el-form></div>
-    <el-button type="primary" @click="$emit('stepNext',3)"
+    <el-button type="primary" @click="$emit('stepNext',1)">上一步</el-button>
+    <el-button type="primary" @click="otherNext"
           >下一步</el-button
         >
   </div>
@@ -447,11 +449,14 @@ export default {
       finaList: [],
       bondList: [],
       pawnList: [],
+      repInfo:{}
     };
   },
   mounted(){
     if(this.projId){
       this.getOther()
+    }else{
+      this.$emit('stepNext',1)
     }
   },
   methods:{
@@ -461,6 +466,10 @@ export default {
       this.finaList=res.data.finaList
       this.bondList=res.data.bondList
       this.pawnList=res.data.pawnList
+      this.repInfo = res.data.repInfo
+      if(!this.repInfo.rep_id){
+        this.$emit('stepNext',1)
+      }
       this.listIsEdit(this.finaList)
       this.listIsEdit(this.bondList)
       this.listIsEdit(this.pawnList)
@@ -489,6 +498,7 @@ export default {
       row.proj_id = this.projId;
       let info = {...row}
       info.cost_sum = this.$format.restoreMoney(info.cost_sum)
+      info.rep_id=this.repInfo.rep_id
       let res = await this.$API.enter.addCost(info);
       row.isEdit = false;
       this.$message({ type: "success", message: "保存成功" });
@@ -513,6 +523,7 @@ export default {
      //保证担保行内编辑按钮
     async bondSave(row) {
       row.proj_id = this.projId;
+      row.rep_id=this.repInfo.rep_id
       let res = await this.$API.enter.addBond(row);
       row.isEdit = false;
       this.$message({ type: "success", message: "保存成功" });
@@ -538,6 +549,7 @@ export default {
     //抵押担保行保存按钮
     async pawnSave(row) {
       row.proj_id = this.projId;
+      row.rep_id=this.repInfo.rep_id
       let res = await this.$API.enter.addPawn(row);
       row.isEdit = false;
       this.$message({ type: "success", message: "保存成功" });
@@ -572,6 +584,10 @@ export default {
         return "无";
       }
     },
+    async otherNext(){
+      await this.$API.enter.getNext('loan',this.projId)
+      this.$emit('stepNext',3)
+    }
   }
 };
 </script>

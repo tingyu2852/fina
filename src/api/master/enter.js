@@ -24,5 +24,18 @@ export const addPawn=(data)=>request({url:'/enter/pawn',data,method:'POST'})
 //删除担保人信息接口
 export const delPawn=(data)=>request({url:'/enter/pawn',data,method:'DELETE'})
 
-//获取借款信息按钮
+//获取借款信息接口
 export const getLoan = (proj_id)=>request({url:`/enter/loan?proj_id=${proj_id}`,method:'GET'})
+
+export const addLoan = (data)=>request({url:'/enter/loan',data,method:'POST'})
+//获取下款信息接口
+export const getMt = (loan_id)=>request({url:`/enter/mt?loan_id=${loan_id}`,method:'GET'})
+
+export const addMt = (data)=>request({url:'/enter/mt',data,method:'POST'})
+
+//获取走款信息接口
+export const getSp = (mt_id)=>request({url:`/enter/sp?mt_id=${mt_id}`,method:'GET'})
+
+//点击下一步发送请求保存项目录入阶段
+export const getNext = (name,id,proj_id)=>request({url:`/enter/next?id=${id}&name=${name}&proj_id=${proj_id}`,method:'GET'})
+
