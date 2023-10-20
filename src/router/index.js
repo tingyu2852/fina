@@ -313,6 +313,12 @@ export const asyncRoutes = [
         meta: { title: '项目添加', icon: 'el-icon-s-order' }
       },
       {
+        path: 'deatils',
+        name: 'Bank',
+        component: () => import('@/views/proj/deatils'),
+        meta: { title: '项目详情', icon: 'el-icon-s-order' }
+      },
+      {
         path: 'detail/:id',
         name: 'Detail',
         component: () => import('@/views/proj/detail.vue'),
