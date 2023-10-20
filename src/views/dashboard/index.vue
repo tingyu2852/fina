@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
-    <div clang="weclome-wrap">
-      <div class="title">欢迎使用</div>
+    <div class="weclome-wrap">
+      <div class="title">欢迎进入项目管理平台</div>
     </div>
     <!-- <el-card>
       <div style="text-align: center;margin: 20px;font-size: 20px;">年度统计</div>
@@ -113,12 +113,17 @@ export default {
     font-size: 30px;
     line-height: 46px;
   }
-}
 
+}
 .weclome-wrap{
   width: 98%;
+  height: 500px;
+  padding-top: 300px;
   .title{
-    
+    letter-spacing: 2px;
+    font-size: 24px;
+    text-align: center;
+    color: #333;
   }
 }
 </style>
