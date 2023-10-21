@@ -180,6 +180,18 @@ export default {
         this.curMT = parseInt(list[1])
       }
 
+    }else{
+      this.curProj=null
+        this.curLoan=null
+        this.curMT=null
+        this.form= {
+        proj_name: "",
+        corp_name: "",
+        fina_name: "",
+        proj_remark: null,
+        hidden_debt: 0,
+      }
+      this.activeStatus = 0
     }
   },
   methods: {
@@ -201,6 +213,7 @@ export default {
       this.$refs["proj"].validate(async(validate) => {
         console.log(validate);
         if (validate) {
+          this.form.proj_id = this.curProj
            let res = await this.$API.enter.addProj(this.form)
            //console.log(res.data.proj_id);
            this.curProj=res.data.proj_id
@@ -232,6 +245,13 @@ export default {
         this.curProj=null
         this.curLoan=null
         this.curMT=null
+        this.form= {
+        proj_name: "",
+        corp_name: "",
+        fina_name: "",
+        proj_remark: null,
+        hidden_debt: 0,
+      }
       }
       console.log(curObj);
     }

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="custom-btn-wrap">
+    <div v-show="!dialogMt">
+      <div class="custom-btn-wrap">
       <div class="add-custom-btn" @click="dialogMt = true">
         <i class="el-icon-plus"></i>新增下款
       </div>
@@ -75,12 +76,14 @@
     </el-table>
     <el-button type="primary" @click="mtPre">上一步</el-button>
     <el-button type="primary" @click="mtNext">下一步</el-button>
-    <el-dialog
+    </div>
+   <div style="width: 700px;" v-show="dialogMt">
+    <!-- <el-dialog
       title="编辑下款信息"
       :visible.sync="dialogMt"
       width="700px"
       @close="handlerClose"
-    >
+    > -->
       <!-- 自定义分割线 -->
       <div class="custom-horizontal-line"></div>
       <div class="dialog_body custom-dialog-table-body">
@@ -244,7 +247,8 @@
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="mtSave">确 定</el-button>
       </span> -->
-    </el-dialog>
+    <!-- </el-dialog> -->
+   </div>
     <el-dialog title="匹配资本金" :visible.sync="dialogMatching" width="900px">
       <div class="custom-dialog-table-body" style="margin-top: 12px">
         <div class="custom-btn-wrap">
@@ -421,6 +425,13 @@ export default {
         },
       },
     };
+  },
+  watch:{
+    dialogMt(nv,ov){
+      if(nv===false){
+        this.handlerClose()
+      }
+    }
   },
   methods: {
     //获取下款列表

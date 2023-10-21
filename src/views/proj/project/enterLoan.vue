@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="custom-btn-wrap">
+    <div v-show="!dialogLoan">
+      <div class="custom-btn-wrap">
       <div class="add-custom-btn" @click="dialogLoan = true">
         <i class="el-icon-plus"></i>新增借款
       </div>
@@ -53,13 +54,16 @@
     </el-table>
     <el-button type="primary" @click="$emit('stepNext', 2)">上一步</el-button>
     <el-button type="primary" @click="loanNext">下一步</el-button>
+    </div>
     <div>
-      <el-dialog
+      
+      <div style="width: 600px;" v-show="dialogLoan">
+        <!-- <el-dialog
         title="添加借款信息"
         :visible.sync="dialogLoan"
         @close="loanClose"
         width="500px"
-      >
+      > -->
         <div class="custom-horizontal-line"></div>
         <div class="dialog_body custom-dialog-body">
           <el-form
@@ -182,7 +186,7 @@
           </el-form>
         </div>
         <div class="custom-horizontal-line"></div>
-        <div slot="footer" class="dialog-footer custom-dialog-btn-wrap">
+        <div slot="footer" class="dialog-footer custom-dialog-btn-wrap" >
           <div class="cancel-custom-dialog-btn" @click="dialogLoan = false">
             取消
           </div>
@@ -190,7 +194,8 @@
         </div>
         <!-- <el-button type="primary" @click="loan_save">保存</el-button>
         <el-button type="primary" @click="dialogLoan = false">取消</el-button> -->
-      </el-dialog>
+      
+      </div>
       <el-dialog
         title="当前存在多条借款信息，请选择借款信息进入下款"
         :visible.sync="dialogVisible"
@@ -246,6 +251,7 @@ export default {
       checkAll: false,
       curLoan: "",
       rep_form: {
+        rep_id:null,
         sub_project: 0,
         rep_date: "2023-10-19",
       },
@@ -288,25 +294,34 @@ export default {
       },
     };
   },
+  watch:{
+    dialogLoan(nv,ov){
+      if(nv===false){
+        this.loanClose()
+      }
+
+    }
+  },
   methods: {
     //获取借款信息列表
     async getLoanList() {
       let res = await this.$API.enter.getLoan(this.projId);
-      console.log(res);
 
       this.loanList = res.data.loanList;
       this.loanList.forEach((item) => {
         item.loan_sum = this.$format.money(item.loan_sum);
         item.rate = (parseFloat(item.rate) * 100).toFixed(3);
       });
-      this.rep_form = res.data.repInfo;
-      if (!this.rep_form.rep_id) {
+      if (!res.data.repInfo) {
         this.$emit("stepNext", 1);
         return this.$message({
           type: "error",
           message: "请先添加批复信息",
         });
       }
+      this.rep_form = res.data.repInfo;
+      console.log(res);
+      
     },
     //弹窗关闭回调
     loanClose() {

@@ -135,6 +135,7 @@ const actions = {
       logout(state.token).then(() => {
         removeToken() // must remove  token  first
         resetRouter()
+        console.log('log');
         commit('RESET_STATE')
         resolve()
       }).catch(error => {

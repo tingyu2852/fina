@@ -102,7 +102,7 @@
             background
             :total="total" 
             :current-page="current" 
-            :page-size="10" 
+            :page-size="size" 
             @current-change="curchange" 
             :layout="'prev, pager, next, jumper, ->, total'">
           </el-pagination>
@@ -173,6 +173,7 @@ export default {
       loan_id: 0,
       current: 1,
       total: 0,
+      size:12,
       planList: [],
       pickerOptions: {
         disabledDate: (time) => {

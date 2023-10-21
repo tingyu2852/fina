@@ -1,64 +1,71 @@
 <template>
   <div>
-    <div class="custom-btn-wrap">
-      <div class="add-custom-btn" @click="dialogSp = true">
-        <i class="el-icon-plus"></i>新增下款
+    <div v-show="!dialogSp">
+      <div class="custom-btn-wrap">
+        <div class="add-custom-btn" @click="dialogSp = true">
+          <i class="el-icon-plus"></i>新增下款
+        </div>
       </div>
-    </div>
-    <el-table
-      style="margin-top: 12px"
-      row-class-name="active-contnet"
-      header-cell-class-name="active-header"
-      :stripe="true"
-      :data="spList"
-      border
-    >
-      <el-table-column label="收款单位" prop="corp_name"></el-table-column>
-      <el-table-column label="走款时间" prop="sp_date"></el-table-column>
-      <el-table-column label="走款金额" prop="sp_num">
-        <template slot-scope="{ row }">
-          <div>
-            {{ $format.money(row.sp_num) }}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="回款金额" prop="refund">
-        <template slot-scope="{ row }">
-          <div>
-            {{ $format.money(row.refund) }}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="实际支付金额" prop="actul_num" min-width="100px">
-        <template slot-scope="{ row }">
-          <div>
-            {{ $format.money(row.actul_num) }}
-          </div>
-        </template></el-table-column
+      <el-table
+        style="margin-top: 12px"
+        row-class-name="active-contnet"
+        header-cell-class-name="active-header"
+        :stripe="true"
+        :data="spList"
+        border
       >
-      <el-table-column label="用途" prop="sp_use"></el-table-column>
-      <el-table-column label="备注" prop="remark"></el-table-column>
-      <el-table-column label="操作" prop="remark" min-width="140px">
-        <template slot-scope="{ row }">
-          <div class="custom-table-btn-wrap">
-            <div class="edit-custom-table-btn" @click="spEdit(row)">
-              <i class="el-icon-edit"></i>编辑
+        <el-table-column label="收款单位" prop="corp_name"></el-table-column>
+        <el-table-column label="走款时间" prop="sp_date"></el-table-column>
+        <el-table-column label="走款金额" prop="sp_num">
+          <template slot-scope="{ row }">
+            <div>
+              {{ $format.money(row.sp_num) }}
             </div>
-            <div class="delete-custom-table-btn">
-              <i class="el-icon-delete"></i>删除
+          </template>
+        </el-table-column>
+        <el-table-column label="回款金额" prop="refund">
+          <template slot-scope="{ row }">
+            <div>
+              {{ $format.money(row.refund) }}
             </div>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-button type="primary" @click="spPre">上一步</el-button>
-    <el-button type="primary" @click="endBtn">完成</el-button>
-    <el-dialog
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="实际支付金额"
+          prop="actul_num"
+          min-width="100px"
+        >
+          <template slot-scope="{ row }">
+            <div>
+              {{ $format.money(row.actul_num) }}
+            </div>
+          </template></el-table-column
+        >
+        <el-table-column label="用途" prop="sp_use"></el-table-column>
+        <el-table-column label="备注" prop="remark"></el-table-column>
+        <el-table-column label="操作" prop="remark" min-width="140px">
+          <template slot-scope="{ row }">
+            <div class="custom-table-btn-wrap">
+              <div class="edit-custom-table-btn" @click="spEdit(row)">
+                <i class="el-icon-edit"></i>编辑
+              </div>
+              <div class="delete-custom-table-btn">
+                <i class="el-icon-delete"></i>删除
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-button type="primary" @click="spPre">上一步</el-button>
+      <el-button type="primary" @click="endBtn">完成</el-button>
+    </div>
+    <div v-show="dialogSp" style="width: 600px">
+      <!-- <el-dialog
       width="500px"
       title="走款信息"
       :visible.sync="dialogSp"
       @close="handleClose"
-    >
+    > -->
       <!-- 自定义分割线 -->
       <div class="custom-horizontal-line"></div>
       <div class="dialog_body custom-dialog-body">
@@ -145,7 +152,8 @@
           <el-button @click="innerVisible = false">取 消</el-button>
           <el-button type="primary" @click="spSave">确 定</el-button>
         </span> -->
-    </el-dialog>
+      <!-- </el-dialog> -->
+    </div>
   </div>
 </template>
 
@@ -203,6 +211,13 @@ export default {
       this.$emit("stepNext", 4);
     }
   },
+  watch: {
+    dialogSp(nv, ov) {
+      if (nv === false) {
+        this.handleClose();
+      }
+    },
+  },
   methods: {
     async getSpList() {
       let res = await this.$API.enter.getSp(this.mtId);
@@ -227,24 +242,31 @@ export default {
       };
     },
     async spSave() {
-      //this.sp_form.mt_id = this.mtId;
-      let sp_info = { ...this.sp_form };
-      sp_info.mt_id = this.mtId;
-      sp_info.sp_num = parseFloat(
-        sp_info.sp_num.substring(1).replace(/,/g, "")
-      );
-      sp_info.refund = parseFloat(
-        sp_info.refund.substring(1).replace(/,/g, "")
-      );
-      sp_info.actul_num = parseFloat(
-        sp_info.actul_num.substring(1).replace(/,/g, "")
-      );
-      let res = await this.$API.fina.addSp(sp_info);
-      this.getSpList();
-      if (res.code == 20000) {
-        this.$message({ type: "success", message: "保存成功" });
-      }
-      this.dialogSp = false;
+      this.$refs["sp"].validate(async (validate) => {
+        if (validate) {
+          //this.sp_form.mt_id = this.mtId;
+          let sp_info = { ...this.sp_form };
+          sp_info.mt_id = this.mtId;
+          sp_info.sp_num = parseFloat(
+            sp_info.sp_num.substring(1).replace(/,/g, "")
+          );
+          sp_info.refund = parseFloat(
+            sp_info.refund.substring(1).replace(/,/g, "")
+          );
+          sp_info.actul_num = parseFloat(
+            sp_info.actul_num.substring(1).replace(/,/g, "")
+          );
+          let res = await this.$API.fina.addSp(sp_info);
+          this.getSpList();
+          if (res.code == 20000) {
+            this.$message({ type: "success", message: "保存成功" });
+          }
+          this.dialogSp = false;
+        } else {
+          return false;
+        }
+      });
+      return;
     },
     //走款编辑
     spEdit(row) {
@@ -273,6 +295,9 @@ export default {
             name: "proj_end",
           });
           this.$emit("stepNext", 0);
+          this.$router.push({
+            path: `/projs/enter`,
+          });
         })
         .catch(() => {});
     },

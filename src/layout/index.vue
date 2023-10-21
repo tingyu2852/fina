@@ -11,7 +11,7 @@
         </div>
         <div class="user-info-wrap">
             <div>用户名：{{ this.$store.state.user.name }}</div>
-            <div @click.native="logout" class="exit-login">
+            <div @click="logout" class="exit-login">
               <span>退出登录</span>
             </div>
         </div>
@@ -61,6 +61,7 @@ export default {
     },
     // 退出功能实现方法
     async logout() {
+      console.log('123');
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
